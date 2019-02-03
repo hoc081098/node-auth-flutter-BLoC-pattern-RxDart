@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:node_auth/data/models/my_http_exception.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
+import 'package:node_auth/data/models/remote_data_source_exception.dart';
 
 class NetworkUtils {
   static Future get(
@@ -13,11 +12,11 @@ class NetworkUtils {
     final body = response.body;
     final statusCode = response.statusCode;
     if (body == null) {
-      throw MyHttpException(statusCode, 'Response body is null');
+      throw RemoteDataSourceException(statusCode, 'Response body is null');
     }
     final decoded = json.decode(body);
     if (statusCode < 200 || statusCode >= 300) {
-      throw MyHttpException(statusCode, decoded['message']);
+      throw RemoteDataSourceException(statusCode, decoded['message']);
     }
     return decoded;
   }
@@ -47,15 +46,13 @@ class NetworkUtils {
     if (headers != null) {
       request.headers.addAll(headers);
     }
-    final streamedReponse = await request.send();
+    final streamedResponse = await request.send();
 
-    final statusCode = streamedReponse.statusCode;
-    final decoded = json.decode(await streamedReponse.stream.bytesToString());
-
-    debugPrint('decoded: $decoded');
+    final statusCode = streamedResponse.statusCode;
+    final decoded = json.decode(await streamedResponse.stream.bytesToString());
 
     if (statusCode < 200 || statusCode >= 300) {
-      throw MyHttpException(statusCode, decoded['message']);
+      throw RemoteDataSourceException(statusCode, decoded['message']);
     }
 
     return decoded;

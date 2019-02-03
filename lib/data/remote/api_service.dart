@@ -4,22 +4,21 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' as http;
-import 'package:node_auth/data/models/my_http_exception.dart';
+import 'package:node_auth/data/data.dart';
 import 'package:node_auth/data/models/response.dart';
-import 'package:node_auth/data/models/user.dart';
 import 'package:node_auth/data/remote/network_utils.dart';
 import 'package:path/path.dart' as path;
 
-class ApiService {
-  static const String baseUrl = 'node-auth-081098.herokuapp.com';
+class ApiService implements RemoteDataSource {
   static const String xAccessToken = 'x-access-token';
-  
+
   const ApiService();
 
   ///
   /// Login user with [email] and [password]
   /// return [Response] including message and token
   ///
+  @override
   Future<Response> loginUser(
     String email,
     String password,
@@ -37,6 +36,7 @@ class ApiService {
   /// Login user with [email] and [password]
   /// return message
   ///
+  @override
   Future<Response> registerUser(
     String name,
     String email,
@@ -56,6 +56,7 @@ class ApiService {
   /// Get user profile by [email] and [token]
   /// return [User]
   ///
+  @override
   Future<User> getUserProfile(
     String email,
     String token,
@@ -69,6 +70,7 @@ class ApiService {
   /// Change password of user
   /// return message
   ///
+  @override
   Future<Response> changePassword(
     String email,
     String password,
@@ -91,6 +93,7 @@ class ApiService {
   /// otherwise, send an email to email
   /// return message
   ///
+  @override
   Future<Response> resetPassword(
     String email, {
     String token,
@@ -111,6 +114,7 @@ class ApiService {
   /// Upload avatar image
   /// return [User] profile after image file is uploaded
   ///
+  @override
   Future<User> uploadImage(
     File file,
     String email,
@@ -135,7 +139,7 @@ class ApiService {
     debugPrint('decoded: $decoded');
 
     if (statusCode < 200 || statusCode >= 300) {
-      throw MyHttpException(statusCode, decoded['message']);
+      throw RemoteDataSourceException(statusCode, decoded['message']);
     }
 
     return User.fromJson(decoded);

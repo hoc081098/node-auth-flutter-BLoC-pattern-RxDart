@@ -7,6 +7,9 @@ class Success implements Result {
   final String message;
 
   const Success([this.message]);
+
+  @override
+  String toString() => 'Success{message: $message}';
 }
 
 class Failure implements Result {
@@ -14,4 +17,7 @@ class Failure implements Result {
   final Object error;
 
   const Failure(this.message, [this.error]);
+
+  @override
+  String toString() => 'Failure{message: $message, error: $error}';
 }

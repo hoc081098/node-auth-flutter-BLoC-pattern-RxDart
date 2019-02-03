@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/models/result.dart';
-import 'package:node_auth/data/user_repository.dart';
+import 'package:node_auth/data/data.dart';
 import 'package:rxdart/rxdart.dart';
 
 ///

@@ -1,32 +1,74 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:node_auth/data/models/user.dart';
-import 'package:node_auth/data/models/my_http_exception.dart';
-import 'package:node_auth/data/remote/api_service.dart';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:node_auth/data/data.dart';
+import 'package:node_auth/dependency_injection.dart';
+import 'package:node_auth/pages/home/change_password/change_password.dart';
+import 'package:node_auth/pages/home/home.dart';
+import 'package:rounded_modal/rounded_modal.dart';
 
 class HomePage extends StatefulWidget {
+  final HomeBloc Function() initBloc;
+
+  const HomePage({Key key, @required this.initBloc}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String _token, _email, _createdAt;
-  User _user;
-  ApiService _apiService;
-
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  AnimationController _rotateLogoController;
+
+  HomeBloc _homeBloc;
+  StreamSubscription _subscription;
 
   @override
   void initState() {
     super.initState();
 
-    _createdAt = 'loading...';
-    _apiService = ApiService();
+    _rotateLogoController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 4),
+    )..repeat();
 
-    getUserInformation();
+    _homeBloc = widget.initBloc();
+    _subscription = _homeBloc.message$.listen(_handleMessage);
+  }
+
+  @override
+  void dispose() {
+    _rotateLogoController.dispose();
+    _subscription.cancel();
+    _homeBloc.dispose();
+    super.dispose();
+  }
+
+  void _handleMessage(HomeMessage message) async {
+    print('[DEBUG] homeBloc message=$message');
+
+    if (message is LogoutMessage) {
+      if (message is LogoutSuccessMessage) {
+        await _showMessage('Logout successfully!');
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/login_page',
+          (Route<dynamic> route) => false,
+        );
+      }
+      if (message is LogoutErrorMessage) {
+        await _showMessage('Error when logout: ${message.message}');
+      }
+    }
+    if (message is UpdateAvatarMessage) {
+      if (message is UpdateAvatarSuccessMessage) {
+        _showMessage('Upload image successfully!');
+      }
+      if (message is UpdateAvatarErrorMessage) {
+        _showMessage('Error when upload image: ${message.message}');
+      }
+    }
   }
 
   @override
@@ -54,19 +96,49 @@ class _HomePageState extends State<HomePage> {
             Card(
               color: Colors.black.withOpacity(0.5),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    Row(
+                padding: const EdgeInsets.all(16.0),
+                child: StreamBuilder<User>(
+                  stream: _homeBloc.user$,
+                  initialData: _homeBloc.user$.value,
+                  builder: (context, snapshot) {
+                    final user = snapshot.data;
+
+                    if (user == null) {
+                      return Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    const AlwaysStoppedAnimation(Colors.white),
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'Loging out...',
+                                style: Theme.of(context).textTheme.subhead,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         ClipOval(
                           child: GestureDetector(
-                            child: _user?.imageUrl != null
+                            child: user.imageUrl != null
                                 ? Image.network(
                                     Uri.https(
-                                            ApiService.baseUrl, _user?.imageUrl)
-                                        .toString(),
+                                      baseUrl,
+                                      user.imageUrl,
+                                    ).toString(),
                                     fit: BoxFit.cover,
                                     width: 90.0,
                                     height: 90.0,
@@ -82,24 +154,25 @@ class _HomePageState extends State<HomePage> {
                         Expanded(
                           child: ListTile(
                             title: Text(
-                              _user?.name ?? "loading...",
+                              user.name,
                               style: TextStyle(
                                 fontSize: 24.0,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             subtitle: Text(
-                              "${_user?.email ?? "loading..."}\n$_createdAt",
+                              "${user.email}\n${user.createdAt}",
                               style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w400,
-                                  fontStyle: FontStyle.italic),
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -108,9 +181,7 @@ class _HomePageState extends State<HomePage> {
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: RaisedButton.icon(
-                onPressed: () {
-                  _showChangePassword();
-                },
+                onPressed: _showChangePassword,
                 label: Text('Change password'),
                 icon: Icon(Icons.lock_outline),
                 color: Theme.of(context).backgroundColor,
@@ -123,12 +194,7 @@ class _HomePageState extends State<HomePage> {
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: RaisedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login_page',
-                    ModalRoute.withName(Navigator.defaultRouteName),
-                  );
-                },
+                onPressed: _homeBloc.logout,
                 label: Text('Logout'),
                 icon: Icon(Icons.exit_to_app),
                 color: Theme.of(context).backgroundColor,
@@ -136,199 +202,37 @@ class _HomePageState extends State<HomePage> {
                 splashColor: Colors.white.withOpacity(0.5),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  getUserInformation() async {
-    try {
-      final user = await _apiService.getUserProfile(_email, _token);
-      setState(() {
-        _user = user;
-        _createdAt = user.createdAt.toString();
-        debugPrint("getUserInformation $user");
-      });
-    } on MyHttpException catch (e) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
-    } catch (e) {
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
-        content: Text('Unknown error occurred'),
-      ));
-    }
-  }
-
-  _showChangePassword() {
-    _scaffoldKey.currentState.showBottomSheet((context) {
-      return ChangePasswordBottomSheet(
-        email: _email,
-        token: _token,
-      );
-    });
-  }
-
-  _pickAndUploadImage() async {
-    try {
-      final imageFile = await ImagePicker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 720.0,
-        maxHeight: 720.0,
-      );
-      final user = await _apiService.uploadImage(imageFile, _email);
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text('Changed avatar successfully!'),
-        ),
-      );
-      setState(() {
-        _user = user;
-        debugPrint('After change avatar $user');
-      });
-    } on MyHttpException catch (e) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-        ),
-      );
-    } catch (e) {
-      _scaffoldKey.currentState.showSnackBar(
-        SnackBar(content: Text('An unknown error occurred!')),
-      );
-    }
-  }
-}
-
-class ChangePasswordBottomSheet extends StatefulWidget {
-  final String email;
-  final String token;
-
-  const ChangePasswordBottomSheet({Key key, this.email, this.token})
-      : super(key: key);
-
-  @override
-  _ChangePasswordBottomSheetState createState() =>
-      _ChangePasswordBottomSheetState();
-}
-
-class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
-  final _formKey = GlobalKey<FormState>();
-  ApiService _apiService;
-  bool _obscurePassword;
-  bool _obscureNewPassword;
-  String _password, _newPassword;
-  bool _isLoading;
-  String _msg;
-
-  String _token, _email;
-
-  @override
-  void initState() {
-    super.initState();
-    _email = widget.email;
-    _token = widget.token;
-    _apiService = ApiService();
-    _isLoading = false;
-    _obscurePassword = true;
-    _obscureNewPassword = true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final passwordTextField = TextFormField(
-      autocorrect: true,
-      autovalidate: true,
-      obscureText: _obscurePassword,
-      decoration: InputDecoration(
-        suffixIcon: IconButton(
-          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-          icon:
-              Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-          iconSize: 18.0,
-        ),
-        labelText: 'Old password',
-        prefixIcon: Padding(
-          padding: const EdgeInsetsDirectional.only(end: 8.0),
-          child: Icon(Icons.lock),
-        ),
-      ),
-      keyboardType: TextInputType.text,
-      maxLines: 1,
-      style: TextStyle(fontSize: 16.0),
-      onSaved: (s) => _password = s,
-      validator: (s) => s.length < 6 ? "Minimum length of password is 6" : null,
-    );
-
-    final newPasswordTextField = TextFormField(
-      autocorrect: true,
-      autovalidate: true,
-      obscureText: _obscureNewPassword,
-      decoration: InputDecoration(
-        suffixIcon: IconButton(
-          onPressed: () =>
-              setState(() => _obscureNewPassword = !_obscureNewPassword),
-          icon: Icon(
-              _obscureNewPassword ? Icons.visibility_off : Icons.visibility),
-          iconSize: 18.0,
-        ),
-        labelText: 'New password',
-        prefixIcon: Padding(
-          padding: const EdgeInsetsDirectional.only(end: 8.0),
-          child: Icon(Icons.lock),
-        ),
-      ),
-      keyboardType: TextInputType.text,
-      maxLines: 1,
-      style: TextStyle(fontSize: 16.0),
-      onSaved: (s) => _newPassword = s,
-      validator: (s) => s.length < 6 ? "Minimum length of password is 6" : null,
-    );
-
-    final changePasswordButton = _isLoading
-        ? CircularProgressIndicator()
-        : _msg != null
-            ? Text(
-                _msg,
-                style: TextStyle(
-                  fontSize: 14.0,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.amber,
+            Expanded(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Flutter auth BLoC pattern RxDart',
+                        style: Theme.of(context)
+                            .textTheme
+                            .subhead
+                            .copyWith(fontSize: 16),
+                      ),
+                    ),
+                    Center(
+                      child: AnimatedBuilder(
+                        animation: _rotateLogoController,
+                        child: FlutterLogo(size: 96),
+                        builder: (context, child) {
+                          return RotationTransition(
+                            turns: _rotateLogoController,
+                            child: child,
+                          );
+                        },
+                      ),
+                    )
+                  ],
                 ),
-              )
-            : RaisedButton(
-                color: Colors.teal.shade400,
-                onPressed: _changePassword,
-                child: Text(
-                  "Change password",
-                  style: TextStyle(fontSize: 16.0),
-                ),
-              );
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(8.0),
-          topRight: Radius.circular(8.0),
-        ),
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: passwordTextField,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: newPasswordTextField,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: changePasswordButton,
+              ),
             )
           ],
         ),
@@ -336,55 +240,34 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet> {
     );
   }
 
-  _changePassword() async {
-    setState(() => _isLoading = true);
-
-    if (!_formKey.currentState.validate()) {
-      setState(() {
-        _isLoading = false;
-        _msg = 'Invalid information';
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        _msg = null;
-      });
-      return;
-    }
-
-    _formKey.currentState.save();
-    debugPrint("$_password|$_newPassword");
-
-    try {
-      final response = await _apiService.changePassword(
-          _email, _password, _newPassword, _token);
-
-      setState(() {
-        _isLoading = false;
-        _msg = response.message;
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        _msg = null;
-      });
-    } on MyHttpException catch (e) {
-      setState(() {
-        _isLoading = false;
-        _msg = e.message;
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        _msg = null;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _msg = 'Unknown error occurred';
-      });
-      await Future.delayed(Duration(seconds: 1));
-      setState(() {
-        _msg = null;
-      });
-      throw e;
-    }
+  _showChangePassword() {
+    showRoundedModalBottomSheet(
+      context: context,
+      builder: (context) {
+        final repository = DependencyInjector.of(context).userRepository;
+        return ChangePasswordBottomSheet(
+          initBloc: () => ChangePasswordBloc(repository),
+        );
+      },
+      color: Theme.of(context).canvasColor,
+    );
   }
+
+  _pickAndUploadImage() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 720.0,
+      maxHeight: 720.0,
+    );
+    _homeBloc.changeAvatar(imageFile);
+  }
+
+  Future<void> _showMessage(String message) => _scaffoldKey.currentState
+      ?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      )
+      ?.closed;
 }

@@ -28,6 +28,12 @@ class _AuthenticationBlocProviderState
       authenticationBloc: widget.authenticationBloc,
     );
   }
+
+  @override
+  void dispose() {
+    widget.authenticationBloc.dispose();
+    super.dispose();
+  }
 }
 
 class _AuthenticationBlocInherited extends InheritedWidget {

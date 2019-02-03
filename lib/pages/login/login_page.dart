@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login_bloc.dart';
 import 'package:node_auth/pages/login/reset_password_dialog.dart';
+import 'package:node_auth/widgets/password_textfield.dart';
 
 class LoginPage extends StatefulWidget {
   final LoginBloc Function() initBloc;
@@ -16,7 +16,6 @@ class LoginPage extends StatefulWidget {
 
 class _MyLoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin<LoginPage> {
-  bool _obscurePassword = true;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   AnimationController _loginButtonController;
@@ -32,7 +31,7 @@ class _MyLoginPageState extends State<LoginPage>
     _loginButtonController = AnimationController(
       vsync: this,
       duration: Duration(
-        milliseconds: 2000,
+        milliseconds: 1500,
       ),
     );
     _buttonSqueezeAnimation = Tween(
@@ -49,35 +48,36 @@ class _MyLoginPageState extends State<LoginPage>
     );
 
     _loginBloc = widget.initBloc();
-    _subscription = _loginBloc.message$.listen((message) {
-      if (message is LoginSuccessMessage) {
-        _loginButtonController.reverse();
-        _scaffoldKey.currentState.showSnackBar(
-          SnackBar(content: Text('Login successfully')),
-        );
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => HomePage(),
-            fullscreenDialog: true,
-            maintainState: false,
-          ),
-          ModalRoute.withName(Navigator.defaultRouteName),
-        );
-      }
-      if (message is LoginErrorMessage) {
-        _loginButtonController.reverse();
-        _scaffoldKey.currentState.showSnackBar(
-          SnackBar(content: Text(message.message)),
-        );
-      }
-    });
+    _subscription = _loginBloc.message$.listen(_handleMessage);
   }
+
+  void _handleMessage(message) async {
+    if (message is LoginSuccessMessage) {
+      _loginButtonController.reverse();
+      await _showMessage('Login successfully');
+      Navigator.of(context).pushReplacementNamed('/home_page');
+    }
+    if (message is LoginErrorMessage) {
+      _loginButtonController.reverse();
+      await _showMessage(message.message);
+    }
+  }
+
+  Future<void> _showMessage(String message) => _scaffoldKey.currentState
+      ?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      )
+      ?.closed;
 
   @override
   void dispose() {
     _loginButtonController.dispose();
     _subscription.cancel();
     _loginBloc.dispose();
+
     super.dispose();
   }
 
@@ -107,28 +107,10 @@ class _MyLoginPageState extends State<LoginPage>
     final passwordTextField = StreamBuilder<String>(
       stream: _loginBloc.passwordError$,
       builder: (context, snapshot) {
-        return TextField(
-          autocorrect: true,
-          obscureText: _obscurePassword,
-          decoration: InputDecoration(
-            errorText: snapshot.data,
-            suffixIcon: IconButton(
-              onPressed: () =>
-                  setState(() => _obscurePassword = !_obscurePassword),
-              icon: Icon(
-                  _obscurePassword ? Icons.visibility_off : Icons.visibility),
-              iconSize: 18.0,
-            ),
-            labelText: 'Password',
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
-              child: Icon(Icons.lock),
-            ),
-          ),
-          keyboardType: TextInputType.text,
-          maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
+        return PasswordTextField(
+          errorText: snapshot.data,
           onChanged: _loginBloc.passwordChanged,
+          labelText: 'Password',
         );
       },
     );
@@ -146,7 +128,7 @@ class _MyLoginPageState extends State<LoginPage>
               'LOGIN',
               style: TextStyle(color: Colors.white, fontSize: 16.0),
             ),
-            splashColor: Color(0xFF00e676),
+            splashColor: Theme.of(context).accentColor,
           );
         },
       ),
@@ -158,15 +140,12 @@ class _MyLoginPageState extends State<LoginPage>
           height: 60.0,
           child: Material(
             elevation: 5.0,
+            clipBehavior: Clip.antiAlias,
             shadowColor: Theme.of(context).accentColor,
             borderRadius: BorderRadius.circular(24.0),
             child: value > 75.0
                 ? child
-                : Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 10.0,
-                    ),
+                : Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.0,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

@@ -22,4 +22,21 @@ class User {
   @override
   String toString() =>
       'User{name=$name, email=$email, imageUrl=$imageUrl, createdAt=$createdAt}';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is User &&
+              runtimeType == other.runtimeType &&
+              name == other.name &&
+              email == other.email &&
+              createdAt == other.createdAt &&
+              imageUrl == other.imageUrl;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      email.hashCode ^
+      createdAt.hashCode ^
+      imageUrl.hashCode;
 }

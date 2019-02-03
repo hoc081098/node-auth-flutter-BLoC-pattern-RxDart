@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/models/result.dart';
 import 'package:node_auth/data/models/user_and_token.dart';
@@ -18,4 +20,11 @@ abstract class UserRepository {
   });
 
   Observable<Result> logout();
+
+  Observable<Result> uploadImage(File image);
+
+  Observable<Result> changePassword({
+    @required String password,
+    @required String newPassword,
+  });
 }

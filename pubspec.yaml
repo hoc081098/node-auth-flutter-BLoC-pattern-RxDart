@@ -15,7 +15,8 @@ dependencies:
   built_value: ^6.3.0
   distinct_value_connectable_observable: ^1.0.0+1
   shared_preferences: ^0.4.3
-
+  tuple: ^1.0.2
+  rounded_modal: ^1.0.0
 
 dev_dependencies:
   flutter_test:

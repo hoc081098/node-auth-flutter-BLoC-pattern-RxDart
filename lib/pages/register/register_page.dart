@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:node_auth/data/remote/api_service.dart';
-import 'package:node_auth/data/models/my_http_exception.dart';
+import 'package:node_auth/data/models/remote_data_source_exception.dart';
 import 'package:node_auth/data/models/response.dart';
+import 'package:node_auth/data/remote/api_service.dart';
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key key}) : super(key: key);
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -96,6 +98,7 @@ class _RegisterPageState extends State<RegisterPage>
       height: 60.0,
       child: Material(
         elevation: 5.0,
+        clipBehavior: Clip.antiAlias,
         shadowColor: Theme.of(context).accentColor,
         borderRadius: BorderRadius.circular(24.0),
         child: _buttonSqueezeAnimation.value > 75.0
@@ -107,6 +110,9 @@ class _RegisterPageState extends State<RegisterPage>
                   style: TextStyle(color: Colors.white, fontSize: 16.0),
                 ),
                 splashColor: Color(0xFF00e676),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24.0),
+                ),
               )
             : Container(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
@@ -138,38 +144,43 @@ class _RegisterPageState extends State<RegisterPage>
       key: _scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/bg.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withAlpha(0xBF), BlendMode.darken))),
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withAlpha(0xBF), BlendMode.darken),
+          ),
+        ),
         child: Stack(
           children: <Widget>[
             Center(
               child: Form(
                 key: _formKey,
                 autovalidate: true,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: nameTextField,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: emailTextField,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: passwordTextField,
-                    ),
-                    SizedBox(height: 32.0),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: registerButton,
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: nameTextField,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: emailTextField,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: passwordTextField,
+                      ),
+                      SizedBox(height: 32.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: registerButton,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -211,8 +222,9 @@ class _RegisterPageState extends State<RegisterPage>
           .then((_) => Navigator.of(context).pop());
     }).catchError((error) {
       _loginButtonController.reverse();
-      final message =
-          error is MyHttpException ? error.message : 'Unknown error occurred';
+      final message = error is RemoteDataSourceException
+          ? error.message
+          : 'Unknown error occurred';
       _scaffoldKey.currentState.showSnackBar(
         SnackBar(content: Text(message)),
       );

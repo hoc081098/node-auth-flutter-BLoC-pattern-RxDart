@@ -1,13 +1,10 @@
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/models/user_and_token.dart';
 
 @immutable
 abstract class AuthenticationState {}
 
 class AuthenticatedState implements AuthenticationState {
-  final UserAndToken userAndToken;
-
-  const AuthenticatedState(this.userAndToken);
+  const AuthenticatedState();
 }
 
 class NotAuthenticatedState implements AuthenticationState {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:node_auth/data/data.dart';
-import 'package:node_auth/data/models/my_http_exception.dart';
+import 'package:node_auth/data/models/remote_data_source_exception.dart';
 
 class ResetPasswordDialog extends StatefulWidget {
   @override
@@ -179,7 +179,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
           .then((_) => setState(() => _message = null));
     }).catchError((e) {
       final message =
-          e is MyHttpException ? e.message : "An unknown error occurred";
+          e is RemoteDataSourceException ? e.message : "An unknown error occurred";
       setState(() {
         _isLoading = false;
         _message = message;
@@ -204,7 +204,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
           .then((_) => Navigator.of(context).pop());
     }).catchError((e) {
       final message =
-          e is MyHttpException ? e.message : "An unknown error occurred";
+          e is RemoteDataSourceException ? e.message : "An unknown error occurred";
       setState(() {
         _isLoading = false;
         _message = message;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:node_auth/data/local/local_data_source.dart';
-import 'package:node_auth/data/models/shared_pref_exception.dart';
+import 'package:node_auth/data/models/local_data_source_exception.dart';
 import 'package:node_auth/data/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,7 +17,7 @@ class SharedPrefUtil implements LocalDataSource {
       final sharedPreference = await SharedPreferences.getInstance();
       return sharedPreference.getString(_kTokenKey);
     } catch (e) {
-      throw SharedPrefException('Cannot get token', e);
+      throw LocalDataSourceException('Cannot get token', e);
     }
   }
 
@@ -28,10 +28,10 @@ class SharedPrefUtil implements LocalDataSource {
       final sharedPreference = await SharedPreferences.getInstance();
       result = await sharedPreference.setString(_kTokenKey, token);
     } catch (e) {
-      throw SharedPrefException('Cannot save token', e);
+      throw LocalDataSourceException('Cannot save token', e);
     }
     if (!result) {
-      throw SharedPrefException('Cannot save token');
+      throw LocalDataSourceException('Cannot save token');
     }
   }
 
@@ -42,11 +42,11 @@ class SharedPrefUtil implements LocalDataSource {
       final sharedPreference = await SharedPreferences.getInstance();
       result = await sharedPreference.remove(_kTokenKey);
     } catch (e) {
-      throw SharedPrefException('Cannot delete token', e);
+      throw LocalDataSourceException('Cannot delete token', e);
     }
 
     if (!result) {
-      throw SharedPrefException('Cannot delete token');
+      throw LocalDataSourceException('Cannot delete token');
     }
   }
 
@@ -58,11 +58,11 @@ class SharedPrefUtil implements LocalDataSource {
       final sharedPreference = await SharedPreferences.getInstance();
       result = await sharedPreference.setString(_kUserKey, json.encode(user));
     } catch (e) {
-      throw SharedPrefException('Cannot save user', e);
+      throw LocalDataSourceException('Cannot save user', e);
     }
 
     if (!result) {
-      throw SharedPrefException('Cannot save user');
+      throw LocalDataSourceException('Cannot save user');
     }
   }
 
@@ -73,11 +73,11 @@ class SharedPrefUtil implements LocalDataSource {
       final sharedPreference = await SharedPreferences.getInstance();
       result = await sharedPreference.remove(_kUserKey);
     } catch (e) {
-      throw SharedPrefException('Cannot delete user', e);
+      throw LocalDataSourceException('Cannot delete user', e);
     }
 
     if (!result) {
-      throw SharedPrefException('Cannot delete user');
+      throw LocalDataSourceException('Cannot delete user');
     }
   }
 
@@ -91,7 +91,7 @@ class SharedPrefUtil implements LocalDataSource {
       }
       return User.fromJson(json.decode(string));
     } catch (e) {
-      throw SharedPrefException('Cannot get user', e);
+      throw LocalDataSourceException('Cannot get user', e);
     }
   }
 }
