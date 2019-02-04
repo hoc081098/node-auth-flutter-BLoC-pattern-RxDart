@@ -19,7 +19,15 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
         '/': (context) => const Home(),
-        '/register_page': (context) => const RegisterPage(),
+        '/register_page': (context) {
+          return RegisterPage(
+            initBloc: () {
+              return RegisterBloc(
+                DependencyInjector.of(context).userRepository,
+              );
+            },
+          );
+        },
         '/home_page': (context) {
           return HomePage(
             initBloc: () {

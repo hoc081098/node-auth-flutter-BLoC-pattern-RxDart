@@ -24,6 +24,9 @@ class _MyLoginPageState extends State<LoginPage>
   LoginBloc _loginBloc;
   List<StreamSubscription> _subscriptions;
 
+  FocusNode _passwordFocusNode;
+  TextEditingController _emailController;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +61,9 @@ class _MyLoginPageState extends State<LoginPage>
         }
       })
     ];
+
+    _passwordFocusNode = FocusNode();
+    _emailController = TextEditingController();
   }
 
   void _handleMessage(message) async {
@@ -97,6 +103,7 @@ class _MyLoginPageState extends State<LoginPage>
       stream: _loginBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
+          controller: _emailController,
           autocorrect: true,
           decoration: InputDecoration(
             prefixIcon: Padding(
@@ -110,6 +117,11 @@ class _MyLoginPageState extends State<LoginPage>
           maxLines: 1,
           style: TextStyle(fontSize: 16.0),
           onChanged: _loginBloc.emailChanged,
+          textInputAction: TextInputAction.next,
+          autofocus: true,
+          onSubmitted: (_) {
+            FocusScope.of(context).requestFocus(_passwordFocusNode);
+          },
         );
       },
     );
@@ -121,6 +133,12 @@ class _MyLoginPageState extends State<LoginPage>
           errorText: snapshot.data,
           onChanged: _loginBloc.passwordChanged,
           labelText: 'Password',
+          textInputAction: TextInputAction.done,
+          onSubmitted: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            _loginBloc.submitLogin();
+          },
+          focusNode: _passwordFocusNode,
         );
       },
     );
@@ -164,8 +182,14 @@ class _MyLoginPageState extends State<LoginPage>
     );
 
     final needAnAccount = FlatButton(
-      onPressed: () {
-        Navigator.of(context).pushNamed('/register_page');
+      onPressed: () async {
+        final email = await Navigator.pushNamed(context, '/register_page');
+        print('[DEBUG] email = $email');
+        if (email != null && email is String) {
+          _emailController.text = email;
+          _loginBloc.emailChanged(email);
+          FocusScope.of(context).requestFocus(_passwordFocusNode);
+        }
       },
       child: Text(
         "Don't have an account? Sign up",

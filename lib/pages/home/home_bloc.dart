@@ -55,6 +55,7 @@ class HomeBloc {
 
     final Observable<UpdateAvatarMessage> updateAvatarMessage$ =
         changeAvatarController
+            .where((file) => file != null)
             .distinct()
             .switchMap(userRepository.uploadImage)
             .map((result) {

@@ -73,6 +73,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    final logoSize = MediaQuery.of(context).size.width / 2;
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -205,15 +207,17 @@ class _HomePageState extends State<HomePage>
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'Flutter auth BLoC pattern RxDart',
-                  style:
-                      Theme.of(context).textTheme.subhead.copyWith(fontSize: 16),
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontSize: 16),
                 ),
               ),
             ),
             Center(
               child: AnimatedBuilder(
                 animation: _rotateLogoController,
-                child: FlutterLogo(size: 96),
+                child: FlutterLogo(size: logoSize),
                 builder: (context, child) {
                   return RotationTransition(
                     turns: _rotateLogoController,

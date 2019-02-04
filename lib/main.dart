@@ -7,7 +7,6 @@ import 'package:node_auth/dependency_injection.dart';
 
 void main() async {
   //TODO: reset password
-  //TODO: register page
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 

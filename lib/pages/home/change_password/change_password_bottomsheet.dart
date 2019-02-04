@@ -25,6 +25,8 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
   ChangePasswordBloc _changePasswordBloc;
   StreamSubscription _subscription;
 
+  FocusNode _newPasswordFocusNode;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,8 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
         }
       }
     });
+
+    _newPasswordFocusNode = FocusNode();
   }
 
   @override
@@ -74,6 +78,11 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
           errorText: snapshot.data,
           onChanged: _changePasswordBloc.passwordChanged,
           labelText: 'Old password',
+          onSubmitted: () {
+            FocusScope.of(context).requestFocus(_newPasswordFocusNode);
+          },
+          textInputAction: TextInputAction.next,
+          focusNode: null,
         );
       },
     );
@@ -85,6 +94,12 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
           errorText: snapshot.data,
           onChanged: _changePasswordBloc.newPasswordChanged,
           labelText: 'New password',
+          focusNode: _newPasswordFocusNode,
+          onSubmitted: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            _changePasswordBloc.changePassword();
+          },
+          textInputAction: TextInputAction.done,
         );
       },
     );

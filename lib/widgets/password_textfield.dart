@@ -4,12 +4,18 @@ class PasswordTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String errorText;
   final String labelText;
+  final TextInputAction textInputAction;
+  final VoidCallback onSubmitted;
+  final FocusNode focusNode;
 
   const PasswordTextField({
     Key key,
     @required this.onChanged,
     @required this.errorText,
     @required this.labelText,
+    @required this.onSubmitted,
+    @required this.textInputAction,
+    @required this.focusNode,
   }) : super(key: key);
 
   @override
@@ -43,6 +49,9 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       maxLines: 1,
       style: TextStyle(fontSize: 16.0),
       onChanged: widget.onChanged,
+      onSubmitted: (_) => widget.onSubmitted(),
+      textInputAction: widget.textInputAction,
+      focusNode: widget.focusNode,
     );
   }
 }
