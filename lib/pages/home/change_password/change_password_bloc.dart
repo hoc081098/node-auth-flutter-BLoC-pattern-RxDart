@@ -11,14 +11,23 @@ bool _isValidPassword(String password) {
 }
 
 class ChangePasswordBloc {
+  ///
+  /// Input functions
+  ///
   final void Function() changePassword;
   final void Function(String) passwordChanged;
   final void Function(String) newPasswordChanged;
 
+  ///
+  /// Output stream
+  ///
   final Stream<ChangePasswordState> changePasswordState$;
   final Stream<String> passwordError$;
   final Stream<String> newPasswordError$;
 
+  ///
+  /// Clean up
+  ///
   final void Function() dispose;
 
   ChangePasswordBloc._({
@@ -32,6 +41,8 @@ class ChangePasswordBloc {
   });
 
   factory ChangePasswordBloc(UserRepository userRepository) {
+    assert(userRepository != null);
+
     ///
     /// Controllers
     ///

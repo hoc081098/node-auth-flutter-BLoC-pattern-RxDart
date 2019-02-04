@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
@@ -18,7 +20,10 @@ class ChangePasswordBottomSheet extends StatefulWidget {
 class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     with SingleTickerProviderStateMixin<ChangePasswordBottomSheet> {
   AnimationController _fadeMessageController;
+  Animation<double> _messageOpacity;
+
   ChangePasswordBloc _changePasswordBloc;
+  StreamSubscription _subscription;
 
   @override
   void initState() {
@@ -26,14 +31,35 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
 
     _fadeMessageController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1200),
+    );
+    _messageOpacity = Tween(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _fadeMessageController,
+        curve: Curves.bounceIn,
+      ),
     );
 
     _changePasswordBloc = widget.initBloc();
+    _subscription =
+        _changePasswordBloc.changePasswordState$.listen((state) async {
+      if (state.message != null) {
+        _fadeMessageController.reset();
+        await _fadeMessageController.forward();
+
+        if (state?.error == null) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _subscription.cancel();
     _fadeMessageController.dispose();
     _changePasswordBloc.dispose();
     super.dispose();
@@ -66,32 +92,17 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     final messageText = StreamBuilder<ChangePasswordState>(
       stream: _changePasswordBloc.changePasswordState$,
       builder: (context, snapshot) {
-        final data = snapshot.data;
-        final message = data?.message;
-
+        final message = snapshot.data?.message;
         if (message != null) {
-          _fadeMessageController.reset();
-          _fadeMessageController.reverse(from: 1).then((_) {
-            if (data?.error == null) {
-              Navigator.of(context).pop();
-            }
-          });
-
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: FadeTransition(
-              opacity: Tween(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: _fadeMessageController,
-                  curve: Curves.easeOut,
-                ),
-              ),
+              opacity: _messageOpacity,
               child: Text(
                 message,
                 style: TextStyle(
                   fontSize: 14.0,
                   fontStyle: FontStyle.italic,
-                  color: Theme.of(context).accentColor,
                 ),
               ),
             ),
@@ -106,7 +117,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       builder: (context, snapshot) {
         if (!snapshot.hasData || !snapshot.data.isLoading) {
           return RaisedButton(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             elevation: 8,
             onPressed: _changePasswordBloc.changePassword,
             child: Text(

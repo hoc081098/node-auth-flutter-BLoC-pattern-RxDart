@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:node_auth/pages/login/login_bloc.dart';
+import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/pages/login/reset_password_dialog.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
@@ -22,7 +22,7 @@ class _MyLoginPageState extends State<LoginPage>
   Animation<double> _buttonSqueezeAnimation;
 
   LoginBloc _loginBloc;
-  StreamSubscription _subscription;
+  List<StreamSubscription> _subscriptions;
 
   @override
   void initState() {
@@ -30,9 +30,7 @@ class _MyLoginPageState extends State<LoginPage>
 
     _loginButtonController = AnimationController(
       vsync: this,
-      duration: Duration(
-        milliseconds: 1500,
-      ),
+      duration: const Duration(milliseconds: 1200),
     );
     _buttonSqueezeAnimation = Tween(
       begin: 320.0,
@@ -48,18 +46,30 @@ class _MyLoginPageState extends State<LoginPage>
     );
 
     _loginBloc = widget.initBloc();
-    _subscription = _loginBloc.message$.listen(_handleMessage);
+    _subscriptions = [
+      _loginBloc.message$.listen(_handleMessage),
+      _loginBloc.isLoading$.listen((isLoading) {
+        if (isLoading) {
+          _loginButtonController
+            ..reset()
+            ..forward();
+        } else {
+          _loginButtonController.reverse();
+        }
+      })
+    ];
   }
 
   void _handleMessage(message) async {
     if (message is LoginSuccessMessage) {
-      _loginButtonController.reverse();
       await _showMessage('Login successfully');
       Navigator.of(context).pushReplacementNamed('/home_page');
     }
     if (message is LoginErrorMessage) {
-      _loginButtonController.reverse();
       await _showMessage(message.message);
+    }
+    if (message is InvalidInformationMessage) {
+      await _showMessage('Invalid information');
     }
   }
 
@@ -75,7 +85,7 @@ class _MyLoginPageState extends State<LoginPage>
   @override
   void dispose() {
     _loginButtonController.dispose();
-    _subscription.cancel();
+    _subscriptions.forEach((s) => s.cancel());
     _loginBloc.dispose();
 
     super.dispose();
@@ -117,20 +127,17 @@ class _MyLoginPageState extends State<LoginPage>
 
     final loginButton = AnimatedBuilder(
       animation: _buttonSqueezeAnimation,
-      child: StreamBuilder<bool>(
-        initialData: _loginBloc.isValidSubmit$.value,
-        stream: _loginBloc.isValidSubmit$,
-        builder: (context, snapshot) {
-          return MaterialButton(
-            onPressed: snapshot.data ? _login : null,
-            color: Theme.of(context).backgroundColor,
-            child: Text(
-              'LOGIN',
-              style: TextStyle(color: Colors.white, fontSize: 16.0),
-            ),
-            splashColor: Theme.of(context).accentColor,
-          );
-        },
+      child: MaterialButton(
+        onPressed: _loginBloc.submitLogin,
+        color: Theme.of(context).backgroundColor,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
+        splashColor: Theme.of(context).accentColor,
       ),
       builder: (context, child) {
         var value = _buttonSqueezeAnimation.value;
@@ -195,45 +202,52 @@ class _MyLoginPageState extends State<LoginPage>
             ),
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: emailTextField,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: passwordTextField,
-                ),
-                SizedBox(height: 32.0),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: loginButton,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: needAnAccount,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: forgotPassword,
-                ),
-              ],
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              color: Colors.transparent,
+              width: double.infinity,
+              height: kToolbarHeight,
             ),
-          ),
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: emailTextField,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: passwordTextField,
+                      ),
+                      SizedBox(height: 32.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: loginButton,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: needAnAccount,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: forgotPassword,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
-  }
-
-  void _login() {
-    _loginButtonController.reset();
-    _loginButtonController.forward();
-    _loginBloc.submitLogin();
   }
 
   void _resetPassword() {

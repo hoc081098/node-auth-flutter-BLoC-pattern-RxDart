@@ -2,53 +2,8 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
+import 'package:node_auth/pages/login/login.dart';
 import 'package:rxdart/rxdart.dart';
-
-///
-///
-///
-
-class Validator {
-  Validator._();
-
-  static bool isValidPassword(String password) {
-    return password.length >= 6;
-  }
-
-  static bool isValidEmail(String email) {
-    final _emailRegExpString = r'[a-zA-Z0-9\+\.\_\%\-\+]{1,256}\@[a-zA-Z0-9]'
-        r'[a-zA-Z0-9\-]{0,64}(\.[a-zA-Z0-9][a-zA-Z0-9\-]{0,25})+';
-    return RegExp(_emailRegExpString, caseSensitive: false).hasMatch(email);
-  }
-}
-
-///
-/// Login message
-///
-
-class Credential {
-  final String email;
-  final String password;
-
-  const Credential({this.email, this.password});
-}
-
-@immutable
-abstract class LoginMessage {}
-
-class LoginSuccessMessage implements LoginMessage {
-  const LoginSuccessMessage();
-}
-
-class LoginErrorMessage implements LoginMessage {
-  final Object error;
-  final String message;
-
-  const LoginErrorMessage(this.message, [this.error]);
-
-  @override
-  String toString() => 'LoginErrorMessage{message=$message, error=$error}';
-}
 
 ///
 /// BLoC handle validate form and login
@@ -66,8 +21,8 @@ class LoginBloc {
   ///
   final Stream<String> emailError$;
   final Stream<String> passwordError$;
-  final ValueObservable<bool> isValidSubmit$;
   final Stream<LoginMessage> message$;
+  final Stream<bool> isLoading$;
 
   ///
   /// Clean up
@@ -81,8 +36,8 @@ class LoginBloc {
     @required this.emailError$,
     @required this.passwordError$,
     @required this.message$,
-    @required this.isValidSubmit$,
     @required this.dispose,
+    @required this.isLoading$,
   });
 
   factory LoginBloc(UserRepository userRepository) {
@@ -94,20 +49,25 @@ class LoginBloc {
     final emailController = PublishSubject<String>(); // ignore: close_sinks
     final passwordController = PublishSubject<String>(); // ignore: close_sinks
     final submitLoginController = PublishSubject<void>(); // ignore: close_sinks
+    // ignore: close_sinks
+    final isLoadingController = BehaviorSubject<bool>(seedValue: false);
     final controllers = <StreamController>[
       emailController,
       passwordController,
       submitLoginController,
+      isLoadingController,
     ];
 
     ///
     /// Streams
     ///
 
-    final isValidSubmit$ = Observable.combineLatest2(
+    final isValidSubmit$ = Observable.combineLatest3(
       emailController.stream.map(Validator.isValidEmail),
       passwordController.stream.map(Validator.isValidPassword),
-      (isValidEmail, isValidPassword) => isValidEmail && isValidPassword,
+      isLoadingController.stream,
+      (isValidEmail, isValidPassword, isLoading) =>
+          isValidEmail && isValidPassword && !isLoading,
     ).shareValue(seedValue: false);
 
     final credential$ = Observable.combineLatest2(
@@ -116,17 +76,28 @@ class LoginBloc {
       (email, password) => Credential(email: email, password: password),
     );
 
-    final message$ = submitLoginController.stream
+    final submit$ = submitLoginController.stream
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
-        .where((isValid) => isValid)
-        .withLatestFrom(credential$, (_, Credential c) => c)
-        .exhaustMap((credential) => userRepository
-            .login(
-              email: credential.email,
-              password: credential.password,
-            )
-            .map(_responseToMessage))
         .share();
+
+    final message$ = Observable.merge([
+      submit$
+          .where((isValid) => isValid)
+          .withLatestFrom(credential$, (_, Credential c) => c)
+          .exhaustMap(
+            (credential) => userRepository
+                .login(
+                  email: credential.email,
+                  password: credential.password,
+                )
+                .doOnListen(() => isLoadingController.add(true))
+                .doOnData((_) => isLoadingController.add(false))
+                .map(_responseToMessage),
+          ),
+      submit$
+          .where((isValid) => !isValid)
+          .map((_) => const InvalidInformationMessage())
+    ]).share();
 
     final emailError$ = emailController.stream
         .map((email) {
@@ -149,11 +120,13 @@ class LoginBloc {
       'passwordError': passwordError$,
       'isValidSubmit': isValidSubmit$,
       'message': message$,
+      'isLoading': isLoadingController,
     };
-    final subscriptions = streams.keys
-        .map((tag) =>
-            streams[tag].listen((data) => print('[DEBUG] [$tag] = $data')))
-        .toList();
+    final subscriptions = streams.keys.map((tag) {
+      return streams[tag].listen((data) {
+        print('[DEBUG] [$tag] = $data');
+      });
+    }).toList();
 
     return LoginBloc._(
       emailChanged: emailController.add,
@@ -162,11 +135,11 @@ class LoginBloc {
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
-      isValidSubmit$: isValidSubmit$,
       dispose: () async {
         await Future.wait(subscriptions.map((s) => s.cancel()));
         await Future.wait(controllers.map((c) => c.close()));
       },
+      isLoading$: isLoadingController,
     );
   }
 

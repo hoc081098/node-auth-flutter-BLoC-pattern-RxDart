@@ -4,45 +4,7 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dd802896-af2b-49cc-97ac-54eab6a0e702" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/data/constants.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/remote/remote_data_source.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/change_password/change_password.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/change_password/change_password_bloc.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/change_password/change_password_bottomsheet.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/change_password/change_password_state.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/home_bloc.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/pages/home/home_state.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/widgets/password_textfield.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/authentication_bloc/authentication_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/authentication_bloc/authentication_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/authentication_bloc/authentication_bloc_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/authentication_bloc/authentication_bloc_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/authentication_bloc/authentication_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/authentication_bloc/authentication_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/data.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/data.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/local/local_data_source.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/local/local_data_source.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/local/shared_pref_util.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/local/shared_pref_util.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/my_http_exception.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/remote_data_source_exception.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/result.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/result.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/shared_pref_exception.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/local_data_source_exception.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/user_and_token.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user_and_token.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/remote/api_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/remote/api_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/remote/network_utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/remote/network_utils.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/user_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/user_repository.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/user_repository_imp.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/user_repository_imp.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/home/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home/home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/home/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home/home_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/login/login_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/login/login_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/login/login_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/login/login_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/login/login_page_old.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/login/reset_password_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/login/reset_password_dialog.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/register/register_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/register/register_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="dd802896-af2b-49cc-97ac-54eab6a0e702" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.dart_tool/" />
     <ignored path="$PROJECT_DIR$/.idea/" />
     <ignored path="$PROJECT_DIR$/.pub/" />
@@ -237,7 +199,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549214060281" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1549214202638" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="show.migrate.to.gradle.popup" value="false" />
@@ -275,10 +237,19 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25945538" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25945538" />
       <window_info id="Capture Tool" order="1" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Build Variants" order="3" side_tool="true" />
@@ -292,9 +263,9 @@
       <window_info anchor="bottom" id="Debug" />
       <window_info anchor="bottom" id="Find" />
       <window_info anchor="bottom" id="Logcat" order="0" weight="0.32973805" />
-      <window_info active="true" anchor="bottom" id="TODO" order="1" visible="true" weight="0.32973805" />
+      <window_info anchor="bottom" id="TODO" order="1" weight="0.32973805" />
       <window_info anchor="bottom" id="Android Profiler" order="2" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="3" weight="0.41448382" />
+      <window_info anchor="bottom" id="Terminal" order="3" weight="0.57473034" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Flutter Performance" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.95377505" />
@@ -340,13 +311,6 @@
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/pages/home/change_password/change_password_state.g.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="62" selection-start-line="62" selection-end-line="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/pages/home/change_password/change_password.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
@@ -735,13 +699,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/home/home_page.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="3" column="34" selection-start-line="3" selection-start-column="34" selection-end-line="3" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/pages/home/change_password/change_password_bottomsheet.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="296">
@@ -785,6 +742,19 @@
           <caret line="32" column="12" selection-start-line="32" selection-start-column="12" selection-end-line="32" selection-end-column="12" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/home/home_page.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="205" column="31" lean-forward="true" selection-start-line="205" selection-start-column="31" selection-end-line="205" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/home/home_state.dart">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

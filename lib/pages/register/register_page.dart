@@ -151,50 +151,55 @@ class _RegisterPageState extends State<RegisterPage>
                 Colors.black.withAlpha(0xBF), BlendMode.darken),
           ),
         ),
-        child: Stack(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Center(
+            Container(
+              margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              color: Colors.transparent,
+              width: double.infinity,
+              height: kToolbarHeight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[BackButton(color: Colors.white)],
+              ),
+            ),
+            Expanded(
               child: Form(
                 key: _formKey,
                 autovalidate: true,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: nameTextField,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: emailTextField,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: passwordTextField,
-                      ),
-                      SizedBox(height: 32.0),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: registerButton,
-                      ),
-                    ],
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: nameTextField,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: emailTextField,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: passwordTextField,
+                        ),
+                        SizedBox(height: 32.0),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: registerButton,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            _getToolbar(context)
           ],
         ),
       ),
-    );
-  }
-
-  _getToolbar(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      child: BackButton(color: Colors.white),
     );
   }
 

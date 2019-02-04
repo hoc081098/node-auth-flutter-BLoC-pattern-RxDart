@@ -89,9 +89,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
+        child: ListView(
           children: <Widget>[
             Card(
               color: Colors.black.withOpacity(0.5),
@@ -129,7 +127,7 @@ class _HomePageState extends State<HomePage>
                     }
 
                     return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         ClipOval(
                           child: GestureDetector(
@@ -163,7 +161,7 @@ class _HomePageState extends State<HomePage>
                             subtitle: Text(
                               "${user.email}\n${user.createdAt}",
                               style: TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 18.0,
                                 fontWeight: FontWeight.w400,
                                 fontStyle: FontStyle.italic,
                               ),
@@ -202,36 +200,26 @@ class _HomePageState extends State<HomePage>
                 splashColor: Colors.white.withOpacity(0.5),
               ),
             ),
-            Expanded(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Flutter auth BLoC pattern RxDart',
-                        style: Theme.of(context)
-                            .textTheme
-                            .subhead
-                            .copyWith(fontSize: 16),
-                      ),
-                    ),
-                    Center(
-                      child: AnimatedBuilder(
-                        animation: _rotateLogoController,
-                        child: FlutterLogo(size: 96),
-                        builder: (context, child) {
-                          return RotationTransition(
-                            turns: _rotateLogoController,
-                            child: child,
-                          );
-                        },
-                      ),
-                    )
-                  ],
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Flutter auth BLoC pattern RxDart',
+                  style:
+                      Theme.of(context).textTheme.subhead.copyWith(fontSize: 16),
                 ),
+              ),
+            ),
+            Center(
+              child: AnimatedBuilder(
+                animation: _rotateLogoController,
+                child: FlutterLogo(size: 96),
+                builder: (context, child) {
+                  return RotationTransition(
+                    turns: _rotateLogoController,
+                    child: child,
+                  );
+                },
               ),
             )
           ],
