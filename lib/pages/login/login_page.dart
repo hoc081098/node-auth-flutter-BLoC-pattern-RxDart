@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:node_auth/dependency_injection.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/pages/login/reset_password_dialog.dart';
+import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
+import 'package:node_auth/pages/login/reset_password/send_email_page.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class LoginPage extends StatefulWidget {
@@ -136,7 +138,6 @@ class _MyLoginPageState extends State<LoginPage>
           textInputAction: TextInputAction.done,
           onSubmitted: () {
             FocusScope.of(context).requestFocus(FocusNode());
-            _loginBloc.submitLogin();
           },
           focusNode: _passwordFocusNode,
         );
@@ -146,7 +147,10 @@ class _MyLoginPageState extends State<LoginPage>
     final loginButton = AnimatedBuilder(
       animation: _buttonSqueezeAnimation,
       child: MaterialButton(
-        onPressed: _loginBloc.submitLogin,
+        onPressed: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          _loginBloc.submitLogin();
+        },
         color: Theme.of(context).backgroundColor,
         child: Text(
           'LOGIN',
@@ -255,12 +259,13 @@ class _MyLoginPageState extends State<LoginPage>
                         padding: const EdgeInsets.all(8.0),
                         child: loginButton,
                       ),
+                      SizedBox(height: 32.0),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: needAnAccount,
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: forgotPassword,
                       ),
                     ],
@@ -274,11 +279,27 @@ class _MyLoginPageState extends State<LoginPage>
     );
   }
 
-  void _resetPassword() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => ResetPasswordDialog(),
-    );
+  void _resetPassword() async {
+    final done = await showDialog<bool>(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return SendEmailPage(initBloc: () {
+              final userRepository =
+                  DependencyInjector.of(context).userRepository;
+              return SendEmailBloc(userRepository);
+            });
+          },
+        ) ??
+        false;
+    if (done) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return ResetPasswordPage();
+        },
+      );
+    }
   }
 }

@@ -215,15 +215,9 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             Center(
-              child: AnimatedBuilder(
-                animation: _rotateLogoController,
+              child: RotationTransition(
+                turns: _rotateLogoController,
                 child: FlutterLogo(size: logoSize),
-                builder: (context, child) {
-                  return RotationTransition(
-                    turns: _rotateLogoController,
-                    child: child,
-                  );
-                },
               ),
             )
           ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
 ///

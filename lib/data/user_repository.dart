@@ -27,4 +27,12 @@ abstract class UserRepository {
     @required String password,
     @required String newPassword,
   });
+
+  Observable<Result> resetPassword({
+    @required String email,
+    @required String token,
+    @required String newPassword,
+  });
+
+  Observable<Result> sendResetPasswordEmail(String email);
 }

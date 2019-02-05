@@ -134,7 +134,6 @@ class _RegisterPageState extends State<RegisterPage>
           focusNode: _passwordFocusNode,
           onSubmitted: () {
             FocusScope.of(context).requestFocus(FocusNode());
-            _registerBloc.submitRegister();
           },
           textInputAction: TextInputAction.done,
         );
@@ -144,7 +143,10 @@ class _RegisterPageState extends State<RegisterPage>
     final registerButton = AnimatedBuilder(
       animation: _buttonSqueezeAnimation,
       child: MaterialButton(
-        onPressed: _registerBloc.submitRegister,
+        onPressed: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          _registerBloc.submitRegister();
+        },
         color: Theme.of(context).backgroundColor,
         child: Text(
           'REGISTER',

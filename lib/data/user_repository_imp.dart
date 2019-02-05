@@ -122,8 +122,8 @@ class UserRepositoryImpl implements UserRepository {
         localDataSource.getToken(),
         localDataSource.getUser(),
       ]).then((list) => UserAndToken(list[1] as User, list[0] as String));
-
       behaviorSubject.add(userAndToken);
+
       print('[DEBUG] init userAndToken local=$userAndToken');
 
       if (userAndToken.token != null && userAndToken.user != null) {
@@ -133,16 +133,25 @@ class UserRepositoryImpl implements UserRepository {
         );
         behaviorSubject.add(UserAndToken(userProfile, userAndToken.token));
         await localDataSource.saveUser(userProfile);
+        
         print('[DEBUG] init userProfile server=$userProfile');
+
       }
     } on RemoteDataSourceException catch (e) {
       print('[DEBUG] init error=$e');
       if (e.statusCode == 401 && e.message == 'Invalid token!') {
         print('[DEBUG] init error=$e invalid token ==> login again');
+        
         behaviorSubject.add(UserAndToken(null, null));
+        await Future.wait([
+          localDataSource.deleteToken(),
+          localDataSource.deleteUser(),
+        ]);
+
       }
     } catch (e) {
       print('[DEBUG] init error=$e');
+      behaviorSubject.add(UserAndToken(null, null));
     }
   }
 
@@ -187,6 +196,28 @@ class UserRepositoryImpl implements UserRepository {
     }
     return Observable.fromFuture(_remoteDataSource.changePassword(
             email, password, newPassword, token))
+        .map<Result>((_) => const Success())
+        .onErrorReturnWith(_errorToResult);
+  }
+
+  @override
+  Observable<Result> resetPassword({
+    String email,
+    String token,
+    String newPassword,
+  }) {
+    return Observable.fromFuture(
+      _remoteDataSource.resetPassword(
+        email,
+        token: token,
+        newPassword: newPassword,
+      ),
+    ).map<Result>((_) => const Success()).onErrorReturnWith(_errorToResult);
+  }
+
+  @override
+  Observable<Result> sendResetPasswordEmail(String email) {
+    return Observable.fromFuture(_remoteDataSource.resetPassword(email))
         .map<Result>((_) => const Success())
         .onErrorReturnWith(_errorToResult);
   }
