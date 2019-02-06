@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:node_auth/dependency_injection.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
-import 'package:node_auth/pages/login/reset_password/send_email_page.dart';
+import 'package:node_auth/pages/login/reset_password/send_email.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class LoginPage extends StatefulWidget {
