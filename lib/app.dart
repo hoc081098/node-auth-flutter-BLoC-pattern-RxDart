@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/authentication_bloc/authentication.dart';
-import 'package:node_auth/dependency_injection.dart';
+import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
 import 'package:node_auth/pages/register/register.dart';
 
 class MyApp extends StatelessWidget {
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
           return RegisterPage(
             initBloc: () {
               return RegisterBloc(
-                DependencyInjector.of(context).userRepository,
+                Provider.of<UserRepository>(context),
               );
             },
           );
@@ -31,16 +33,19 @@ class MyApp extends StatelessWidget {
         '/home_page': (context) {
           return HomePage(
             initBloc: () {
-              return HomeBloc(DependencyInjector.of(context).userRepository);
+              return HomeBloc(Provider.of<UserRepository>(context));
             },
           );
         },
         '/login_page': (context) {
           return LoginPage(
             initBloc: () {
-              return LoginBloc(DependencyInjector.of(context).userRepository);
+              return LoginBloc(Provider.of<UserRepository>(context));
             },
           );
+        },
+        '/reset_password_page': (context) {
+          return ResetPasswordPage();
         },
       },
     );
@@ -52,7 +57,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRepository = DependencyInjector.of(context).userRepository;
+    final userRepository = Provider.of<UserRepository>(context);
     final future =
         AuthenticationBlocProvider.of(context).authenticationState$.first;
 

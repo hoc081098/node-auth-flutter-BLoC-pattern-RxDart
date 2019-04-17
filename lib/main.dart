@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:node_auth/app.dart';
 import 'package:node_auth/authentication_bloc/authentication.dart';
 import 'package:node_auth/data/data.dart';
-import 'package:node_auth/dependency_injection.dart';
+import 'package:flutter_provider/flutter_provider.dart';
 
 void main() async {
   //TODO: reset password
@@ -18,8 +18,8 @@ void main() async {
   );
 
   runApp(
-    DependencyInjector(
-      userRepository,
+    Provider<UserRepository>(
+      value: userRepository,
       child: AuthenticationBlocProvider(
         authenticationBloc: AuthenticationBloc(
           userRepository,

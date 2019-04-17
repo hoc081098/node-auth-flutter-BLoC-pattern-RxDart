@@ -74,7 +74,7 @@ class ChangePasswordBloc {
       return _isValidPassword(newPassword) &&
           _isValidPassword(password) &&
           password != newPassword;
-    }).shareValue(seedValue: false);
+    }).shareValueSeeded(false);
 
     final changePasswordState$ = submitChangePasswordController.stream
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)

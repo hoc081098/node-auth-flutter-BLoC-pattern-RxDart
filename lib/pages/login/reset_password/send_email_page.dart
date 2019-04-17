@@ -1,25 +1,69 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:node_auth/pages/login/reset_password/send_email.dart';
 
 class SendEmailPage extends StatefulWidget {
   final SendEmailBloc Function() initBloc;
+  final VoidCallback toggle;
 
-  const SendEmailPage({Key key, @required this.initBloc}) : super(key: key);
+  const SendEmailPage({
+    Key key,
+    @required this.initBloc,
+    @required this.toggle,
+  }) : super(key: key);
 
   _SendEmailPageState createState() => _SendEmailPageState();
 }
 
-class _SendEmailPageState extends State<SendEmailPage> {
+class _SendEmailPageState extends State<SendEmailPage>
+    with SingleTickerProviderStateMixin {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   SendEmailBloc _bloc;
+  List<StreamSubscription> _subscriptions;
+
+  AnimationController _fadeController;
+  Animation<double> _fadeAnim;
 
   @override
   void initState() {
     super.initState();
+
     _bloc = widget.initBloc();
+    _subscriptions = <StreamSubscription>[
+      _bloc.message$.map(_getMessageString).listen(_showSnackBar),
+      _bloc.isLoading$.listen((isLoading) {
+        if (isLoading) {
+          _fadeController.forward();
+        } else {
+          _fadeController.reverse();
+        }
+      }),
+    ];
+
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        curve: Curves.fastOutSlowIn,
+        parent: _fadeController,
+      ),
+    );
   }
+
+  _showSnackBar(String message) => _scaffoldKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      );
 
   @override
   void dispose() {
+    _subscriptions.forEach((s) => s.cancel());
     _bloc.dispose();
     super.dispose();
   }
@@ -52,156 +96,91 @@ class _SendEmailPageState extends State<SendEmailPage> {
       },
     );
 
-    final messageText = StreamBuilder<SendEmailMessage>(
-      stream: _bloc.message$,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Container(width: 0, height: 0);
-        }
-        print('[DEBUG] send_email_message snapshot=$snapshot');
-        if (snapshot.data is SendEmailSuccessMessage) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context, true);
-          });
-        }
-        return _Message(message: _getMessageString(snapshot.data));
-      },
-    );
-
-    final loadingIndicator = StreamBuilder<bool>(
-      stream: _bloc.isLoading$,
-      initialData: _bloc.isLoading$.value,
-      builder: (context, snapshot) {
-        if (snapshot.data) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text('Request email'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withAlpha(0xBF),
+              BlendMode.darken,
             ),
-          );
-        }
-        return Container(width: 0, height: 0);
-      },
-    );
-
-    return AlertDialog(
-      title: Text('Send reset password email'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            emailTextField,
-            messageText,
-            loadingIndicator,
-          ],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: emailTextField,
+                ),
+                SizedBox(height: 12),
+                Center(
+                  child: FadeTransition(
+                    opacity: _fadeAnim,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: RaisedButton(
+                    child: Text('Send'),
+                    padding: const EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    color: Theme.of(context).cardColor,
+                    splashColor: Theme.of(context).accentColor,
+                    onPressed: _bloc.submit,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: RaisedButton(
+                    child: Text('Input received token'),
+                    padding: const EdgeInsets.all(16),
+                    color: Theme.of(context).cardColor,
+                    splashColor: Theme.of(context).accentColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    onPressed: widget.toggle,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Cancel'),
-          onPressed: () => Navigator.pop(context, false),
-        ),
-        FlatButton(
-          child: Text('OK'),
-          onPressed: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-            _bloc.submit();
-          },
-        ),
-      ],
     );
   }
 
-  String _getMessageString(SendEmailMessage msg) {
+  static String _getMessageString(SendEmailMessage msg) {
     if (msg is SendEmailInvalidInformationMessage) {
-      return 'Invalid information';
+      return 'Invalid information. Try again';
     }
     if (msg is SendEmailSuccessMessage) {
-      return 'Email sended. Check your email inbox';
+      return 'Email sended. Check your email inbox and go to reset password page';
     }
     if (msg is SendEmailErrorMessage) {
       return msg.message;
     }
-    return null;
-  }
-}
-
-class _Message extends StatefulWidget {
-  final String message;
-
-  const _Message({Key key, this.message}) : super(key: key);
-
-  __MessageState createState() => __MessageState();
-}
-
-class __MessageState extends State<_Message>
-    with SingleTickerProviderStateMixin<_Message> {
-  AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    );
-    _controller.forward();
-    print('[DEBUG] __MessageState::initState message=${widget.message}');
-  }
-
-  @override
-  void didUpdateWidget(_Message oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print('[DEBUG] __MessageState::didUpdateWidget message=${widget.message}');
-    _controller.reset();
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    print('[DEBUG] __MessageState::dispose message=${widget.message}');
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizeTransition(
-      axis: Axis.vertical,
-      sizeFactor: Tween<double>(
-        begin: 1,
-        end: 0,
-      ).animate(
-        CurvedAnimation(
-          curve: Curves.fastOutSlowIn,
-          parent: _controller,
-        ),
-      ),
-      child: FadeTransition(
-        opacity: Tween<double>(
-          begin: 1,
-          end: 0,
-        ).animate(
-          CurvedAnimation(
-            curve: Curves.easeInOut,
-            parent: _controller,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              widget.message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14.0,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+    return 'An unexpected error has occurred';
   }
 }

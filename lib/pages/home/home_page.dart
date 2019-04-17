@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_provider/flutter_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/data/data.dart';
-import 'package:node_auth/dependency_injection.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:rounded_modal/rounded_modal.dart';
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage>
     showRoundedModalBottomSheet(
       context: context,
       builder: (context) {
-        final repository = DependencyInjector.of(context).userRepository;
+        final repository = Provider.of<UserRepository>(context);
         return ChangePasswordBottomSheet(
           initBloc: () => ChangePasswordBloc(repository),
         );

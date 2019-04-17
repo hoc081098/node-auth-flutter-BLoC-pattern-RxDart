@@ -57,7 +57,7 @@ class RegisterBloc {
     // ignore: close_sinks
     final submitRegisterController = PublishSubject<void>();
     // ignore: close_sinks
-    final isLoadingController = BehaviorSubject<bool>(seedValue: false);
+    final isLoadingController = BehaviorSubject<bool>.seeded(false);
     final controllers = <StreamController>[
       emailController,
       nameController,
@@ -78,7 +78,7 @@ class RegisterBloc {
       (isValidEmail, isValidPassword, isLoading, isValidName) {
         return isValidEmail && isValidPassword && !isLoading && isValidName;
       },
-    ).shareValue(seedValue: false);
+    ).shareValueSeeded(false);
 
     final registerUser$ = Observable.combineLatest3(
       emailController.stream,

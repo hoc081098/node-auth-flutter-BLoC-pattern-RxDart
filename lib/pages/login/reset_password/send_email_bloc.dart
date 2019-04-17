@@ -20,7 +20,7 @@ class SendEmailBloc {
   ///
   final Stream<String> emailError$;
   final Stream<SendEmailMessage> message$;
-  final ValueObservable<bool> isLoading$;
+  final Stream<bool> isLoading$;
 
   ///
   ///
@@ -41,24 +41,30 @@ class SendEmailBloc {
 
     final emailController = PublishSubject<String>();
     final submitController = PublishSubject<void>();
-    final isLoadingController = BehaviorSubject<bool>(seedValue: false);
+    final isLoadingController = BehaviorSubject<bool>.seeded(false);
 
     final emailError$ = emailController.map((email) {
       if (Validator.isValidEmail(email)) return null;
       return 'Invalid email address';
     }).share();
 
-    final submit$ = submitController
+    final submittedEmail$ = submitController
         .withLatestFrom(emailController, (_, String email) => email)
         .share();
 
-    final sendResult$ = submit$.where(Validator.isValidEmail).exhaustMap(
-        (email) => send(email, userRepository, isLoadingController));
     final message$ = Observable.merge([
-      submit$
+      submittedEmail$
           .where((email) => !Validator.isValidEmail(email))
           .map((_) => const SendEmailInvalidInformationMessage()),
-      sendResult$,
+      submittedEmail$.where(Validator.isValidEmail).exhaustMap(
+        (email) {
+          return send(
+            email,
+            userRepository,
+            isLoadingController,
+          );
+        },
+      ),
     ]).share();
 
     return SendEmailBloc._(

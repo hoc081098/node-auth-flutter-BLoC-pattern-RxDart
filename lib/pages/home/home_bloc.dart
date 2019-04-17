@@ -67,7 +67,7 @@ class HomeBloc {
       }
     });
 
-    final user$ = DistinctValueConnectableObservable(
+    final user$ = publishValueSeededDistinct(
       userRepository.userAndToken$.map((userAndToken) => userAndToken.user),
       seedValue: userRepository.userAndToken$.value?.user,
     );

@@ -89,7 +89,6 @@ class _RegisterPageState extends State<RegisterPage>
 
   @override
   void dispose() {
-    _registerButtonController.dispose();
     _subscriptions.forEach((s) => s.cancel());
     _registerButtonController.dispose();
 

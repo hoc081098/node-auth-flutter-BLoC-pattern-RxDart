@@ -51,7 +51,7 @@ class LoginBloc {
     final passwordController = PublishSubject<String>(); // ignore: close_sinks
     final submitLoginController = PublishSubject<void>(); // ignore: close_sinks
     // ignore: close_sinks
-    final isLoadingController = BehaviorSubject<bool>(seedValue: false);
+    final isLoadingController = BehaviorSubject<bool>.seeded(false);
     final controllers = <StreamController>[
       emailController,
       passwordController,
@@ -69,7 +69,7 @@ class LoginBloc {
       isLoadingController.stream,
       (isValidEmail, isValidPassword, isLoading) =>
           isValidEmail && isValidPassword && !isLoading,
-    ).shareValue(seedValue: false);
+    ).shareValueSeeded(false);
 
     final credential$ = Observable.combineLatest2(
       emailController.stream,

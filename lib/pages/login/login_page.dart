@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:node_auth/dependency_injection.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
-import 'package:node_auth/pages/login/reset_password/send_email.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class LoginPage extends StatefulWidget {
@@ -206,7 +203,7 @@ class _MyLoginPageState extends State<LoginPage>
     );
 
     final forgotPassword = FlatButton(
-      onPressed: _resetPassword,
+      onPressed: () => Navigator.pushNamed(context, '/reset_password_page'),
       child: Text(
         "Forgot password?",
         style: TextStyle(
@@ -277,29 +274,5 @@ class _MyLoginPageState extends State<LoginPage>
         ),
       ),
     );
-  }
-
-  void _resetPassword() async {
-    final done = await showDialog<bool>(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            return SendEmailPage(initBloc: () {
-              final userRepository =
-                  DependencyInjector.of(context).userRepository;
-              return SendEmailBloc(userRepository);
-            });
-          },
-        ) ??
-        false;
-    if (done) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return ResetPasswordPage();
-        },
-      );
-    }
   }
 }
