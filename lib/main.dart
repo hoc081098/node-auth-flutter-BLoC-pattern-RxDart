@@ -6,8 +6,6 @@ import 'package:node_auth/data/data.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 
 void main() async {
-  //TODO: reset password
-
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   const RemoteDataSource remoteDataSource = ApiService();

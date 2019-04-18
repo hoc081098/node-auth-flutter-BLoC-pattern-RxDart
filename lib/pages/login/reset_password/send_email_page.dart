@@ -65,6 +65,7 @@ class _SendEmailPageState extends State<SendEmailPage>
   void dispose() {
     _subscriptions.forEach((s) => s.cancel());
     _bloc.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -123,19 +124,17 @@ class _SendEmailPageState extends State<SendEmailPage>
                   padding: const EdgeInsets.all(8.0),
                   child: emailTextField,
                 ),
-                SizedBox(height: 12),
                 Center(
                   child: FadeTransition(
                     opacity: _fadeAnim,
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(24),
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 12),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   child: RaisedButton(
@@ -149,7 +148,7 @@ class _SendEmailPageState extends State<SendEmailPage>
                     onPressed: _bloc.submit,
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 8),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   child: RaisedButton(

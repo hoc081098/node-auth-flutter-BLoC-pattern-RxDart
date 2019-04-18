@@ -203,7 +203,16 @@ class _MyLoginPageState extends State<LoginPage>
     );
 
     final forgotPassword = FlatButton(
-      onPressed: () => Navigator.pushNamed(context, '/reset_password_page'),
+      onPressed: () async {
+        final email =
+            await Navigator.pushNamed(context, '/reset_password_page');
+        print('[DEBUG] email = $email');
+        if (email != null && email is String) {
+          _emailController.text = email;
+          _loginBloc.emailChanged(email);
+          FocusScope.of(context).requestFocus(_passwordFocusNode);
+        }
+      },
       child: Text(
         "Forgot password?",
         style: TextStyle(

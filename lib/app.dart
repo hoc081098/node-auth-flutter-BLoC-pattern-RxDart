@@ -64,23 +64,12 @@ class Home extends StatelessWidget {
     return FutureBuilder<AuthenticationState>(
       future: future,
       builder: (context, snapshot) {
-        print('[DEBUG] home snapshot=$snapshot');
-
         if (!snapshot.hasData) {
-          print('[DEBUG] home snapshot=$snapshot [1][waiting]');
+          print('[HOME] home snapshot=$snapshot [1][waiting...]');
           return Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/bg.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withAlpha(0xBF),
-                  BlendMode.darken,
-                ),
-              ),
-            ),
+            color: Theme.of(context).cardColor,
             child: Center(
               child: CircularProgressIndicator(
                 valueColor: const AlwaysStoppedAnimation(Colors.white),
@@ -89,11 +78,11 @@ class Home extends StatelessWidget {
           );
         }
         if (snapshot.hasError || snapshot.data is NotAuthenticatedState) {
-          print('[DEBUG] home snapshot=$snapshot [2][NotAuthenticatedState]');
+          print('[HOME] home snapshot=$snapshot [2][NotAuthenticated]');
           return LoginPage(initBloc: () => LoginBloc(userRepository));
         }
         if (snapshot.data is AuthenticatedState) {
-          print('[DEBUG] home snapshot=$snapshot [3][AuthenticatedState]');
+          print('[HOME] home snapshot=$snapshot [3][Authenticated]');
           return HomePage(initBloc: () => HomeBloc(userRepository));
         }
       },
