@@ -192,6 +192,7 @@ class _InputTokenAndResetPasswordPageState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: emailTextField,
@@ -208,7 +209,7 @@ class _InputTokenAndResetPasswordPageState
                   child: FadeTransition(
                     opacity: _fadeAnim,
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(16),
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                       ),
@@ -242,6 +243,7 @@ class _InputTokenAndResetPasswordPageState
                     onPressed: widget.toggle,
                   ),
                 ),
+                SizedBox(height: 24),
               ],
             ),
           ),

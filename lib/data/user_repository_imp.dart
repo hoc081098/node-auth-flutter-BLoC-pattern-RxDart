@@ -123,7 +123,6 @@ class UserRepositoryImpl implements UserRepository {
         localDataSource.getUser(),
       ]).then((list) => UserAndToken(list[1] as User, list[0] as String));
       behaviorSubject.add(userAndToken);
-
       print('[REPOSITORY] init userAndToken local=$userAndToken');
 
       if (userAndToken.token != null && userAndToken.user != null) {
@@ -133,12 +132,12 @@ class UserRepositoryImpl implements UserRepository {
         );
         behaviorSubject.add(UserAndToken(userProfile, userAndToken.token));
         await localDataSource.saveUser(userProfile);
-        
         print('[REPOSITORY] init userProfile server=$userProfile');
-
       }
+
     } on RemoteDataSourceException catch (e) {
       print('[REPOSITORY] init error=$e');
+
       if (e.statusCode == 401 && e.message == 'Invalid token!') {
         print('[REPOSITORY] init error=$e invalid token ==> login again');
         
@@ -149,7 +148,7 @@ class UserRepositoryImpl implements UserRepository {
         ]);
 
       }
-    } catch (e) {
+    } on LocalDataSourceException catch (e) {
       print('[REPOSITORY] init error=$e');
       behaviorSubject.add(UserAndToken(null, null));
     }

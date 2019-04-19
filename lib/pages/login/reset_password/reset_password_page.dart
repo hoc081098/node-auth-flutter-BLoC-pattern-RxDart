@@ -28,6 +28,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
   Animation<Offset> _animationPosition;
   Animation<double> _animationScale;
   Animation<double> _animationOpacity;
+  Animation<double> _animationTurns;
 
   @override
   void initState() {
@@ -62,6 +63,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       CurvedAnimation(
         parent: _animationController,
         curve: Curves.fastOutSlowIn,
+      ),
+    );
+    _animationTurns = Tween<double>(
+      begin: 0.5,
+      end: 0,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
       ),
     );
 
@@ -106,15 +116,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       children: <Widget>[
         Positioned.fill(child: sendEmailPage),
         Positioned.fill(
-          child: SlideTransition(
-            position: _animationPosition,
-            child: ScaleTransition(
-              scale: _animationScale,
-              child: FadeTransition(
-                opacity: _animationOpacity,
-                child: resetPasswordPage,
+          child: RotationTransition(
+            child: SlideTransition(
+              position: _animationPosition,
+              child: ScaleTransition(
+                scale: _animationScale,
+                child: FadeTransition(
+                  opacity: _animationOpacity,
+                  child: resetPasswordPage,
+                ),
               ),
             ),
+            turns: _animationTurns,
           ),
         )
       ],
