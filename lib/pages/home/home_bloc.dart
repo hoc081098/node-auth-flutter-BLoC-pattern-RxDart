@@ -47,6 +47,7 @@ class HomeBloc {
         if (result is Failure) {
           return LogoutErrorMessage(result.message, result.error);
         }
+        return null;
       }),
       userRepository.userAndToken$
           .where((userAndToken) => userAndToken.user == null)
@@ -65,6 +66,7 @@ class HomeBloc {
       if (result is Failure) {
         return UpdateAvatarErrorMessage(result.message, result.error);
       }
+      return null;
     });
 
     final user$ = publishValueSeededDistinct(

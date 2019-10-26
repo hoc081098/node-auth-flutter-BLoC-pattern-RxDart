@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/pages/home/home.dart';
-import 'package:rounded_modal/rounded_modal.dart';
 
 class HomePage extends StatefulWidget {
   final HomeBloc Function() initBloc;
@@ -51,7 +50,8 @@ class _HomePageState extends State<HomePage>
 
     if (message is LogoutMessage) {
       if (message is LogoutSuccessMessage) {
-        await _showMessage('Logout successfully!');
+        _showMessage('Logout successfully!');
+        await Future.delayed(const Duration(seconds: 1));
         Navigator.of(context).pushNamedAndRemoveUntil(
           '/login_page',
           (Route<dynamic> route) => false,
@@ -80,6 +80,7 @@ class _HomePageState extends State<HomePage>
       appBar: AppBar(
         title: Text('Home'),
       ),
+      resizeToAvoidBottomInset: true,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -227,7 +228,16 @@ class _HomePageState extends State<HomePage>
   }
 
   _showChangePassword() {
-    showRoundedModalBottomSheet(
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+          bottomLeft: Radius.zero,
+          bottomRight: Radius.zero,
+        ),
+      ),
       context: context,
       builder: (context) {
         final repository = Provider.of<UserRepository>(context);
@@ -235,7 +245,9 @@ class _HomePageState extends State<HomePage>
           initBloc: () => ChangePasswordBloc(repository),
         );
       },
-      color: Theme.of(context).canvasColor,
+      backgroundColor: Theme
+          .of(context)
+          .canvasColor,
     );
   }
 

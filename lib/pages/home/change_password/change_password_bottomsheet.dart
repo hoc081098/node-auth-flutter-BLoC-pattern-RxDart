@@ -147,25 +147,32 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: passwordTextField,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: newPasswordTextField,
-          ),
-          messageText,
-          Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: changePasswordButton,
-          )
-        ],
+    return Padding(
+      padding: EdgeInsets.only(
+          bottom: MediaQuery
+              .of(context)
+              .viewInsets
+              .bottom),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: passwordTextField,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: newPasswordTextField,
+            ),
+            messageText,
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: changePasswordButton,
+            )
+          ],
+        ),
       ),
     );
   }

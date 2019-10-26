@@ -67,7 +67,8 @@ class _MyLoginPageState extends State<LoginPage>
 
   void _handleMessage(message) async {
     if (message is LoginSuccessMessage) {
-      await _showMessage('Login successfully');
+      _showMessage('Login successfully');
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.of(context).pushReplacementNamed('/home_page');
     }
     if (message is LoginErrorMessage) {

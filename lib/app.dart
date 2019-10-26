@@ -85,6 +85,7 @@ class Home extends StatelessWidget {
           print('[HOME] home snapshot=$snapshot [3][Authenticated]');
           return HomePage(initBloc: () => HomeBloc(userRepository));
         }
+        return Container(width: 0, height: 0);
       },
     );
   }

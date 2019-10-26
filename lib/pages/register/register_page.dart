@@ -67,7 +67,8 @@ class _RegisterPageState extends State<RegisterPage>
 
   void _handleMessage(RegisterMessage message) async {
     if (message is RegisterSuccessMessage) {
-      await _showMessage('Register successfully');
+      _showMessage('Register successfully');
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pop<String>(context, message.email);
     }
     if (message is RegisterErrorMessage) {
