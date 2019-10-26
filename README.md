@@ -6,11 +6,6 @@ A new Flutter project.
 
 [Youtube](https://youtu.be/OvsDKfy0aOs)
 
-## Getting Started
-
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
-
 ## Screenshots
 
 |  |  |  |
