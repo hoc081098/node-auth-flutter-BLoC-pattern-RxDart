@@ -1,6 +1,6 @@
 # node_auth
 
-A new Flutter project.
+:snowflake: :snowflake: [BLOC_PATTERN] [RXDART] [STREAM] :whale2: :whale2: Simple auth app flutter, server node.js, BLoC pattern, RxDart :cyclone: :cyclone: Functionalities: LOGIN, REGISTER, CHANGE PASSWORD, CHANGE AVATAR, FORGOT PASSWORD
 
 ## Video demo:
 
