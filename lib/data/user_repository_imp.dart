@@ -138,7 +138,7 @@ class UserRepositoryImpl implements UserRepository {
     } on RemoteDataSourceException catch (e) {
       print('[REPOSITORY] init error=$e');
 
-      if (e.statusCode == 401 && e.message == 'Invalid token!') {
+      if (e.statusCode == 401) {
         print('[REPOSITORY] init error=$e invalid token ==> login again');
         
         behaviorSubject.add(UserAndToken(null, null));
