@@ -8,31 +8,31 @@ import 'package:rxdart/rxdart.dart';
 abstract class UserRepository {
   ValueObservable<UserAndToken> get userAndToken$;
 
-  Observable<Result> login({
+  Observable<Result<void>> login({
     @required String email,
     @required String password,
   });
 
-  Observable<Result> registerUser({
+  Observable<Result<void>> registerUser({
     @required String name,
     @required String email,
     @required String password,
   });
 
-  Observable<Result> logout();
+  Observable<Result<void>> logout();
 
-  Observable<Result> uploadImage(File image);
+  Observable<Result<void>> uploadImage(File image);
 
-  Observable<Result> changePassword({
+  Observable<Result<void>> changePassword({
     @required String password,
     @required String newPassword,
   });
 
-  Observable<Result> resetPassword({
+  Observable<Result<void>> resetPassword({
     @required String email,
     @required String token,
     @required String newPassword,
   });
 
-  Observable<Result> sendResetPasswordEmail(String email);
+  Observable<Result<void>> sendResetPasswordEmail(String email);
 }

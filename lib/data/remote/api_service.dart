@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' as http;
 import 'package:node_auth/data/data.dart';
-import 'package:node_auth/data/models/response.dart';
+import 'package:node_auth/data/models/token_response.dart';
 import 'package:node_auth/data/remote/network_utils.dart';
 import 'package:path/path.dart' as path;
 
@@ -16,10 +16,10 @@ class ApiService implements RemoteDataSource {
 
   ///
   /// Login user with [email] and [password]
-  /// return [Response] including message and token
+  /// return [TokenResponse] including message and token
   ///
   @override
-  Future<Response> loginUser(
+  Future<TokenResponse> loginUser(
     String email,
     String password,
   ) async {
@@ -29,7 +29,7 @@ class ApiService implements RemoteDataSource {
     final json = await NetworkUtils.post(url, headers: {
       HttpHeaders.authorizationHeader: basic,
     });
-    return Response.fromJson(json);
+    return TokenResponse.fromJson(json);
   }
 
   ///
@@ -37,7 +37,7 @@ class ApiService implements RemoteDataSource {
   /// return message
   ///
   @override
-  Future<Response> registerUser(
+  Future<TokenResponse> registerUser(
     String name,
     String email,
     String password,
@@ -49,7 +49,7 @@ class ApiService implements RemoteDataSource {
       'password': password,
     };
     final decoded = await NetworkUtils.post(url, body: body);
-    return Response.fromJson(decoded);
+    return TokenResponse.fromJson(decoded);
   }
 
   ///
@@ -71,7 +71,7 @@ class ApiService implements RemoteDataSource {
   /// return message
   ///
   @override
-  Future<Response> changePassword(
+  Future<TokenResponse> changePassword(
     String email,
     String password,
     String newPassword,
@@ -84,7 +84,7 @@ class ApiService implements RemoteDataSource {
       headers: {xAccessToken: token},
       body: body,
     );
-    return Response.fromJson(json);
+    return TokenResponse.fromJson(json);
   }
 
   ///
@@ -94,7 +94,7 @@ class ApiService implements RemoteDataSource {
   /// return message
   ///
   @override
-  Future<Response> resetPassword(
+  Future<TokenResponse> resetPassword(
     String email, {
     String token,
     String newPassword,
@@ -107,7 +107,7 @@ class ApiService implements RemoteDataSource {
           })
         : NetworkUtils.post(url);
     final json = await task;
-    return Response.fromJson(json);
+    return TokenResponse.fromJson(json);
   }
 
   ///
@@ -132,9 +132,9 @@ class ApiService implements RemoteDataSource {
           filename: path.basename(file.path),
         ),
       );
-    final streamedReponse = await request.send();
-    final statusCode = streamedReponse.statusCode;
-    final decoded = json.decode(await streamedReponse.stream.bytesToString());
+    final streamedResponse = await request.send();
+    final statusCode = streamedResponse.statusCode;
+    final decoded = json.decode(await streamedResponse.stream.bytesToString());
 
     debugPrint('decoded: $decoded');
 

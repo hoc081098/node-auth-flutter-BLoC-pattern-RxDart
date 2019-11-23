@@ -1,18 +1,18 @@
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class Result {}
+abstract class Result<T> {}
 
-class Success implements Result {
-  final String message;
+class Success<T> implements Result<T> {
+  final T result;
 
-  const Success([this.message]);
+  const Success(this.result);
 
   @override
-  String toString() => 'Success{message: $message}';
+  String toString() => 'Success{result: $result}';
 }
 
-class Failure implements Result {
+class Failure<T> implements Result<T> {
   final String message;
   final Object error;
 

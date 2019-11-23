@@ -1,21 +1,21 @@
 import 'dart:io';
 
-import 'package:node_auth/data/models/response.dart';
+import 'package:node_auth/data/models/token_response.dart';
 import 'package:node_auth/data/models/user.dart';
 
 abstract class RemoteDataSource {
-  Future<Response> loginUser(String email, String password);
+  Future<TokenResponse> loginUser(String email, String password);
 
-  Future<Response> registerUser(String name, String email, String password);
+  Future<TokenResponse> registerUser(String name, String email, String password);
 
-  Future<Response> changePassword(
+  Future<TokenResponse> changePassword(
     String email,
     String password,
     String newPassword,
     String token,
   );
 
-  Future<Response> resetPassword(
+  Future<TokenResponse> resetPassword(
     String email, {
     String token,
     String newPassword,

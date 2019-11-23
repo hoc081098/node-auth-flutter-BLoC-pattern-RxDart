@@ -46,8 +46,7 @@ class _AuthenticationBlocInherited extends InheritedWidget {
   }) : super(key: key, child: child);
 
   static _AuthenticationBlocInherited of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(_AuthenticationBlocInherited)
-        as _AuthenticationBlocInherited);
+    return context.dependOnInheritedWidgetOfExactType<_AuthenticationBlocInherited>();
   }
 
   @override

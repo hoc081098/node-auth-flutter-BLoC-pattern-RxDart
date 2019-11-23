@@ -1,15 +1,10 @@
-import 'package:node_auth/data/models/user.dart';
+import 'package:node_auth/data/data.dart';
+import 'package:rxdart/rxdart.dart';
 
 abstract class LocalDataSource {
-  Future<String> getToken();
+  ValueObservable<UserAndToken> get userAndToken$;
 
-  Future<void> saveToken(String token);
+  Future<void> saveUserAndToken(UserAndToken userAndToken);
 
-  Future<void> deleteToken();
-
-  Future<void> saveUser(User user);
-
-  Future<void> deleteUser();
-
-  Future<User> getUser();
+  Future<void> removeUserAndToken();
 }

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
 import 'package:node_auth/data/models/local_data_source_exception.dart';
 import 'package:node_auth/data/models/remote_data_source_exception.dart';
 import 'package:node_auth/data/models/result.dart';
+import 'package:node_auth/data/models/token_response.dart';
 import 'package:node_auth/data/models/user.dart';
 import 'package:node_auth/data/models/user_and_token.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
@@ -14,70 +14,179 @@ import 'package:rxdart/rxdart.dart';
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
   final LocalDataSource _localDataSource;
-  final BehaviorSubject<UserAndToken> _userAndTokenController;
 
-  const UserRepositoryImpl._(
+  UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
-    this._userAndTokenController,
   )   : assert(_remoteDataSource != null),
-        assert(_localDataSource != null),
-        assert(_userAndTokenController != null);
+        assert(_localDataSource != null) {
+    _init();
+  }
 
-  factory UserRepositoryImpl({
-    @required RemoteDataSource remoteDataSource,
-    @required LocalDataSource localDataSource,
-  }) {
-    final behaviorSubject = BehaviorSubject<UserAndToken>();
-    behaviorSubject.stream.listen((userAndToken) {
-      print('[DEBUG] UserRepositoryImpl userAndToken=$userAndToken');
+  @override
+  Observable<Result<void>> login({
+    String email,
+    String password,
+  }) =>
+      _execute(() => _remoteDataSource.loginUser(email, password))
+          .flatMap((result) => _getUserProfileAndSaveToLocal(email, result));
+
+  @override
+  ValueObservable<UserAndToken> get userAndToken$ =>
+      _localDataSource.userAndToken$;
+
+  @override
+  Observable<Result<void>> registerUser({
+    String name,
+    String email,
+    String password,
+  }) =>
+      _execute(() => _remoteDataSource.registerUser(name, email, password));
+
+  @override
+  Observable<Result<void>> logout() =>
+      _execute(() => _localDataSource.removeUserAndToken());
+
+  @override
+  Observable<Result<void>> uploadImage(File image) {
+    final userAndToken = _localDataSource.userAndToken$.value;
+
+    if (userAndToken == null) {
+      return Observable.just(
+        const Failure(
+          'Require login!',
+          'Email or token is null',
+        ),
+      );
+    }
+
+    return _execute(
+      () => _remoteDataSource.uploadImage(
+        image,
+        userAndToken.user.email,
+      ),
+    ).asyncMap((result) async {
+      if (result is Success<User>) {
+        await _localDataSource.saveUserAndToken(
+          UserAndToken(
+            result.result,
+            userAndToken.token,
+          ),
+        );
+      }
+      return result;
     });
-    _init(remoteDataSource, localDataSource, behaviorSubject);
-    return UserRepositoryImpl._(
-      remoteDataSource,
-      localDataSource,
-      behaviorSubject,
+  }
+
+  @override
+  Observable<Result<void>> changePassword({
+    String password,
+    String newPassword,
+  }) {
+    final userAndToken = _localDataSource.userAndToken$.value;
+
+    if (userAndToken == null) {
+      return Observable.just(
+        const Failure(
+          'Require login!',
+          'Email or token is null',
+        ),
+      );
+    }
+
+    return _execute(
+      () => _remoteDataSource.changePassword(
+        userAndToken.user.email,
+        password,
+        newPassword,
+        userAndToken.token,
+      ),
     );
   }
 
   @override
-  Observable<Result> login({
+  Observable<Result<void>> resetPassword({
     String email,
-    String password,
-  }) {
-    return Observable.fromFuture(_remoteDataSource.loginUser(email, password))
-        .map((response) => response.token)
-        .flatMap((token) {
-          return Observable.zip2(
-            Stream.fromFuture(
-              _remoteDataSource.getUserProfile(
-                email,
-                token,
-              ),
-            ),
-            Stream.fromFuture(
-              _localDataSource.saveToken(token),
-            ),
-            (User user, _) => user,
-          ).map((user) => UserAndToken(user, token));
-        })
-        .flatMap((userAndToken) {
-          return Stream.fromFuture(_localDataSource.saveUser(userAndToken.user))
-              .map((_) => userAndToken);
-        })
-        .doOnData((userAndToken) {
-          _userAndTokenController.add(
+    String token,
+    String newPassword,
+  }) =>
+      _execute(
+        () => _remoteDataSource.resetPassword(
+          email,
+          token: token,
+          newPassword: newPassword,
+        ),
+      );
+
+  @override
+  Observable<Result<void>> sendResetPasswordEmail(String email) =>
+      _execute(() => _remoteDataSource.resetPassword(email));
+
+  Stream<Result<void>> _getUserProfileAndSaveToLocal(
+    String email,
+    Result<TokenResponse> tokenResult,
+  ) {
+    if (tokenResult is Failure) {
+      return Observable.just(tokenResult);
+    }
+
+    if (tokenResult is Success<TokenResponse>) {
+      final token = tokenResult.result.token;
+      return _execute(
+        () => _remoteDataSource.getUserProfile(
+          email,
+          token,
+        ),
+      ).asyncMap((userResult) async {
+        if (userResult is Success<User>) {
+          await _localDataSource.saveUserAndToken(
             UserAndToken(
-              userAndToken.user,
-              userAndToken.token,
+              userResult.result,
+              token,
             ),
           );
-        })
-        .map<Result>((_) => const Success())
-        .onErrorReturnWith(_errorToResult);
+        }
+        return userResult;
+      });
+    }
+
+    return Observable.error('Unknow $tokenResult');
   }
 
-  Failure _errorToResult(e) {
+  ///
+  /// Helpers functions
+  ///
+
+  ///
+  /// Execute [factory] when listen to observable,
+  /// if future is successful, emit [Success]
+  /// if future complete with error, emit [Failure]
+  ///
+  Observable<Result<T>> _execute<T>(Future<T> Function() factory) {
+    return Observable.defer(() {
+      return Observable.fromFuture(factory())
+          .doOnError(_handleUnauthenticatedError)
+          .map<Result<T>>((result) => Success<T>(result))
+          .onErrorReturnWith(_errorToResult);
+    });
+  }
+
+  ///
+  /// Like error http interceptor
+  ///
+  void _handleUnauthenticatedError(e) {
+    if (e is RemoteDataSourceException &&
+        e.statusCode == HttpStatus.unauthorized) {
+      print(
+          '[USER_REPOSITORY] {interceptor} 401 - unauthenticated error ===> login again');
+      _localDataSource.removeUserAndToken();
+    }
+  }
+
+  ///
+  /// Convert error to [Failure]
+  ///
+  static Failure<T> _errorToResult<T>(e) {
     if (e is RemoteDataSourceException) {
       return Failure(e.message, e);
     }
@@ -87,137 +196,41 @@ class UserRepositoryImpl implements UserRepository {
     return Failure(e.toString(), e);
   }
 
-  @override
-  ValueObservable<UserAndToken> get userAndToken$ =>
-      _userAndTokenController.stream;
+  ///
+  /// Check auth when starting app
+  ///
+  void _init() async {
+    const tag = '[USER_REPOSITORY] {init}';
 
-  @override
-  Observable<Result> registerUser({
-    String name,
-    String email,
-    String password,
-  }) {
-    return Observable.fromFuture(
-            _remoteDataSource.registerUser(name, email, password))
-        .map<Result>((_) => const Success())
-        .onErrorReturnWith(_errorToResult);
-  }
-
-  @override
-  Observable<Result> logout() {
-    return Observable.zip2(Stream.fromFuture(_localDataSource.deleteToken()),
-            Stream.fromFuture(_localDataSource.deleteUser()), (_, __) => null)
-        .map<Result>((_) => const Success())
-        .doOnData((_) => _userAndTokenController.add(UserAndToken(null, null)))
-        .onErrorReturnWith(_errorToResult);
-  }
-
-  static void _init(
-    RemoteDataSource remoteDataSource,
-    LocalDataSource localDataSource,
-    BehaviorSubject behaviorSubject,
-  ) async {
     try {
-      final userAndToken = await Future.wait([
-        localDataSource.getToken(),
-        localDataSource.getUser(),
-      ]).then((list) => UserAndToken(list[1] as User, list[0] as String));
-      behaviorSubject.add(userAndToken);
-      print('[REPOSITORY] init userAndToken local=$userAndToken');
+      final userAndToken = await _localDataSource.userAndToken$.first;
+      print('$tag userAndToken local=$userAndToken');
 
-      if (userAndToken.token != null && userAndToken.user != null) {
-        final userProfile = await remoteDataSource.getUserProfile(
-          userAndToken.user.email,
-          userAndToken.token,
-        );
-        behaviorSubject.add(UserAndToken(userProfile, userAndToken.token));
-        await localDataSource.saveUser(userProfile);
-        print('[REPOSITORY] init userProfile server=$userProfile');
+      if (userAndToken == null) {
+        return;
       }
 
+      final userProfile = await _remoteDataSource.getUserProfile(
+        userAndToken.user.email,
+        userAndToken.token,
+      );
+      print('$tag userProfile server=$userProfile');
+      await _localDataSource.saveUserAndToken(
+        UserAndToken(
+          userProfile,
+          userAndToken.token,
+        ),
+      );
     } on RemoteDataSourceException catch (e) {
-      print('[REPOSITORY] init error=$e');
+      print('$tag remote error=$e');
 
-      if (e.statusCode == 401) {
-        print('[REPOSITORY] init error=$e invalid token ==> login again');
-        
-        behaviorSubject.add(UserAndToken(null, null));
-        await Future.wait([
-          localDataSource.deleteToken(),
-          localDataSource.deleteUser(),
-        ]);
-
+      if (e.statusCode == HttpStatus.unauthorized) {
+        print('$tag 401 - unauthenticated error ===> login again');
+        await _localDataSource.removeUserAndToken();
       }
     } on LocalDataSourceException catch (e) {
-      print('[REPOSITORY] init error=$e');
-      behaviorSubject.add(UserAndToken(null, null));
+      print('$tag local error=$e');
+      await _localDataSource.removeUserAndToken();
     }
-  }
-
-  @override
-  Observable<Result> uploadImage(File image) {
-    var email = _userAndTokenController.value?.user?.email;
-    var token = _userAndTokenController.value?.token;
-    if (email == null || token == null) {
-      return Observable.just(
-        const Failure(
-          'Require login!',
-          'Email or token is null',
-        ),
-      );
-    }
-    return Observable.fromFuture(_remoteDataSource.uploadImage(image, email))
-        .flatMap((user) {
-          return Stream.fromFuture(_localDataSource.saveUser(user))
-              .map((_) => user);
-        })
-        .doOnData((user) {
-          _userAndTokenController.add(UserAndToken(user, token));
-        })
-        .map<Result>((_) => const Success())
-        .onErrorReturnWith(_errorToResult);
-  }
-
-  @override
-  Observable<Result> changePassword({
-    String password,
-    String newPassword,
-  }) {
-    var email = _userAndTokenController.value?.user?.email;
-    var token = _userAndTokenController.value?.token;
-    if (email == null || token == null) {
-      return Observable.just(
-        const Failure(
-          'Require login!',
-          'Email or token is null',
-        ),
-      );
-    }
-    return Observable.fromFuture(_remoteDataSource.changePassword(
-            email, password, newPassword, token))
-        .map<Result>((_) => const Success())
-        .onErrorReturnWith(_errorToResult);
-  }
-
-  @override
-  Observable<Result> resetPassword({
-    String email,
-    String token,
-    String newPassword,
-  }) {
-    return Observable.fromFuture(
-      _remoteDataSource.resetPassword(
-        email,
-        token: token,
-        newPassword: newPassword,
-      ),
-    ).map<Result>((_) => const Success()).onErrorReturnWith(_errorToResult);
-  }
-
-  @override
-  Observable<Result> sendResetPasswordEmail(String email) {
-    return Observable.fromFuture(_remoteDataSource.resetPassword(email))
-        .map<Result>((_) => const Success())
-        .onErrorReturnWith(_errorToResult);
   }
 }
