@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:node_auth/data/local/local_data_source.dart';
+import 'package:node_auth/data/models/auth_state.dart';
 import 'package:node_auth/data/models/local_data_source_exception.dart';
 import 'package:node_auth/data/models/remote_data_source_exception.dart';
 import 'package:node_auth/data/models/result.dart';
@@ -14,14 +15,30 @@ import 'package:rxdart/rxdart.dart';
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
   final LocalDataSource _localDataSource;
+  final ValueObservable<AuthenticationState> _authenticationState$;
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   )   : assert(_remoteDataSource != null),
-        assert(_localDataSource != null) {
+        assert(_localDataSource != null),
+        _authenticationState$ =
+            _localDataSource.userAndToken$.map((userAndToken) {
+          if (userAndToken == null) {
+            return const UnauthenticatedState();
+          } else {
+            return AuthenticatedState(userAndToken.user);
+          }
+        }).publishValue()
+              ..connect() {
+    _authenticationState$
+        .listen((state) => print('[USER_REPOSITORY] state=$state'));
     _init();
   }
+
+  @override
+  ValueObservable<AuthenticationState> get authenticationState$ =>
+      _authenticationState$;
 
   @override
   Observable<Result<void>> login({
@@ -30,10 +47,6 @@ class UserRepositoryImpl implements UserRepository {
   }) =>
       _execute(() => _remoteDataSource.loginUser(email, password))
           .flatMap((result) => _getUserProfileAndSaveToLocal(email, result));
-
-  @override
-  ValueObservable<UserAndToken> get userAndToken$ =>
-      _localDataSource.userAndToken$;
 
   @override
   Observable<Result<void>> registerUser({

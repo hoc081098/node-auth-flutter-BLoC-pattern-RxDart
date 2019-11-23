@@ -4,6 +4,7 @@ export 'package:node_auth/data/local/shared_pref_util.dart';
 export 'package:node_auth/data/models/remote_data_source_exception.dart';
 export 'package:node_auth/data/models/result.dart';
 export 'package:node_auth/data/models/user.dart';
+export 'package:node_auth/data/models/auth_state.dart';
 export 'package:node_auth/data/models/user_and_token.dart';
 export 'package:node_auth/data/remote/api_service.dart';
 export 'package:node_auth/data/remote/remote_data_source.dart';

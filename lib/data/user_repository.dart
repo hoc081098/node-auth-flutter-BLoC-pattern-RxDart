@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:node_auth/data/models/auth_state.dart';
 import 'package:node_auth/data/models/result.dart';
-import 'package:node_auth/data/models/user_and_token.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class UserRepository {
-  ValueObservable<UserAndToken> get userAndToken$;
+  ValueObservable<AuthenticationState> get authenticationState$;
 
   Observable<Result<void>> login({
     @required String email,

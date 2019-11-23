@@ -17,9 +17,7 @@ class SharedPrefUtil implements LocalDataSource {
             .getStringObservable(_kUserTokenKey)
             .map(json.decode)
             .map((json) => UserAndToken.fromJson(json))
-            .onErrorReturn(null)
-            .publishValue()
-              ..connect();
+            .onErrorReturn(null);
 
   @override
   Future<void> removeUserAndToken() async {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:node_auth/authentication_bloc/authentication.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
@@ -58,14 +57,14 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userRepository = Provider.of<UserRepository>(context);
-    final future =
-        AuthenticationBlocProvider.of(context).authenticationState$.first;
+    final future = userRepository.authenticationState$.first;
 
     return FutureBuilder<AuthenticationState>(
       future: future,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           print('[HOME] home snapshot=$snapshot [1][waiting...]');
+
           return Container(
             width: double.infinity,
             height: double.infinity,
@@ -77,7 +76,7 @@ class Home extends StatelessWidget {
             ),
           );
         }
-        if (snapshot.hasError || snapshot.data is NotAuthenticatedState) {
+        if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home snapshot=$snapshot [2][NotAuthenticated]');
           return LoginPage(initBloc: () => LoginBloc(userRepository));
         }
