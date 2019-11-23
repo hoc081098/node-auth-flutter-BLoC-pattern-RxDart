@@ -63,7 +63,7 @@ class Home extends StatelessWidget {
       future: future,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          print('[HOME] home snapshot=$snapshot [1][waiting...]');
+          print('[HOME] home [1] >> [waiting...]');
 
           return Container(
             width: double.infinity,
@@ -77,11 +77,11 @@ class Home extends StatelessWidget {
           );
         }
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
-          print('[HOME] home snapshot=$snapshot [2][NotAuthenticated]');
+          print('[HOME] home [2] >> [NotAuthenticated]');
           return LoginPage(initBloc: () => LoginBloc(userRepository));
         }
         if (snapshot.data is AuthenticatedState) {
-          print('[HOME] home snapshot=$snapshot [3][Authenticated]');
+          print('[HOME] home [3] >> [Authenticated]');
           return HomePage(initBloc: () => HomeBloc(userRepository));
         }
         return Container(width: 0, height: 0);

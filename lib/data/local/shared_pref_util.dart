@@ -15,9 +15,11 @@ class SharedPrefUtil implements LocalDataSource {
   SharedPrefUtil(this._rxPrefs)
       : _userAndToken$ = _rxPrefs
             .getStringObservable(_kUserTokenKey)
-            .map(json.decode)
-            .map((json) => UserAndToken.fromJson(json))
-            .onErrorReturn(null);
+            .map((jsonString) => jsonString == null
+                ? null
+                : UserAndToken.fromJson(json.decode(jsonString)))
+            .onErrorReturn(null)
+            .shareValue();
 
   @override
   Future<void> removeUserAndToken() async {
@@ -39,6 +41,7 @@ class SharedPrefUtil implements LocalDataSource {
     try {
       result =
           await _rxPrefs.setString(_kUserTokenKey, json.encode(userAndToken));
+      print('Saved $userAndToken');
     } catch (e) {
       throw LocalDataSourceException('Cannot save user and token', e);
     }

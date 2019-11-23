@@ -5,22 +5,19 @@ import 'package:node_auth/data/data.dart';
 abstract class AuthenticationState {
   const AuthenticationState();
 
-  User get user {
+  UserAndToken get userAndToken {
     final self = this;
     if (self is AuthenticatedState) {
-      return self.user;
-    }
-    if (self is UnauthenticatedState) {
-      return null;
+      return self.userAndToken;
     }
     return null;
   }
 }
 
 class AuthenticatedState extends AuthenticationState {
-  final User user;
+  final UserAndToken userAndToken;
 
-  const AuthenticatedState(this.user);
+  const AuthenticatedState(this.userAndToken);
 }
 
 class UnauthenticatedState extends AuthenticationState {

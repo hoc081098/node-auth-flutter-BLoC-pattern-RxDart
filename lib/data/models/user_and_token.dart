@@ -13,7 +13,7 @@ class UserAndToken {
 
   factory UserAndToken.fromJson(Map<String, dynamic> json) {
     return UserAndToken(
-      User.fromJson(json),
+      User.fromJson(json['user']),
       json['token'],
     );
   }

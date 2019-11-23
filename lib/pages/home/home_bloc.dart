@@ -39,6 +39,8 @@ class HomeBloc {
     ///
     ///
     ///
+    final authenticationState$ = userRepository.authenticationState$;
+
     final Observable<LogoutMessage> logoutMessage$ = Observable.merge([
       logoutController.exhaustMap((_) => userRepository.logout()).map((result) {
         if (result is Success) {
@@ -49,8 +51,8 @@ class HomeBloc {
         }
         return null;
       }),
-      userRepository.authenticationState$
-          .where((userAndToken) => userAndToken.user == null)
+      authenticationState$
+          .where((state) => state.userAndToken == null)
           .map((_) => const LogoutSuccessMessage()),
     ]);
 
@@ -70,8 +72,8 @@ class HomeBloc {
     });
 
     final user$ = publishValueSeededDistinct(
-      userRepository.authenticationState$.map((userAndToken) => userAndToken.user),
-      seedValue: userRepository.authenticationState$.value?.user,
+      authenticationState$.map((state) => state.userAndToken?.user),
+      seedValue: authenticationState$.value?.userAndToken?.user,
     );
 
     final message$ = Observable.merge([

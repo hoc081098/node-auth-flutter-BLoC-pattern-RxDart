@@ -15,25 +15,24 @@ import 'package:rxdart/rxdart.dart';
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
   final LocalDataSource _localDataSource;
-  final ValueObservable<AuthenticationState> _authenticationState$;
+  final ValueConnectableObservable<AuthenticationState> _authenticationState$;
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   )   : assert(_remoteDataSource != null),
         assert(_localDataSource != null),
-        _authenticationState$ =
-            _localDataSource.userAndToken$.map((userAndToken) {
-          if (userAndToken == null) {
-            return const UnauthenticatedState();
-          } else {
-            return AuthenticatedState(userAndToken.user);
-          }
-        }).publishValue()
-              ..connect() {
+        _authenticationState$ = _localDataSource.userAndToken$
+            .map((userAndToken) => userAndToken == null
+                ? const UnauthenticatedState()
+                : AuthenticatedState(userAndToken))
+            .onErrorReturn(const UnauthenticatedState())
+            .publishValue() {
+    _init();
+
     _authenticationState$
         .listen((state) => print('[USER_REPOSITORY] state=$state'));
-    _init();
+    _authenticationState$.connect();
   }
 
   @override
@@ -62,7 +61,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Observable<Result<void>> uploadImage(File image) {
-    final userAndToken = _localDataSource.userAndToken$.value;
+    final userAndToken = _userAndToken;
 
     if (userAndToken == null) {
       return Observable.just(
@@ -96,7 +95,7 @@ class UserRepositoryImpl implements UserRepository {
     String password,
     String newPassword,
   }) {
-    final userAndToken = _localDataSource.userAndToken$.value;
+    final userAndToken = _userAndToken;
 
     if (userAndToken == null) {
       return Observable.just(
@@ -170,6 +169,8 @@ class UserRepositoryImpl implements UserRepository {
   /// Helpers functions
   ///
 
+  UserAndToken get _userAndToken => _authenticationState$.value?.userAndToken;
+
   ///
   /// Execute [factory] when listen to observable,
   /// if future is successful, emit [Success]
@@ -187,7 +188,7 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Like error http interceptor
   ///
-  void _handleUnauthenticatedError(e) {
+  void _handleUnauthenticatedError(e, s) {
     if (e is RemoteDataSourceException &&
         e.statusCode == HttpStatus.unauthorized) {
       print(
@@ -213,7 +214,7 @@ class UserRepositoryImpl implements UserRepository {
   /// Check auth when starting app
   ///
   void _init() async {
-    const tag = '[USER_REPOSITORY] {init}';
+    const tag = '[USER_REPOSITORY] { init }';
 
     try {
       final userAndToken = await _localDataSource.userAndToken$.first;
