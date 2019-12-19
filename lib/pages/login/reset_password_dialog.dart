@@ -178,8 +178,9 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
       Future.delayed(Duration(seconds: 1))
           .then((_) => setState(() => _message = null));
     }).catchError((e) {
-      final message =
-          e is RemoteDataSourceException ? e.message : "An unknown error occurred";
+      final message = e is RemoteDataSourceException
+          ? e.message
+          : "An unknown error occurred";
       setState(() {
         _isLoading = false;
         _message = message;
@@ -203,8 +204,9 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
       Future.delayed(Duration(seconds: 1))
           .then((_) => Navigator.of(context).pop());
     }).catchError((e) {
-      final message =
-          e is RemoteDataSourceException ? e.message : "An unknown error occurred";
+      final message = e is RemoteDataSourceException
+          ? e.message
+          : "An unknown error occurred";
       setState(() {
         _isLoading = false;
         _message = message;

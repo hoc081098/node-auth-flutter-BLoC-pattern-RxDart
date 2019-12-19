@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
@@ -10,24 +11,20 @@ bool _isValidPassword(String password) {
   return password.length >= 6;
 }
 
+// ignore_for_file: close_sinks
+
 class ChangePasswordBloc {
-  ///
   /// Input functions
-  ///
   final void Function() changePassword;
   final void Function(String) passwordChanged;
   final void Function(String) newPasswordChanged;
 
-  ///
   /// Output stream
-  ///
   final Stream<ChangePasswordState> changePasswordState$;
   final Stream<String> passwordError$;
   final Stream<String> newPasswordError$;
 
-  ///
   /// Clean up
-  ///
   final void Function() dispose;
 
   ChangePasswordBloc._({
@@ -43,28 +40,19 @@ class ChangePasswordBloc {
   factory ChangePasswordBloc(UserRepository userRepository) {
     assert(userRepository != null);
 
-    ///
     /// Controllers
-    ///
-    // ignore: close_sinks
-    final passwordController = PublishSubject<String>();
-    // ignore: close_sinks
-    final newPasswordController = PublishSubject<String>();
-    // ignore: close_sinks
-    final submitChangePasswordController = PublishSubject<void>();
-    final controllers = <StreamController>[
-      newPasswordController,
-      passwordController,
-      submitChangePasswordController,
-    ];
+    final passwordS = PublishSubject<String>();
+    final newPasswordS = PublishSubject<String>();
+    final submitChangePasswordS = PublishSubject<void>();
+    final controllers = [newPasswordS, passwordS, submitChangePasswordS];
 
     ///
     /// Streams
     ///
 
     final both$ = Rx.combineLatest2(
-      passwordController.stream.startWith(''),
-      newPasswordController.stream.startWith(''),
+      passwordS.stream.startWith(''),
+      newPasswordS.stream.startWith(''),
       (String password, String newPassword) => Tuple2(password, newPassword),
     ).share();
 
@@ -76,7 +64,7 @@ class ChangePasswordBloc {
           password != newPassword;
     }).shareValueSeeded(false);
 
-    final changePasswordState$ = submitChangePasswordController.stream
+    final changePasswordState$ = submitChangePasswordS.stream
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
@@ -133,14 +121,11 @@ class ChangePasswordBloc {
     }).toList();
 
     return ChangePasswordBloc._(
-      changePassword: () => submitChangePasswordController.add(null),
+      changePassword: () => submitChangePasswordS.add(null),
       changePasswordState$: changePasswordState$,
-      dispose: () async {
-        await Future.wait(subscriptions.map((s) => s.cancel()));
-        await Future.wait(controllers.map((c) => c.close()));
-      },
-      passwordChanged: passwordController.add,
-      newPasswordChanged: newPasswordController.add,
+      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
+      passwordChanged: passwordS.add,
+      newPasswordChanged: newPasswordS.add,
       passwordError$: passwordError$,
       newPasswordError$: newPasswordError$,
     );

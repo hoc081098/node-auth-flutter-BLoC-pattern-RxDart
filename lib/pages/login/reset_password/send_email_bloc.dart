@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/reset_password/send_email.dart';
@@ -39,18 +40,17 @@ class SendEmailBloc {
   factory SendEmailBloc(UserRepository userRepository) {
     assert(userRepository != null);
 
-    final emailController = PublishSubject<String>();
-    final submitController = PublishSubject<void>();
-    final isLoadingController = BehaviorSubject<bool>.seeded(false);
+    final emailS = PublishSubject<String>();
+    final submitS = PublishSubject<void>();
+    final isLoadingS = BehaviorSubject<bool>.seeded(false);
 
-    final emailError$ = emailController.map((email) {
+    final emailError$ = emailS.map((email) {
       if (Validator.isValidEmail(email)) return null;
       return 'Invalid email address';
     }).share();
 
-    final submittedEmail$ = submitController
-        .withLatestFrom(emailController, (_, String email) => email)
-        .share();
+    final submittedEmail$ =
+        submitS.withLatestFrom(emailS, (_, String email) => email).share();
 
     final message$ = Rx.merge([
       submittedEmail$
@@ -61,25 +61,19 @@ class SendEmailBloc {
           return send(
             email,
             userRepository,
-            isLoadingController,
+            isLoadingS,
           );
         },
       ),
     ]).share();
 
     return SendEmailBloc._(
-      dispose: () async {
-        await Future.wait(<StreamController>[
-          emailController,
-          submitController,
-          isLoadingController,
-        ].map((c) => c.close()));
-      },
-      emailChanged: emailController.add,
+      dispose: DisposeBag([emailS, submitS, isLoadingS]).dispose,
+      emailChanged: emailS.add,
       emailError$: emailError$,
-      submit: () => submitController.add(null),
+      submit: () => submitS.add(null),
       message$: message$,
-      isLoading$: isLoadingController,
+      isLoading$: isLoadingS,
     );
   }
 

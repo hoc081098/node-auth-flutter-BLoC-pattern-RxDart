@@ -245,9 +245,7 @@ class _HomePageState extends State<HomePage>
           initBloc: () => ChangePasswordBloc(repository),
         );
       },
-      backgroundColor: Theme
-          .of(context)
-          .canvasColor,
+      backgroundColor: Theme.of(context).canvasColor,
     );
   }
 

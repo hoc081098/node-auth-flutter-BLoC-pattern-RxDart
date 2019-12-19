@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/utils/validators.dart';
@@ -62,6 +63,13 @@ class InputTokenAndResetPasswordBloc {
     final passwordSubject = BehaviorSubject<String>.seeded('');
     final submitSubject = PublishSubject<void>();
     final isLoadingSubject = BehaviorSubject<bool>.seeded(false);
+    final subjects = [
+      emailSubject,
+      tokenSubject,
+      passwordSubject,
+      submitSubject,
+      isLoadingSubject,
+    ];
 
     ///
     /// Stream
@@ -105,21 +113,8 @@ class InputTokenAndResetPasswordBloc {
               )),
     ]).share();
 
-    ///
-    ///
-    ///
-    final subsciptions = <StreamSubscription>[];
-    final subjects = <Subject>[
-      emailSubject,
-      tokenSubject,
-      passwordSubject,
-      submitSubject,
-    ];
     return InputTokenAndResetPasswordBloc._(
-      dispose: () async {
-        await Future.wait(subsciptions.map((s) => s.cancel()));
-        await Future.wait(subjects.map((s) => s.close()));
-      },
+      dispose: DisposeBag(subjects).dispose,
       emailChanged: emailSubject.add,
       tokenChanged: tokenSubject.add,
       passwordChanged: passwordSubject.add,

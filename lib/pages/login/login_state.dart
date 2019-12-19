@@ -1,7 +1,4 @@
-
 import 'package:meta/meta.dart';
-
-
 
 ///
 /// Login message

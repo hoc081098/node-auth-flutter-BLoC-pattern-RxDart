@@ -11,7 +11,6 @@ class Validator {
     return RegExp(_emailRegExpString, caseSensitive: false).hasMatch(email);
   }
 
-  
   static bool isValidUserName(String userName) {
     return userName.length >= 3;
   }

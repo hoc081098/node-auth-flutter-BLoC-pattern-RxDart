@@ -1,33 +1,28 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
-///
+// ignore_for_file: close_sinks
+
 /// BLoC handle validate form and login
-///
 class LoginBloc {
-  ///
   /// Input functions
-  ///
   final void Function(String) emailChanged;
   final void Function(String) passwordChanged;
   final void Function() submitLogin;
 
-  ///
   /// Streams
-  ///
   final Stream<String> emailError$;
   final Stream<String> passwordError$;
   final Stream<LoginMessage> message$;
   final Stream<bool> isLoading$;
 
-  ///
   /// Clean up
-  ///
   final void Function() dispose;
 
   LoginBloc._({
@@ -44,15 +39,12 @@ class LoginBloc {
   factory LoginBloc(UserRepository userRepository) {
     assert(userRepository != null);
 
-    ///
     /// Controllers
-    ///
-    final emailController = PublishSubject<String>(); // ignore: close_sinks
-    final passwordController = PublishSubject<String>(); // ignore: close_sinks
-    final submitLoginController = PublishSubject<void>(); // ignore: close_sinks
-    // ignore: close_sinks
+    final emailController = PublishSubject<String>();
+    final passwordController = PublishSubject<String>();
+    final submitLoginController = PublishSubject<void>();
     final isLoadingController = BehaviorSubject<bool>.seeded(false);
-    final controllers = <StreamController>[
+    final controllers = [
       emailController,
       passwordController,
       submitLoginController,
@@ -136,10 +128,7 @@ class LoginBloc {
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
-      dispose: () async {
-        await Future.wait(subscriptions.map((s) => s.cancel()));
-        await Future.wait(controllers.map((c) => c.close()));
-      },
+      dispose: DisposeBag([...controllers, subscriptions]).dispose,
       isLoading$: isLoadingController,
     );
   }

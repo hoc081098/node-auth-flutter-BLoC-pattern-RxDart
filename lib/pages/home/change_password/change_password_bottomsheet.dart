@@ -148,11 +148,8 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     );
 
     return Padding(
-      padding: EdgeInsets.only(
-          bottom: MediaQuery
-              .of(context)
-              .viewInsets
-              .bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
