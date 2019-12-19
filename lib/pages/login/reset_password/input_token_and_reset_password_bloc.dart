@@ -92,7 +92,7 @@ class InputTokenAndResetPasswordBloc {
           Validator.isValidPassword(tuple3.item3);
     }
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       allField$
           .where((tuple3) => !allFieldsAreValid(tuple3))
           .map((_) => const InvalidInformation()),

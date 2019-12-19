@@ -5,5 +5,6 @@ class LocalDataSourceException implements Exception {
   const LocalDataSourceException(this.message, [this.error]);
 
   @override
-  String toString() => 'LocalDataSourceException{message=$message, error=$error}';
+  String toString() =>
+      'LocalDataSourceException{message=$message, error=$error}';
 }

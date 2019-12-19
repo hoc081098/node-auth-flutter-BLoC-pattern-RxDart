@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:distinct_value_connectable_observable/distinct_value_connectable_observable.dart';
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/data/user_repository.dart';
@@ -21,7 +21,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
   /// and reset password page otherwise
   ///
   final _requestEmailController = PublishSubject<void>();
-  DistinctValueConnectableObservable<bool> _requestEmail$;
+  DistinctValueConnectableStream<bool> _requestEmail$;
   List<StreamSubscription> _subscriptions;
 
   AnimationController _animationController;
@@ -75,10 +75,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       ),
     );
 
-    _requestEmail$ = publishValueSeededDistinct(
-      _requestEmailController.scan((acc, e, _) => !acc, true),
-      seedValue: true,
-    );
+    _requestEmail$ = _requestEmailController
+        .scan((acc, e, _) => !acc, true)
+        .publishValueSeededDistinct(seedValue: true);
     _subscriptions = [
       _requestEmail$.listen((requestEmailPage) {
         if (requestEmailPage) {

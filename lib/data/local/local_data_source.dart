@@ -2,7 +2,7 @@ import 'package:node_auth/data/data.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class LocalDataSource {
-  ValueObservable<UserAndToken> get userAndToken$;
+  ValueStream<UserAndToken> get userAndToken$;
 
   Future<void> saveUserAndToken(UserAndToken userAndToken);
 

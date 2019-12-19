@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:distinct_value_connectable_observable/distinct_value_connectable_observable.dart';
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/home_state.dart';
@@ -11,7 +11,7 @@ class HomeBloc {
   final void Function(File) changeAvatar;
   final void Function() logout;
 
-  final ValueObservable<User> user$;
+  final ValueStream<User> user$;
   final Stream<HomeMessage> message$;
 
   final void Function() dispose;
@@ -41,7 +41,7 @@ class HomeBloc {
     ///
     final authenticationState$ = userRepository.authenticationState$;
 
-    final Observable<LogoutMessage> logoutMessage$ = Observable.merge([
+    final Stream<LogoutMessage> logoutMessage$ = Rx.merge([
       logoutController.exhaustMap((_) => userRepository.logout()).map((result) {
         if (result is Success) {
           return const LogoutSuccessMessage();
@@ -56,7 +56,7 @@ class HomeBloc {
           .map((_) => const LogoutSuccessMessage()),
     ]);
 
-    final Observable<UpdateAvatarMessage> updateAvatarMessage$ =
+    final Stream<UpdateAvatarMessage> updateAvatarMessage$ =
         changeAvatarController
             .where((file) => file != null)
             .distinct()
@@ -71,12 +71,12 @@ class HomeBloc {
       return null;
     });
 
-    final user$ = publishValueSeededDistinct(
-      authenticationState$.map((state) => state.userAndToken?.user),
-      seedValue: authenticationState$.value?.userAndToken?.user,
-    );
+    final user$ = authenticationState$
+        .map((state) => state.userAndToken?.user)
+        .publishValueSeededDistinct(
+            seedValue: authenticationState$.value?.userAndToken?.user);
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       logoutMessage$,
       updateAvatarMessage$,
     ]);

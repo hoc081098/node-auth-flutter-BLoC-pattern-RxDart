@@ -62,13 +62,13 @@ class ChangePasswordBloc {
     /// Streams
     ///
 
-    final both$ = Observable.combineLatest2(
+    final both$ = Rx.combineLatest2(
       passwordController.stream.startWith(''),
       newPasswordController.stream.startWith(''),
       (String password, String newPassword) => Tuple2(password, newPassword),
     ).share();
 
-    final ValueObservable<bool> isValidSubmit$ = both$.map((both) {
+    final ValueStream<bool> isValidSubmit$ = both$.map((both) {
       final password = both.item1;
       final newPassword = both.item2;
       return _isValidPassword(newPassword) &&
@@ -146,7 +146,7 @@ class ChangePasswordBloc {
     );
   }
 
-  static Observable<ChangePasswordState> _performChangePassword(
+  static Stream<ChangePasswordState> _performChangePassword(
     UserRepository userRepository,
     Tuple2<String, String> both,
   ) {

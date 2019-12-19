@@ -15,7 +15,7 @@ import 'package:rxdart/rxdart.dart';
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
   final LocalDataSource _localDataSource;
-  final ValueConnectableObservable<AuthenticationState> _authenticationState$;
+  final ValueConnectableStream<AuthenticationState> _authenticationState$;
 
   UserRepositoryImpl(
     this._remoteDataSource,
@@ -36,11 +36,11 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  ValueObservable<AuthenticationState> get authenticationState$ =>
+  ValueStream<AuthenticationState> get authenticationState$ =>
       _authenticationState$;
 
   @override
-  Observable<Result<void>> login({
+  Stream<Result<void>> login({
     String email,
     String password,
   }) =>
@@ -48,7 +48,7 @@ class UserRepositoryImpl implements UserRepository {
           .flatMap((result) => _getUserProfileAndSaveToLocal(email, result));
 
   @override
-  Observable<Result<void>> registerUser({
+  Stream<Result<void>> registerUser({
     String name,
     String email,
     String password,
@@ -56,15 +56,15 @@ class UserRepositoryImpl implements UserRepository {
       _execute(() => _remoteDataSource.registerUser(name, email, password));
 
   @override
-  Observable<Result<void>> logout() =>
+  Stream<Result<void>> logout() =>
       _execute(() => _localDataSource.removeUserAndToken());
 
   @override
-  Observable<Result<void>> uploadImage(File image) {
+  Stream<Result<void>> uploadImage(File image) {
     final userAndToken = _userAndToken;
 
     if (userAndToken == null) {
-      return Observable.just(
+      return Stream.value(
         const Failure(
           'Require login!',
           'Email or token is null',
@@ -91,14 +91,14 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Observable<Result<void>> changePassword({
+  Stream<Result<void>> changePassword({
     String password,
     String newPassword,
   }) {
     final userAndToken = _userAndToken;
 
     if (userAndToken == null) {
-      return Observable.just(
+      return Stream.value(
         const Failure(
           'Require login!',
           'Email or token is null',
@@ -117,7 +117,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Observable<Result<void>> resetPassword({
+  Stream<Result<void>> resetPassword({
     String email,
     String token,
     String newPassword,
@@ -131,7 +131,7 @@ class UserRepositoryImpl implements UserRepository {
       );
 
   @override
-  Observable<Result<void>> sendResetPasswordEmail(String email) =>
+  Stream<Result<void>> sendResetPasswordEmail(String email) =>
       _execute(() => _remoteDataSource.resetPassword(email));
 
   Stream<Result<void>> _getUserProfileAndSaveToLocal(
@@ -139,7 +139,7 @@ class UserRepositoryImpl implements UserRepository {
     Result<TokenResponse> tokenResult,
   ) {
     if (tokenResult is Failure) {
-      return Observable.just(tokenResult);
+      return Stream.value(tokenResult);
     }
 
     if (tokenResult is Success<TokenResponse>) {
@@ -162,7 +162,7 @@ class UserRepositoryImpl implements UserRepository {
       });
     }
 
-    return Observable.error('Unknow $tokenResult');
+    return Stream.error('Unknow $tokenResult');
   }
 
   ///
@@ -176,9 +176,9 @@ class UserRepositoryImpl implements UserRepository {
   /// if future is successful, emit [Success]
   /// if future complete with error, emit [Failure]
   ///
-  Observable<Result<T>> _execute<T>(Future<T> Function() factory) {
-    return Observable.defer(() {
-      return Observable.fromFuture(factory())
+  Stream<Result<T>> _execute<T>(Future<T> Function() factory) {
+    return Rx.defer(() {
+      return Stream.fromFuture(factory())
           .doOnError(_handleUnauthenticatedError)
           .map<Result<T>>((result) => Success<T>(result))
           .onErrorReturnWith(_errorToResult);

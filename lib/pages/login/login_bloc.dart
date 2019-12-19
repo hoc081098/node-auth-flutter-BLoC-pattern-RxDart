@@ -63,7 +63,7 @@ class LoginBloc {
     /// Streams
     ///
 
-    final isValidSubmit$ = Observable.combineLatest3(
+    final isValidSubmit$ = Rx.combineLatest3(
       emailController.stream.map(Validator.isValidEmail),
       passwordController.stream.map(Validator.isValidPassword),
       isLoadingController.stream,
@@ -71,7 +71,7 @@ class LoginBloc {
           isValidEmail && isValidPassword && !isLoading,
     ).shareValueSeeded(false);
 
-    final credential$ = Observable.combineLatest2(
+    final credential$ = Rx.combineLatest2(
       emailController.stream,
       passwordController.stream,
       (email, password) => Credential(email: email, password: password),
@@ -81,7 +81,7 @@ class LoginBloc {
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .share();
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       submit$
           .where((isValid) => isValid)
           .withLatestFrom(credential$, (_, Credential c) => c)

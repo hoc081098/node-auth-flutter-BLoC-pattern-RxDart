@@ -26,17 +26,14 @@ class User {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is User &&
-              runtimeType == other.runtimeType &&
-              name == other.name &&
-              email == other.email &&
-              createdAt == other.createdAt &&
-              imageUrl == other.imageUrl;
+      other is User &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          email == other.email &&
+          createdAt == other.createdAt &&
+          imageUrl == other.imageUrl;
 
   @override
   int get hashCode =>
-      name.hashCode ^
-      email.hashCode ^
-      createdAt.hashCode ^
-      imageUrl.hashCode;
+      name.hashCode ^ email.hashCode ^ createdAt.hashCode ^ imageUrl.hashCode;
 }

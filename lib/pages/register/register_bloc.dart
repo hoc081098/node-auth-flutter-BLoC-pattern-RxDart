@@ -70,7 +70,7 @@ class RegisterBloc {
     /// Streams
     ///
 
-    final isValidSubmit$ = Observable.combineLatest4(
+    final isValidSubmit$ = Rx.combineLatest4(
       emailController.stream.map(Validator.isValidEmail),
       passwordController.stream.map(Validator.isValidPassword),
       isLoadingController.stream,
@@ -80,7 +80,7 @@ class RegisterBloc {
       },
     ).shareValueSeeded(false);
 
-    final registerUser$ = Observable.combineLatest3(
+    final registerUser$ = Rx.combineLatest3(
       emailController.stream,
       passwordController.stream,
       nameController.stream,
@@ -91,7 +91,7 @@ class RegisterBloc {
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .share();
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       submit$
           .where((isValid) => isValid)
           .withLatestFrom(registerUser$, (_, RegisterUser user) => user)

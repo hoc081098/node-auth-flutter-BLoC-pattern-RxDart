@@ -52,7 +52,7 @@ class SendEmailBloc {
         .withLatestFrom(emailController, (_, String email) => email)
         .share();
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       submittedEmail$
           .where((email) => !Validator.isValidEmail(email))
           .map((_) => const SendEmailInvalidInformationMessage()),
