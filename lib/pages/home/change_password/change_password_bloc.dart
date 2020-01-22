@@ -56,7 +56,7 @@ class ChangePasswordBloc extends MyBaseBloc {
       (String password, String newPassword) => Tuple2(password, newPassword),
     ).share();
 
-    final ValueStream<bool> isValidSubmit$ = both$.map((both) {
+    final isValidSubmit$ = both$.map((both) {
       final password = both.item1;
       final newPassword = both.item2;
       return _isValidPassword(newPassword) &&

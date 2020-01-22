@@ -94,7 +94,7 @@ class InputTokenAndResetPasswordBloc extends MyBaseBloc {
             emailSubject.value, tokenSubject.value, passwordSubject.value))
         .share();
 
-    allFieldsAreValid(Tuple3<String, String, String> tuple3) {
+    bool allFieldsAreValid(Tuple3<String, String, String> tuple3) {
       return Validator.isValidEmail(tuple3.item1) &&
           tuple3.item2.isNotEmpty &&
           Validator.isValidPassword(tuple3.item3);
@@ -132,7 +132,7 @@ class InputTokenAndResetPasswordBloc extends MyBaseBloc {
     Tuple3<String, String, String> tuple3,
     Sink<bool> isLoadingSink,
   ) async* {
-    _toMessage([result, String email]) {
+    InputTokenAndResetPasswordMessage _toMessage([result, String email]) {
       if (result is Success) {
         return ResetPasswordSuccess(email);
       }

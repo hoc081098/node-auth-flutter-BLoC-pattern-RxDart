@@ -141,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage>
         splashColor: Theme.of(context).accentColor,
       ),
       builder: (context, child) {
-        var value = buttonSqueezeAnimation.value;
+        final value = buttonSqueezeAnimation.value;
 
         return Container(
           width: value,

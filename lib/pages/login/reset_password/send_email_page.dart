@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:node_auth/pages/login/reset_password/send_email.dart';
+import 'package:node_auth/utils/snackbar.dart';
 
 class SendEmailPage extends StatefulWidget {
   final SendEmailBloc Function() initBloc;
@@ -13,6 +14,7 @@ class SendEmailPage extends StatefulWidget {
     @required this.toggle,
   }) : super(key: key);
 
+  @override
   _SendEmailPageState createState() => _SendEmailPageState();
 }
 
@@ -32,7 +34,7 @@ class _SendEmailPageState extends State<SendEmailPage>
 
     _bloc = widget.initBloc();
     _subscriptions = <StreamSubscription>[
-      _bloc.message$.map(_getMessageString).listen(_showSnackBar),
+      _bloc.message$.map(_getMessageString).listen(_scaffoldKey.showSnackBar),
       _bloc.isLoading$.listen((isLoading) {
         if (isLoading) {
           _fadeController.forward();
@@ -53,13 +55,6 @@ class _SendEmailPageState extends State<SendEmailPage>
       ),
     );
   }
-
-  _showSnackBar(String message) => _scaffoldKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 2),
-        ),
-      );
 
   @override
   void dispose() {

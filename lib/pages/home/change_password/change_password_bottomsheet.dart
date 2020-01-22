@@ -138,7 +138,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
               _changePasswordBloc.changePassword();
             },
             child: Text(
-              "Change password",
+              'Change password',
               style: TextStyle(fontSize: 16.0),
             ),
           );

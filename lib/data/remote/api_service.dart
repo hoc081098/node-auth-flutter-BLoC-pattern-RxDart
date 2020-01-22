@@ -77,7 +77,7 @@ class ApiService implements RemoteDataSource {
     String newPassword,
     String token,
   ) async {
-    final url = Uri.http(baseUrl, "/users/$email/password");
+    final url = Uri.http(baseUrl, '/users/$email/password');
     final body = {'password': password, 'new_password': newPassword};
     final json = await NetworkUtils.put(
       url,
