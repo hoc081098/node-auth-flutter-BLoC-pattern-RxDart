@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:node_auth/utils/snackbar.dart';
 
 class LoginPage extends StatefulWidget {
+  static const routeName = '/login_page';
+
   const LoginPage({Key key}) : super(key: key);
 
   @override
@@ -149,7 +152,7 @@ class _MyLoginPageState extends State<LoginPage>
     if (message is LoginSuccessMessage) {
       scaffoldKey.showSnackBar('Login successfully');
       await delay(1000);
-      await Navigator.of(context).pushReplacementNamed('/home_page');
+      await Navigator.of(context).pushReplacementNamed(HomePage.routeName);
     }
     if (message is LoginErrorMessage) {
       scaffoldKey.showSnackBar(message.message);

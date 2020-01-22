@@ -7,10 +7,13 @@ import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/home/home_profile_widget.dart';
+import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/home_page';
+
   const HomePage({Key key}) : super(key: key);
 
   @override
@@ -132,7 +135,7 @@ class _HomePageState extends State<HomePage>
         scaffoldKey.showSnackBar('Logout successfully!');
         await delay(1000);
         await Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login_page',
+          LoginPage.routeName,
           (_) => false,
         );
       }
