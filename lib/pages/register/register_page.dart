@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -68,7 +69,7 @@ class _RegisterPageState extends State<RegisterPage>
   void _handleMessage(RegisterMessage message) async {
     if (message is RegisterSuccessMessage) {
       _showMessage('Register successfully');
-      await Future.delayed(const Duration(seconds: 1));
+      await delay(1000);
       Navigator.pop<String>(context, message.email);
     }
     if (message is RegisterErrorMessage) {

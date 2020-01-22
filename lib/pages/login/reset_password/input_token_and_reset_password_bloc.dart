@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
@@ -28,19 +30,17 @@ class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
 
 //ignore_for_file: close_sinks
 
-class InputTokenAndResetPasswordBloc {
-  final void Function(String) emailChanged;
-  final void Function(String) passwordChanged;
-  final void Function(String) tokenChanged;
-  final void Function() submit;
+class InputTokenAndResetPasswordBloc extends MyBaseBloc {
+  final Function1<String, void> emailChanged;
+  final Function1<String, void> passwordChanged;
+  final Function1<String, void> tokenChanged;
+  final Function0<void> submit;
 
   final Stream<String> emailError$;
   final Stream<String> passwordError$;
   final Stream<String> tokenError$;
   final Stream<bool> isLoading$;
   final Stream<InputTokenAndResetPasswordMessage> message$;
-
-  final void Function() dispose;
 
   InputTokenAndResetPasswordBloc._({
     @required this.emailChanged,
@@ -49,11 +49,11 @@ class InputTokenAndResetPasswordBloc {
     @required this.emailError$,
     @required this.passwordError$,
     @required this.tokenError$,
-    @required this.dispose,
+    @required Function0<void> dispose,
     @required this.submit,
     @required this.isLoading$,
     @required this.message$,
-  });
+  }) : super(dispose);
 
   factory InputTokenAndResetPasswordBloc(final UserRepository userRepository) {
     assert(userRepository != null);

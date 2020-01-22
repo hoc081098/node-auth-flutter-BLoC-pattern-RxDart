@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
 import 'package:node_auth/utils/streams.dart';
@@ -14,29 +16,26 @@ bool _isValidPassword(String password) {
 
 // ignore_for_file: close_sinks
 
-class ChangePasswordBloc {
+class ChangePasswordBloc extends MyBaseBloc {
   /// Input functions
-  final void Function() changePassword;
-  final void Function(String) passwordChanged;
-  final void Function(String) newPasswordChanged;
+  final Function0<void> changePassword;
+  final Function1<String, void> passwordChanged;
+  final Function1<String, void> newPasswordChanged;
 
   /// Output stream
   final Stream<ChangePasswordState> changePasswordState$;
   final Stream<String> passwordError$;
   final Stream<String> newPasswordError$;
 
-  /// Clean up
-  final void Function() dispose;
-
   ChangePasswordBloc._({
     @required this.changePassword,
     @required this.changePasswordState$,
-    @required this.dispose,
+    @required Function0<void> dispose,
     @required this.passwordChanged,
     @required this.newPasswordChanged,
     @required this.passwordError$,
     @required this.newPasswordError$,
-  });
+  }) : super(dispose);
 
   factory ChangePasswordBloc(UserRepository userRepository) {
     assert(userRepository != null);

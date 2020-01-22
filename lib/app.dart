@@ -29,20 +29,8 @@ class MyApp extends StatelessWidget {
             },
           );
         },
-        '/home_page': (context) {
-          return HomePage(
-            initBloc: () {
-              return HomeBloc(Provider.of<UserRepository>(context));
-            },
-          );
-        },
-        '/login_page': (context) {
-          return LoginPage(
-            initBloc: () {
-              return LoginBloc(Provider.of<UserRepository>(context));
-            },
-          );
-        },
+        '/home_page': (context) => const HomePage(),
+        '/login_page': (context) => const LoginPage(),
         '/reset_password_page': (context) {
           return ResetPasswordPage();
         },
@@ -78,11 +66,11 @@ class Home extends StatelessWidget {
         }
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home [2] >> [NotAuthenticated]');
-          return LoginPage(initBloc: () => LoginBloc(userRepository));
+          return const LoginPage();
         }
         if (snapshot.data is AuthenticatedState) {
           print('[HOME] home [3] >> [Authenticated]');
-          return HomePage(initBloc: () => HomeBloc(userRepository));
+          return const HomePage();
         }
         return Container(width: 0, height: 0);
       },

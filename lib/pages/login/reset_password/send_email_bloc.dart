@@ -4,38 +4,31 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/reset_password/send_email.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SendEmailBloc {
+class SendEmailBloc extends MyBaseBloc {
   ///
-  ///
-  ///
-  final void Function() submit;
-  final void Function(String) emailChanged;
+  final Function0<void> submit;
+  final Function1<String, void> emailChanged;
 
-  ///
-  ///
   ///
   final Stream<String> emailError$;
   final Stream<SendEmailMessage> message$;
   final Stream<bool> isLoading$;
 
-  ///
-  ///
-  ///
-  final void Function() dispose;
-
-  const SendEmailBloc._({
+  SendEmailBloc._({
     @required this.submit,
     @required this.emailChanged,
     @required this.emailError$,
     @required this.message$,
     @required this.isLoading$,
-    @required this.dispose,
-  });
+    @required Function0<void> dispose,
+  }) : super(dispose);
 
   factory SendEmailBloc(UserRepository userRepository) {
     assert(userRepository != null);

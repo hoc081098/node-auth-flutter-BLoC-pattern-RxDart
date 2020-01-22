@@ -4,31 +4,31 @@ import 'dart:io';
 import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/home_state.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
 
 //ignore_for_file: close_sinks
 
-class HomeBloc {
+/// BLoC that handles user profile and logout
+class HomeBloc extends MyBaseBloc {
   /// Input functions
-  final void Function(File) changeAvatar;
-  final void Function() logout;
+  final Function1<File, void> changeAvatar;
+  final Function0<void> logout;
 
   /// Output stream
   final ValueStream<User> user$;
   final Stream<HomeMessage> message$;
-
-  /// Clean up
-  final void Function() dispose;
 
   HomeBloc._({
     @required this.changeAvatar,
     @required this.message$,
     @required this.logout,
     @required this.user$,
-    @required this.dispose,
-  });
+    @required Function0<void> dispose,
+  }) : super(dispose);
 
   factory HomeBloc(UserRepository userRepository) {
     assert(userRepository != null);

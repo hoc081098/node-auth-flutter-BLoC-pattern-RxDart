@@ -2,20 +2,22 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:node_auth/utils/streams.dart';
 
 // ignore_for_file: close_sinks
 
-/// BLoC handle validate form and login
-class LoginBloc {
+/// BLoC that handles validating form and login
+class LoginBloc extends MyBaseBloc {
   /// Input functions
-  final void Function(String) emailChanged;
-  final void Function(String) passwordChanged;
-  final void Function() submitLogin;
+  final Function1<String, void> emailChanged;
+  final Function1<String, void> passwordChanged;
+  final Function0<void> submitLogin;
 
   /// Streams
   final Stream<String> emailError$;
@@ -23,19 +25,16 @@ class LoginBloc {
   final Stream<LoginMessage> message$;
   final Stream<bool> isLoading$;
 
-  /// Clean up
-  final void Function() dispose;
-
   LoginBloc._({
+    @required Function0<void> dispose,
     @required this.emailChanged,
     @required this.passwordChanged,
     @required this.submitLogin,
     @required this.emailError$,
     @required this.passwordError$,
     @required this.message$,
-    @required this.dispose,
     @required this.isLoading$,
-  });
+  }) : super(dispose);
 
   factory LoginBloc(UserRepository userRepository) {
     assert(userRepository != null);
@@ -118,13 +117,13 @@ class LoginBloc {
     }.debug();
 
     return LoginBloc._(
+      dispose: DisposeBag([...controllers, subscriptions]).dispose,
       emailChanged: emailController.add,
       passwordChanged: passwordController.add,
       submitLogin: () => submitLoginController.add(null),
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
-      dispose: DisposeBag([...controllers, subscriptions]).dispose,
       isLoading$: isLoadingController,
     );
   }

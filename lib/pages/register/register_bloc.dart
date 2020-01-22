@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:node_auth/utils/streams.dart';
@@ -11,12 +13,12 @@ import 'package:node_auth/utils/streams.dart';
 // ignore_for_file: close_sinks
 
 /// BLoC handle validate form and register
-class RegisterBloc {
+class RegisterBloc extends MyBaseBloc {
   /// Input functions
-  final void Function(String) nameChanged;
-  final void Function(String) emailChanged;
-  final void Function(String) passwordChanged;
-  final void Function() submitRegister;
+  final Function1<String, void> nameChanged;
+  final Function1<String, void> emailChanged;
+  final Function1<String, void> passwordChanged;
+  final Function0<void> submitRegister;
 
   /// Streams
   final Stream<String> emailError$;
@@ -25,21 +27,18 @@ class RegisterBloc {
   final Stream<RegisterMessage> message$;
   final Stream<bool> isLoading$;
 
-  /// Clean up
-  final void Function() dispose;
-
   RegisterBloc._({
+    @required Function0<void> dispose,
     @required this.emailChanged,
     @required this.passwordChanged,
     @required this.submitRegister,
     @required this.emailError$,
     @required this.passwordError$,
     @required this.message$,
-    @required this.dispose,
     @required this.isLoading$,
     @required this.nameChanged,
     @required this.nameError$,
-  });
+  }) : super(dispose);
 
   factory RegisterBloc(UserRepository userRepository) {
     assert(userRepository != null);
@@ -137,13 +136,13 @@ class RegisterBloc {
     }.debug();
 
     return RegisterBloc._(
+      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       emailChanged: emailController.add,
       passwordChanged: passwordController.add,
       submitRegister: () => submitRegisterController.add(null),
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
-      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       isLoading$: isLoadingController,
       nameChanged: nameController.add,
       nameError$: nameError$,

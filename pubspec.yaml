@@ -1,5 +1,8 @@
 name: node_auth
-description: A new Flutter project.
+description: Simple auth app flutter, server node.js, BLoC pattern, RxDart.
+
+environment:
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -20,6 +23,7 @@ dependencies:
   flutter_provider: ^1.1.1
   rx_shared_preferences: ^1.1.0
   disposebag: ^1.1.1
+  flutter_bloc_pattern: ^1.1.0
 
 dev_dependencies:
   flutter_test:
