@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:node_auth/utils/snackbar.dart';
@@ -255,7 +256,10 @@ class _MyLoginPageState extends State<LoginPage>
   Widget needAnAccount(LoginBloc loginBloc) {
     return FlatButton(
       onPressed: () async {
-        final email = await Navigator.pushNamed(context, '/register_page');
+        final email = await Navigator.pushNamed(
+          context,
+          RegisterPage.routeName,
+        );
         print('[DEBUG] email = $email');
         if (email != null && email is String) {
           emailController.text = email;

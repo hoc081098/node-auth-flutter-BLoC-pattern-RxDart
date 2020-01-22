@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/delay.dart';
+import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
-  final RegisterBloc Function() initBloc;
+  static const routeName = '/register_page';
 
-  const RegisterPage({
-    Key key,
-    @required this.initBloc,
-  }) : super(key: key);
+  const RegisterPage({Key key}) : super(key: key);
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -19,91 +18,74 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  List<StreamSubscription> subscriptions;
 
-  AnimationController _registerButtonController;
-  Animation<double> _buttonSqueezeAnimation;
+  AnimationController registerButtonController;
+  Animation<double> buttonSqueezeAnimation;
 
-  RegisterBloc _registerBloc;
-  List<StreamSubscription> _subscriptions;
-
-  FocusNode _emailFocusNode;
-  FocusNode _passwordFocusNode;
+  FocusNode emailFocusNode;
+  FocusNode passwordFocusNode;
 
   @override
   void initState() {
     super.initState();
 
-    _registerButtonController = AnimationController(
+    registerButtonController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    _buttonSqueezeAnimation = Tween(
+    buttonSqueezeAnimation = Tween(
       begin: 320.0,
       end: 70.0,
     ).animate(
       CurvedAnimation(
-        parent: _registerButtonController,
+        parent: registerButtonController,
         curve: Interval(0.0, 0.250),
       ),
     );
 
-    _registerBloc = widget.initBloc();
-    _subscriptions = [
-      _registerBloc.message$.listen(_handleMessage),
-      _registerBloc.isLoading$.listen((isLoading) {
-        if (isLoading) {
-          _registerButtonController
-            ..reset()
-            ..forward();
-        } else {
-          _registerButtonController.reverse();
-        }
-      })
-    ];
-
-    _emailFocusNode = FocusNode();
-    _passwordFocusNode = FocusNode();
+    emailFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
   }
 
-  void _handleMessage(RegisterMessage message) async {
-    if (message is RegisterSuccessMessage) {
-      _showMessage('Register successfully');
-      await delay(1000);
-      Navigator.pop<String>(context, message.email);
-    }
-    if (message is RegisterErrorMessage) {
-      await _showMessage(message.message);
-    }
-    if (message is RegisterInvalidInformationMessage) {
-      await _showMessage('Invalid information');
-    }
-  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  Future<void> _showMessage(String message) => _scaffoldKey.currentState
-      ?.showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 2),
-        ),
-      )
-      ?.closed;
+    subscriptions ??= () {
+      final registerBloc = BlocProvider.of<RegisterBloc>(context);
+      return [
+        registerBloc.message$.listen(_handleMessage),
+        registerBloc.isLoading$.listen((isLoading) {
+          if (isLoading) {
+            registerButtonController
+              ..reset()
+              ..forward();
+          } else {
+            registerButtonController.reverse();
+          }
+        }),
+      ];
+    }();
+  }
 
   @override
   void dispose() {
-    _subscriptions.forEach((s) => s.cancel());
-    _registerButtonController.dispose();
-
+    subscriptions.forEach((s) => s.cancel());
+    registerButtonController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final registerBloc = BlocProvider.of<RegisterBloc>(context);
+
     final emailTextField = StreamBuilder<String>(
-      stream: _registerBloc.emailError$,
+      stream: registerBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: _registerBloc.emailChanged,
+          onChanged: registerBloc.emailChanged,
           autocorrect: true,
           decoration: InputDecoration(
             prefixIcon: Padding(
@@ -116,9 +98,9 @@ class _RegisterPageState extends State<RegisterPage>
           keyboardType: TextInputType.emailAddress,
           maxLines: 1,
           style: TextStyle(fontSize: 16.0),
-          focusNode: _emailFocusNode,
+          focusNode: emailFocusNode,
           onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_passwordFocusNode);
+            FocusScope.of(context).requestFocus(passwordFocusNode);
           },
           textInputAction: TextInputAction.next,
         );
@@ -126,13 +108,13 @@ class _RegisterPageState extends State<RegisterPage>
     );
 
     final passwordTextField = StreamBuilder<String>(
-      stream: _registerBloc.passwordError$,
+      stream: registerBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
           errorText: snapshot.data,
           labelText: 'Password',
-          onChanged: _registerBloc.passwordChanged,
-          focusNode: _passwordFocusNode,
+          onChanged: registerBloc.passwordChanged,
+          focusNode: passwordFocusNode,
           onSubmitted: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
@@ -142,11 +124,11 @@ class _RegisterPageState extends State<RegisterPage>
     );
 
     final registerButton = AnimatedBuilder(
-      animation: _buttonSqueezeAnimation,
+      animation: buttonSqueezeAnimation,
       child: MaterialButton(
         onPressed: () {
           FocusScope.of(context).requestFocus(FocusNode());
-          _registerBloc.submitRegister();
+          registerBloc.submitRegister();
         },
         color: Theme.of(context).backgroundColor,
         child: Text(
@@ -159,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage>
         splashColor: Theme.of(context).accentColor,
       ),
       builder: (context, child) {
-        var value = _buttonSqueezeAnimation.value;
+        var value = buttonSqueezeAnimation.value;
 
         return Container(
           width: value,
@@ -183,11 +165,11 @@ class _RegisterPageState extends State<RegisterPage>
     );
 
     final nameTextField = StreamBuilder<String>(
-      stream: _registerBloc.nameError$,
+      stream: registerBloc.nameError$,
       builder: (context, snapshot) {
         return TextField(
           autocorrect: true,
-          onChanged: _registerBloc.nameChanged,
+          onChanged: registerBloc.nameChanged,
           decoration: InputDecoration(
             labelText: 'Name',
             errorText: snapshot.data,
@@ -201,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage>
           style: TextStyle(fontSize: 16.0),
           autofocus: true,
           onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_emailFocusNode);
+            FocusScope.of(context).requestFocus(emailFocusNode);
           },
           textInputAction: TextInputAction.next,
         );
@@ -209,7 +191,7 @@ class _RegisterPageState extends State<RegisterPage>
     );
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -267,5 +249,19 @@ class _RegisterPageState extends State<RegisterPage>
         ),
       ),
     );
+  }
+
+  void _handleMessage(RegisterMessage message) async {
+    if (message is RegisterSuccessMessage) {
+      scaffoldKey.showSnackBar('Register successfully');
+      await delay(1000);
+      Navigator.pop<String>(context, message.email);
+    }
+    if (message is RegisterErrorMessage) {
+      scaffoldKey.showSnackBar(message.message);
+    }
+    if (message is RegisterInvalidInformationMessage) {
+      scaffoldKey.showSnackBar('Invalid information');
+    }
   }
 }

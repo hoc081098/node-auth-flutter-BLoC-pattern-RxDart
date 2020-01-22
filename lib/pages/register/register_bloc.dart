@@ -156,6 +156,6 @@ class RegisterBloc extends MyBaseBloc {
     if (result is Failure) {
       return RegisterErrorMessage(result.message, result.error);
     }
-    return RegisterErrorMessage("Unknown result $result");
+    return RegisterErrorMessage('Unknown result $result');
   }
 }

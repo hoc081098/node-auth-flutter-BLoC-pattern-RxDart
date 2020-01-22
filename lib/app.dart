@@ -14,13 +14,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final routes = <String, WidgetBuilder>{
       '/': (context) => const Home(),
-      '/register_page': (context) {
-        return RegisterPage(
-          initBloc: () {
-            return RegisterBloc(
-              Provider.of<UserRepository>(context),
-            );
-          },
+      RegisterPage.routeName: (context) {
+        final userRepository = Provider.of<UserRepository>(context);
+
+        return BlocProvider<RegisterBloc>(
+          child: const RegisterPage(),
+          initBloc: () => RegisterBloc(userRepository),
         );
       },
       HomePage.routeName: (context) {

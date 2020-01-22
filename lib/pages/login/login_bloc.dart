@@ -135,6 +135,6 @@ class LoginBloc extends MyBaseBloc {
     if (result is Failure) {
       return LoginErrorMessage(result.message, result.error);
     }
-    return LoginErrorMessage("Unknown result $result");
+    return LoginErrorMessage('Unknown result $result');
   }
 }
