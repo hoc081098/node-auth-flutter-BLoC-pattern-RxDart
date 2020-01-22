@@ -116,9 +116,9 @@ class ChangePasswordBloc extends MyBaseBloc {
     }.debug();
 
     return ChangePasswordBloc._(
+      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       changePassword: () => submitChangePasswordS.add(null),
       changePasswordState$: changePasswordState$,
-      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       passwordChanged: passwordS.add,
       newPasswordChanged: newPasswordS.add,
       passwordError$: passwordError$,
@@ -145,7 +145,7 @@ class ChangePasswordBloc extends MyBaseBloc {
         return ChangePasswordState((b) => b
           ..isLoading = false
           ..error = result.error
-          ..message = 'Error when change passwor: ${result.message}');
+          ..message = 'Error when change password: ${result.message}');
       }
       return null;
     }

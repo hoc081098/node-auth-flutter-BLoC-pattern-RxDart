@@ -118,7 +118,7 @@ class LoginBloc extends MyBaseBloc {
 
     return LoginBloc._(
       dispose: DisposeBag([...controllers, subscriptions]).dispose,
-      emailChanged: emailController.add,
+      emailChanged: trim.pipe(emailController.add),
       passwordChanged: passwordController.add,
       submitLogin: () => submitLoginController.add(null),
       emailError$: emailError$,

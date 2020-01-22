@@ -137,14 +137,14 @@ class RegisterBloc extends MyBaseBloc {
 
     return RegisterBloc._(
       dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
-      emailChanged: emailController.add,
+      nameChanged: trim.pipe(nameController.add),
+      emailChanged: trim.pipe(emailController.add),
       passwordChanged: passwordController.add,
       submitRegister: () => submitRegisterController.add(null),
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
       isLoading$: isLoadingController,
-      nameChanged: nameController.add,
       nameError$: nameError$,
     );
   }

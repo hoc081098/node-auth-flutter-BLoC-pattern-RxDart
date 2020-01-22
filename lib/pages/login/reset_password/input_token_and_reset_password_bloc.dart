@@ -115,7 +115,7 @@ class InputTokenAndResetPasswordBloc extends MyBaseBloc {
 
     return InputTokenAndResetPasswordBloc._(
       dispose: DisposeBag(subjects).dispose,
-      emailChanged: emailSubject.add,
+      emailChanged: trim.pipe(emailSubject.add),
       tokenChanged: tokenSubject.add,
       passwordChanged: passwordSubject.add,
       submit: () => submitSubject.add(null),

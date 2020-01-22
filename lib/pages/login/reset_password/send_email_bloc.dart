@@ -62,7 +62,7 @@ class SendEmailBloc extends MyBaseBloc {
 
     return SendEmailBloc._(
       dispose: DisposeBag([emailS, submitS, isLoadingS]).dispose,
-      emailChanged: emailS.add,
+      emailChanged: trim.pipe(emailS.add),
       emailError$: emailError$,
       submit: () => submitS.add(null),
       message$: message$,

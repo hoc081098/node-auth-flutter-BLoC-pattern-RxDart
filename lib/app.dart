@@ -83,14 +83,17 @@ class Home extends StatelessWidget {
             ),
           );
         }
+
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home [2] >> [NotAuthenticated]');
           return routes[LoginPage.routeName](context);
         }
+
         if (snapshot.data is AuthenticatedState) {
           print('[HOME] home [3] >> [Authenticated]');
           return routes[HomePage.routeName](context);
         }
+
         return Container(width: 0, height: 0);
       },
     );
