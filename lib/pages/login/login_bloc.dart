@@ -6,6 +6,7 @@ import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:node_auth/utils/streams.dart';
 
 // ignore_for_file: close_sinks
 
@@ -108,18 +109,13 @@ class LoginBloc {
         .distinct()
         .share();
 
-    final streams = <String, Stream>{
+    final subscriptions = <String, Stream>{
       'emailError': emailError$,
       'passwordError': passwordError$,
       'isValidSubmit': isValidSubmit$,
       'message': message$,
       'isLoading': isLoadingController,
-    };
-    final subscriptions = streams.keys.map((tag) {
-      return streams[tag].listen((data) {
-        print('[DEBUG] [$tag] = $data');
-      });
-    }).toList();
+    }.debug();
 
     return LoginBloc._(
       emailChanged: emailController.add,

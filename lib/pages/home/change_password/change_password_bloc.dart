@@ -6,6 +6,7 @@ import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
+import 'package:node_auth/utils/streams.dart';
 
 bool _isValidPassword(String password) {
   return password.length >= 6;
@@ -107,18 +108,13 @@ class ChangePasswordBloc {
         .distinct()
         .share();
 
-    final streams = <String, Stream>{
+    final subscriptions = <String, Stream>{
       'newPasswordError': newPasswordError$,
       'passwordError': passwordError$,
       'isValidSubmit': isValidSubmit$,
       'both': both$,
       'changePasswordState': changePasswordState$,
-    };
-    final subscriptions = streams.keys.map((tag) {
-      return streams[tag].listen((data) {
-        print('[DEBUG] [$tag] = $data');
-      });
-    }).toList();
+    }.debug();
 
     return ChangePasswordBloc._(
       changePassword: () => submitChangePasswordS.add(null),
