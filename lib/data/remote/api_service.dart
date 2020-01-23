@@ -4,10 +4,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' as http;
-import 'package:node_auth/data/data.dart';
-import 'package:node_auth/data/models/token_response.dart';
-import 'package:node_auth/data/remote/network_utils.dart';
 import 'package:path/path.dart' as path;
+import 'package:node_auth/data/constants.dart';
+import 'package:node_auth/data/exception/remote_data_source_exception.dart';
+import 'package:node_auth/data/remote/network_utils.dart';
+import 'package:node_auth/data/remote/remote_data_source.dart';
+import 'package:node_auth/data/remote/response/token_response.dart';
+import 'package:node_auth/data/remote/response/user_response.dart';
 
 class ApiService implements RemoteDataSource {
   static const String xAccessToken = 'x-access-token';
@@ -57,13 +60,13 @@ class ApiService implements RemoteDataSource {
   /// return [User]
   ///
   @override
-  Future<User> getUserProfile(
+  Future<UserResponse> getUserProfile(
     String email,
     String token,
   ) async {
     final url = Uri.https(baseUrl, '/users/$email');
     final json = await NetworkUtils.get(url, headers: {xAccessToken: token});
-    return User.fromJson(json);
+    return UserResponse.fromJson(json);
   }
 
   ///
@@ -115,7 +118,7 @@ class ApiService implements RemoteDataSource {
   /// return [User] profile after image file is uploaded
   ///
   @override
-  Future<User> uploadImage(
+  Future<UserResponse> uploadImage(
     File file,
     String email,
   ) async {
@@ -142,6 +145,6 @@ class ApiService implements RemoteDataSource {
       throw RemoteDataSourceException(statusCode, decoded['message']);
     }
 
-    return User.fromJson(decoded);
+    return UserResponse.fromJson(decoded);
   }
 }

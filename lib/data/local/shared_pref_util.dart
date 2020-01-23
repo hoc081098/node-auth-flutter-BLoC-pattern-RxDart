@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
-import 'package:node_auth/data/models/local_data_source_exception.dart';
-import 'package:node_auth/data/models/user_and_token.dart';
+import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -10,14 +10,14 @@ class SharedPrefUtil implements LocalDataSource {
   static const _kUserTokenKey = 'com.hoc.node_auth_flutter.user_and_token';
 
   final RxSharedPreferences _rxPrefs;
-  final ValueStream<UserAndToken> _userAndToken$;
+  final ValueStream<UserAndTokenEntity> _userAndToken$;
 
   SharedPrefUtil(this._rxPrefs)
       : _userAndToken$ = _rxPrefs
             .getStringStream(_kUserTokenKey)
             .map((jsonString) => jsonString == null
                 ? null
-                : UserAndToken.fromJson(json.decode(jsonString)))
+                : UserAndTokenEntity.fromJson(json.decode(jsonString)))
             .onErrorReturn(null)
             .shareValue();
 
@@ -36,7 +36,7 @@ class SharedPrefUtil implements LocalDataSource {
   }
 
   @override
-  Future<void> saveUserAndToken(UserAndToken userAndToken) async {
+  Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) async {
     bool result;
     try {
       result =
@@ -51,5 +51,5 @@ class SharedPrefUtil implements LocalDataSource {
   }
 
   @override
-  ValueStream<UserAndToken> get userAndToken$ => _userAndToken$;
+  ValueStream<UserAndTokenEntity> get userAndToken$ => _userAndToken$;
 }

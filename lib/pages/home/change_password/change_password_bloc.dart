@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
-import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
@@ -38,8 +40,8 @@ class ChangePasswordBloc extends MyBaseBloc {
     @required this.newPasswordError$,
   }) : super(dispose);
 
-  factory ChangePasswordBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory ChangePasswordBloc(final ChangePasswordUseCase changePassword) {
+    assert(ChangePasswordUseCase != null);
 
     /// Controllers
     final passwordS = PublishSubject<String>();
@@ -69,7 +71,7 @@ class ChangePasswordBloc extends MyBaseBloc {
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
-        .exhaustMap((both) => _performChangePassword(userRepository, both))
+        .exhaustMap((both) => _performChangePassword(changePassword, both))
         .share();
 
     final passwordError$ = both$
@@ -128,7 +130,7 @@ class ChangePasswordBloc extends MyBaseBloc {
   }
 
   static Stream<ChangePasswordState> _performChangePassword(
-    UserRepository userRepository,
+    ChangePasswordUseCase changePassword,
     Tuple2<String, String> both,
   ) {
     print('[DEBUG] change password both=$both');
@@ -151,8 +153,7 @@ class ChangePasswordBloc extends MyBaseBloc {
       return null;
     }
 
-    return userRepository
-        .changePassword(password: both.item1, newPassword: both.item2)
+    return changePassword(password: both.item1, newPassword: both.item2)
         .map(resultToState)
         .startWith(
           ChangePasswordState((b) => b

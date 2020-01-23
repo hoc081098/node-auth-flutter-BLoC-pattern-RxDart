@@ -10,7 +10,7 @@ class MyBaseBloc implements BaseBloc {
   @override
   void dispose() {
     if (_calledDispose) {
-      throw Exception('[$runtimeType] dispose called more once');
+      throw Exception('[$runtimeType] dispose called more than once');
     }
     _dispose();
     _calledDispose = true;

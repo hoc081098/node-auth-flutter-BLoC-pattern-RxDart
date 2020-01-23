@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/login_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
-import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
@@ -36,8 +38,8 @@ class LoginBloc extends MyBaseBloc {
     @required this.isLoading$,
   }) : super(dispose);
 
-  factory LoginBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory LoginBloc(final LoginUseCase login) {
+    assert(login != null);
 
     /// Controllers
     final emailController = PublishSubject<String>();
@@ -78,11 +80,10 @@ class LoginBloc extends MyBaseBloc {
           .where((isValid) => isValid)
           .withLatestFrom(credential$, (_, Credential c) => c)
           .exhaustMap(
-            (credential) => userRepository
-                .login(
-                  email: credential.email,
-                  password: credential.password,
-                )
+            (credential) => login(
+              email: credential.email,
+              password: credential.password,
+            )
                 .doOnListen(() => isLoadingController.add(true))
                 .doOnData((_) => isLoadingController.add(false))
                 .map(_responseToMessage),

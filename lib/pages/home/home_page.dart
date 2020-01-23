@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:node_auth/data/data.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/home/home_profile_widget.dart';
@@ -166,9 +167,9 @@ class _HomePageState extends State<HomePage>
       ),
       context: context,
       builder: (context) {
-        final repository = Provider.of<UserRepository>(context);
+        final changePassword = Provider.of<ChangePasswordUseCase>(context);
         return BlocProvider<ChangePasswordBloc>(
-          initBloc: () => ChangePasswordBloc(repository),
+          initBloc: () => ChangePasswordBloc(changePassword),
           child: const ChangePasswordBottomSheet(),
         );
       },

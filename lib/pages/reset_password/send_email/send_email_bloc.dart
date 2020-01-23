@@ -4,9 +4,11 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
-import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
@@ -30,8 +32,9 @@ class SendEmailBloc extends MyBaseBloc {
     @required Function0<void> dispose,
   }) : super(dispose);
 
-  factory SendEmailBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory SendEmailBloc(
+      final SendResetPasswordEmailUseCase sendResetPasswordEmail) {
+    assert(sendResetPasswordEmail != null);
 
     final emailS = PublishSubject<String>();
     final submitS = PublishSubject<void>();
@@ -53,7 +56,7 @@ class SendEmailBloc extends MyBaseBloc {
         (email) {
           return send(
             email,
-            userRepository,
+            sendResetPasswordEmail,
             isLoadingS,
           );
         },
@@ -72,7 +75,7 @@ class SendEmailBloc extends MyBaseBloc {
 
   static Stream<SendEmailMessage> send(
     String email,
-    UserRepository userRepository,
+    SendResetPasswordEmailUseCase sendResetPasswordEmail,
     Sink<bool> isLoadingController,
   ) {
     SendEmailMessage _resultToMessage(result) {
@@ -85,8 +88,7 @@ class SendEmailBloc extends MyBaseBloc {
       return SendEmailErrorMessage('An error occurred!');
     }
 
-    return userRepository
-        .sendResetPasswordEmail(email)
+    return sendResetPasswordEmail(email)
         .doOnListen(() => isLoadingController.add(true))
         .doOnData((_) => isLoadingController.add(false))
         .map(_resultToMessage);

@@ -5,7 +5,9 @@ import 'package:distinct_value_connectable_stream/distinct_value_connectable_str
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:node_auth/data/user_repository.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
+import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:rxdart/rxdart.dart';
@@ -106,15 +108,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
 
   @override
   Widget build(BuildContext context) {
-    final userRepository = Provider.of<UserRepository>(context);
+    final sendResetPasswordEmail =
+        Provider.of<SendResetPasswordEmailUseCase>(context);
+    final resetPassword = Provider.of<ResetPasswordUseCase>(context);
 
     final sendEmailPage = BlocProvider<SendEmailBloc>(
-      initBloc: () => SendEmailBloc(userRepository),
+      initBloc: () => SendEmailBloc(sendResetPasswordEmail),
       child: SendEmailPage(toggle: onToggle),
     );
 
     final resetPasswordPage = BlocProvider<InputTokenAndResetPasswordBloc>(
-      initBloc: () => InputTokenAndResetPasswordBloc(userRepository),
+      initBloc: () => InputTokenAndResetPasswordBloc(resetPassword),
       child: InputTokenAndResetPasswordPage(toggle: onToggle),
     );
 

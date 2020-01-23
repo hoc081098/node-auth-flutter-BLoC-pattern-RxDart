@@ -4,9 +4,13 @@ import 'dart:io';
 import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/domain/models/user.dart';
+import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
+import 'package:node_auth/domain/usecases/logout_use_case.dart';
+import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
-import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/home/home_state.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -30,18 +34,21 @@ class HomeBloc extends MyBaseBloc {
     @required Function0<void> dispose,
   }) : super(dispose);
 
-  factory HomeBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory HomeBloc(
+    final LogoutUseCase logout,
+    final GetAuthStateUseCase getAuthState,
+    final UploadImageUseCase uploadImage,
+  ) {
+    assert(logout != null);
+    assert(getAuthState != null);
 
     final changeAvatarS = PublishSubject<File>();
     final logoutS = PublishSubject<void>();
 
-    final authenticationState$ = userRepository.authenticationState$;
+    final authenticationState$ = getAuthState();
 
     final logoutMessage$ = Rx.merge([
-      logoutS
-          .exhaustMap((_) => userRepository.logout())
-          .map(_resultToLogoutMessage),
+      logoutS.exhaustMap((_) => logout.call()).map(_resultToLogoutMessage),
       authenticationState$
           .where((state) => state.userAndToken == null)
           .map((_) => const LogoutSuccessMessage()),
@@ -50,7 +57,7 @@ class HomeBloc extends MyBaseBloc {
     final updateAvatarMessage$ = changeAvatarS
         .where((file) => file != null)
         .distinct()
-        .switchMap(userRepository.uploadImage)
+        .switchMap(uploadImage)
         .map(_resultToChangeAvatarMessage);
 
     final user$ = authenticationState$

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/register_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
-import 'package:node_auth/data/data.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
@@ -40,8 +42,8 @@ class RegisterBloc extends MyBaseBloc {
     @required this.nameError$,
   }) : super(dispose);
 
-  factory RegisterBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory RegisterBloc(final RegisterUseCase registerUser) {
+    assert(registerUser != null);
 
     /// Controllers
     final emailController = PublishSubject<String>();
@@ -87,12 +89,11 @@ class RegisterBloc extends MyBaseBloc {
           .where((isValid) => isValid)
           .withLatestFrom(registerUser$, (_, RegisterUser user) => user)
           .exhaustMap(
-            (user) => userRepository
-                .registerUser(
-                  email: user.email,
-                  password: user.password,
-                  name: user.name,
-                )
+            (user) => registerUser(
+              email: user.email,
+              password: user.password,
+              name: user.name,
+            )
                 .doOnListen(() => isLoadingController.add(true))
                 .doOnData((_) => isLoadingController.add(false))
                 .map((result) => _responseToMessage(result, user.email)),
