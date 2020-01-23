@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
+import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
@@ -21,7 +23,7 @@ class LoginPage extends StatefulWidget {
 class _MyLoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin<LoginPage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<StreamSubscription> subscriptions;
+  DisposeBag disposeBag;
 
   AnimationController loginButtonController;
   Animation<double> buttonSqueezeAnimation;
@@ -58,9 +60,9 @@ class _MyLoginPageState extends State<LoginPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    subscriptions ??= () {
+    disposeBag ??= () {
       final loginBloc = BlocProvider.of<LoginBloc>(context);
-      return [
+      return DisposeBag([
         loginBloc.message$.listen(handleMessage),
         loginBloc.isLoading$.listen((isLoading) {
           if (isLoading) {
@@ -71,15 +73,14 @@ class _MyLoginPageState extends State<LoginPage>
             loginButtonController.reverse();
           }
         })
-      ];
+      ]);
     }();
   }
 
   @override
   void dispose() {
     loginButtonController.dispose();
-    subscriptions.forEach((s) => s.cancel());
-
+    disposeBag.dispose();
     super.dispose();
   }
 
@@ -281,8 +282,10 @@ class _MyLoginPageState extends State<LoginPage>
   Widget forgotPassword(LoginBloc loginBloc) {
     return FlatButton(
       onPressed: () async {
-        final email =
-            await Navigator.pushNamed(context, '/reset_password_page');
+        final email = await Navigator.pushNamed(
+          context,
+          ResetPasswordPage.routeName,
+        );
         print('[DEBUG] email = $email');
         if (email != null && email is String) {
           emailController.text = email;

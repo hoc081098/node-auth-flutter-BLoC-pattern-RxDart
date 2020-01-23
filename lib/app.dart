@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
           child: const LoginPage(),
         );
       },
-      '/reset_password_page': (context) {
-        return ResetPasswordPage();
+      ResetPasswordPage.routeName: (context) {
+        return const ResetPasswordPage();
       },
     };
 

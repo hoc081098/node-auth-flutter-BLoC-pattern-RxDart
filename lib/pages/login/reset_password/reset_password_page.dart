@@ -1,99 +1,103 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/data/user_repository.dart';
-import 'package:node_auth/pages/login/reset_password/input_token_and_reset_password_bloc.dart';
-import 'package:node_auth/pages/login/reset_password/input_token_and_reset_password_page.dart';
-import 'package:node_auth/pages/login/reset_password/send_email.dart';
+import 'package:node_auth/pages/login/reset_password/input_token/input_token_and_reset_password.dart';
+import 'package:node_auth/pages/login/reset_password/send_email/send_email.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ResetPasswordPage extends StatefulWidget {
+  static const routeName = '/reset_password_page';
+
+  const ResetPasswordPage({Key key}) : super(key: key);
+
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage> {
-  ///
-  /// Observable of bool value, true if current page is request email page
+  /// Observable of bool values, true if current page is request email page
   /// and reset password page otherwise
-  ///
-  final _requestEmailController = PublishSubject<void>();
-  DistinctValueConnectableStream<bool> _requestEmail$;
-  List<StreamSubscription> _subscriptions;
+  final requestEmailS = PublishSubject<void>();
+  DistinctValueConnectableStream<bool> requestEmail$;
+  DisposeBag disposeBag;
 
-  AnimationController _animationController;
-  Animation<Offset> _animationPosition;
-  Animation<double> _animationScale;
-  Animation<double> _animationOpacity;
-  Animation<double> _animationTurns;
+  AnimationController animationController;
+  Animation<Offset> animationPosition;
+  Animation<double> animationScale;
+  Animation<double> animationOpacity;
+  Animation<double> animationTurns;
 
   @override
   void initState() {
     super.initState();
 
-    _animationController = AnimationController(
+    animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    _animationPosition = Tween(
+    animationPosition = Tween(
       begin: Offset(2.0, 0),
       end: Offset(0, 0),
     ).animate(
       CurvedAnimation(
-        parent: _animationController,
+        parent: animationController,
         curve: Curves.easeOut,
       ),
     );
-    _animationScale = Tween(
+    animationScale = Tween(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
-        parent: _animationController,
+        parent: animationController,
         curve: Curves.fastOutSlowIn,
       ),
     );
-    _animationOpacity = Tween(
+    animationOpacity = Tween(
       begin: 0.0,
       end: 1.0,
     ).animate(
       CurvedAnimation(
-        parent: _animationController,
+        parent: animationController,
         curve: Curves.fastOutSlowIn,
       ),
     );
-    _animationTurns = Tween<double>(
+    animationTurns = Tween<double>(
       begin: 0.5,
       end: 0,
     ).animate(
       CurvedAnimation(
-        parent: _animationController,
+        parent: animationController,
         curve: Curves.easeOut,
       ),
     );
 
-    _requestEmail$ = _requestEmailController
+    requestEmail$ = requestEmailS
         .scan((acc, e, _) => !acc, true)
         .publishValueSeededDistinct(seedValue: true);
-    _subscriptions = [
-      _requestEmail$.listen((requestEmailPage) {
+
+    disposeBag = DisposeBag([
+      requestEmail$.listen((requestEmailPage) {
         if (requestEmailPage) {
-          _animationController.reverse();
+          animationController.reverse();
         } else {
-          _animationController.forward();
+          animationController.forward();
         }
       }),
-      _requestEmail$.connect(),
-    ];
+      requestEmail$.connect(),
+    ]);
   }
 
   @override
   void dispose() {
-    _subscriptions.forEach((s) => s.cancel());
-    _animationController.dispose();
+    disposeBag.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -101,14 +105,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
   Widget build(BuildContext context) {
     final userRepository = Provider.of<UserRepository>(context);
 
-    final sendEmailPage = SendEmailPage(
+    final sendEmailPage = BlocProvider<SendEmailBloc>(
       initBloc: () => SendEmailBloc(userRepository),
-      toggle: () => _requestEmailController.add(null),
+      child: SendEmailPage(toggle: () => requestEmailS.add(null)),
     );
 
-    final resetPasswordPage = InputTokenAndResetPasswordPage(
-      toggle: () => _requestEmailController.add(null),
+    final resetPasswordPage = BlocProvider<InputTokenAndResetPasswordBloc>(
       initBloc: () => InputTokenAndResetPasswordBloc(userRepository),
+      child: InputTokenAndResetPasswordPage(
+        toggle: () => requestEmailS.add(null),
+      ),
     );
 
     return Stack(
@@ -117,16 +123,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
         Positioned.fill(
           child: RotationTransition(
             child: SlideTransition(
-              position: _animationPosition,
+              position: animationPosition,
               child: ScaleTransition(
-                scale: _animationScale,
+                scale: animationScale,
                 child: FadeTransition(
-                  opacity: _animationOpacity,
+                  opacity: animationOpacity,
                   child: resetPasswordPage,
                 ),
               ),
             ),
-            turns: _animationTurns,
+            turns: animationTurns,
           ),
         )
       ],

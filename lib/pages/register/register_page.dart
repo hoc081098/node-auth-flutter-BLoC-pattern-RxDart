@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/register/register.dart';
@@ -19,7 +20,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  List<StreamSubscription> subscriptions;
+  DisposeBag disposeBag;
 
   AnimationController registerButtonController;
   Animation<double> buttonSqueezeAnimation;
@@ -53,9 +54,9 @@ class _RegisterPageState extends State<RegisterPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    subscriptions ??= () {
+    disposeBag ??= () {
       final registerBloc = BlocProvider.of<RegisterBloc>(context);
-      return [
+      return DisposeBag([
         registerBloc.message$.listen(handleMessage),
         registerBloc.isLoading$.listen((isLoading) {
           if (isLoading) {
@@ -66,13 +67,13 @@ class _RegisterPageState extends State<RegisterPage>
             registerButtonController.reverse();
           }
         }),
-      ];
+      ]);
     }();
   }
 
   @override
   void dispose() {
-    subscriptions.forEach((s) => s.cancel());
+    disposeBag.dispose();
     registerButtonController.dispose();
     super.dispose();
   }

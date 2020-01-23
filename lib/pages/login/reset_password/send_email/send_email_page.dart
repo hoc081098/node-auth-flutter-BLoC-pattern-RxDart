@@ -1,18 +1,15 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
-import 'package:node_auth/pages/login/reset_password/send_email.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:node_auth/pages/login/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/snackbar.dart';
 
 class SendEmailPage extends StatefulWidget {
-  final SendEmailBloc Function() initBloc;
   final VoidCallback toggle;
 
-  const SendEmailPage({
-    Key key,
-    @required this.initBloc,
-    @required this.toggle,
-  }) : super(key: key);
+  const SendEmailPage({Key key, @required this.toggle}) : super(key: key);
 
   @override
   _SendEmailPageState createState() => _SendEmailPageState();
@@ -20,54 +17,60 @@ class SendEmailPage extends StatefulWidget {
 
 class _SendEmailPageState extends State<SendEmailPage>
     with SingleTickerProviderStateMixin {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  DisposeBag disposeBag;
 
-  SendEmailBloc _bloc;
-  List<StreamSubscription> _subscriptions;
-
-  AnimationController _fadeController;
-  Animation<double> _fadeAnim;
+  AnimationController fadeController;
+  Animation<double> fadeAnim;
 
   @override
   void initState() {
     super.initState();
 
-    _bloc = widget.initBloc();
-    _subscriptions = <StreamSubscription>[
-      _bloc.message$.map(_getMessageString).listen(_scaffoldKey.showSnackBar),
-      _bloc.isLoading$.listen((isLoading) {
-        if (isLoading) {
-          _fadeController.forward();
-        } else {
-          _fadeController.reverse();
-        }
-      }),
-    ];
-
-    _fadeController = AnimationController(
+    fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
+    fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         curve: Curves.fastOutSlowIn,
-        parent: _fadeController,
+        parent: fadeController,
       ),
     );
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    disposeBag ??= () {
+      final bloc = BlocProvider.of<SendEmailBloc>(context);
+      return DisposeBag([
+        bloc.message$.map(_getMessageString).listen(scaffoldKey.showSnackBar),
+        bloc.isLoading$.listen((isLoading) {
+          if (isLoading) {
+            fadeController.forward();
+          } else {
+            fadeController.reverse();
+          }
+        }),
+      ]);
+    }();
+  }
+
+  @override
   void dispose() {
-    _subscriptions.forEach((s) => s.cancel());
-    _bloc.dispose();
-    _fadeController.dispose();
+    disposeBag.dispose();
+    fadeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<SendEmailBloc>(context);
+
     final emailTextField = StreamBuilder<String>(
-      stream: _bloc.emailError$,
+      stream: bloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
           autocorrect: true,
@@ -82,7 +85,7 @@ class _SendEmailPageState extends State<SendEmailPage>
           keyboardType: TextInputType.emailAddress,
           maxLines: 1,
           autofocus: true,
-          onChanged: _bloc.emailChanged,
+          onChanged: bloc.emailChanged,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(FocusNode());
@@ -93,7 +96,7 @@ class _SendEmailPageState extends State<SendEmailPage>
     );
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Request email'),
       ),
@@ -121,7 +124,7 @@ class _SendEmailPageState extends State<SendEmailPage>
                 ),
                 Center(
                   child: FadeTransition(
-                    opacity: _fadeAnim,
+                    opacity: fadeAnim,
                     child: Padding(
                       padding: const EdgeInsets.all(24),
                       child: CircularProgressIndicator(
@@ -138,9 +141,13 @@ class _SendEmailPageState extends State<SendEmailPage>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    onPressed: _bloc.submit,
+                    color: Theme
+                        .of(context)
+                        .cardColor,
+                    splashColor: Theme
+                        .of(context)
+                        .accentColor,
+                    onPressed: bloc.submit,
                   ),
                 ),
                 SizedBox(height: 8),
@@ -149,8 +156,12 @@ class _SendEmailPageState extends State<SendEmailPage>
                   child: RaisedButton(
                     child: Text('Input received token'),
                     padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
+                    color: Theme
+                        .of(context)
+                        .cardColor,
+                    splashColor: Theme
+                        .of(context)
+                        .accentColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
