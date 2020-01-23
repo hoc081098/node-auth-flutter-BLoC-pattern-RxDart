@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:node_auth/data/models/remote_data_source_exception.dart';
+import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 
 class NetworkUtils {
   static Future get(

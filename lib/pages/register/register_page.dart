@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/utils/delay.dart';
+import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class RegisterPage extends StatefulWidget {
-  final RegisterBloc Function() initBloc;
+  static const routeName = '/register_page';
 
-  const RegisterPage({
-    Key key,
-    @required this.initBloc,
-  }) : super(key: key);
+  const RegisterPage({Key key}) : super(key: key);
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -18,197 +19,71 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  DisposeBag disposeBag;
 
-  AnimationController _registerButtonController;
-  Animation<double> _buttonSqueezeAnimation;
+  AnimationController registerButtonController;
+  Animation<double> buttonSqueezeAnimation;
 
-  RegisterBloc _registerBloc;
-  List<StreamSubscription> _subscriptions;
-
-  FocusNode _emailFocusNode;
-  FocusNode _passwordFocusNode;
+  FocusNode emailFocusNode;
+  FocusNode passwordFocusNode;
 
   @override
   void initState() {
     super.initState();
 
-    _registerButtonController = AnimationController(
+    registerButtonController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    _buttonSqueezeAnimation = Tween(
+    buttonSqueezeAnimation = Tween(
       begin: 320.0,
       end: 70.0,
     ).animate(
       CurvedAnimation(
-        parent: _registerButtonController,
+        parent: registerButtonController,
         curve: Interval(0.0, 0.250),
       ),
     );
 
-    _registerBloc = widget.initBloc();
-    _subscriptions = [
-      _registerBloc.message$.listen(_handleMessage),
-      _registerBloc.isLoading$.listen((isLoading) {
-        if (isLoading) {
-          _registerButtonController
-            ..reset()
-            ..forward();
-        } else {
-          _registerButtonController.reverse();
-        }
-      })
-    ];
-
-    _emailFocusNode = FocusNode();
-    _passwordFocusNode = FocusNode();
+    emailFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
   }
 
-  void _handleMessage(RegisterMessage message) async {
-    if (message is RegisterSuccessMessage) {
-      _showMessage('Register successfully');
-      await Future.delayed(const Duration(seconds: 1));
-      Navigator.pop<String>(context, message.email);
-    }
-    if (message is RegisterErrorMessage) {
-      await _showMessage(message.message);
-    }
-    if (message is RegisterInvalidInformationMessage) {
-      await _showMessage('Invalid information');
-    }
-  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  Future<void> _showMessage(String message) => _scaffoldKey.currentState
-      ?.showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 2),
-        ),
-      )
-      ?.closed;
+    disposeBag ??= () {
+      final registerBloc = BlocProvider.of<RegisterBloc>(context);
+      return DisposeBag([
+        registerBloc.message$.listen(handleMessage),
+        registerBloc.isLoading$.listen((isLoading) {
+          if (isLoading) {
+            registerButtonController
+              ..reset()
+              ..forward();
+          } else {
+            registerButtonController.reverse();
+          }
+        }),
+      ]);
+    }();
+  }
 
   @override
   void dispose() {
-    _subscriptions.forEach((s) => s.cancel());
-    _registerButtonController.dispose();
-
+    disposeBag.dispose();
+    registerButtonController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final emailTextField = StreamBuilder<String>(
-      stream: _registerBloc.emailError$,
-      builder: (context, snapshot) {
-        return TextField(
-          onChanged: _registerBloc.emailChanged,
-          autocorrect: true,
-          decoration: InputDecoration(
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
-              child: Icon(Icons.email),
-            ),
-            labelText: 'Email',
-            errorText: snapshot.data,
-          ),
-          keyboardType: TextInputType.emailAddress,
-          maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
-          focusNode: _emailFocusNode,
-          onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_passwordFocusNode);
-          },
-          textInputAction: TextInputAction.next,
-        );
-      },
-    );
-
-    final passwordTextField = StreamBuilder<String>(
-      stream: _registerBloc.passwordError$,
-      builder: (context, snapshot) {
-        return PasswordTextField(
-          errorText: snapshot.data,
-          labelText: 'Password',
-          onChanged: _registerBloc.passwordChanged,
-          focusNode: _passwordFocusNode,
-          onSubmitted: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          textInputAction: TextInputAction.done,
-        );
-      },
-    );
-
-    final registerButton = AnimatedBuilder(
-      animation: _buttonSqueezeAnimation,
-      child: MaterialButton(
-        onPressed: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-          _registerBloc.submitRegister();
-        },
-        color: Theme.of(context).backgroundColor,
-        child: Text(
-          'REGISTER',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-        splashColor: Theme.of(context).accentColor,
-      ),
-      builder: (context, child) {
-        var value = _buttonSqueezeAnimation.value;
-
-        return Container(
-          width: value,
-          height: 60.0,
-          child: Material(
-            elevation: 5.0,
-            clipBehavior: Clip.antiAlias,
-            shadowColor: Theme.of(context).accentColor,
-            borderRadius: BorderRadius.circular(24.0),
-            child: value > 75.0
-                ? child
-                : Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  ),
-          ),
-        );
-      },
-    );
-
-    final nameTextField = StreamBuilder<String>(
-      stream: _registerBloc.nameError$,
-      builder: (context, snapshot) {
-        return TextField(
-          autocorrect: true,
-          onChanged: _registerBloc.nameChanged,
-          decoration: InputDecoration(
-            labelText: 'Name',
-            errorText: snapshot.data,
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
-              child: Icon(Icons.person),
-            ),
-          ),
-          keyboardType: TextInputType.text,
-          maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
-          autofocus: true,
-          onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_emailFocusNode);
-          },
-          textInputAction: TextInputAction.next,
-        );
-      },
-    );
+    final registerBloc = BlocProvider.of<RegisterBloc>(context);
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -230,7 +105,9 @@ class _RegisterPageState extends State<RegisterPage>
               height: kToolbarHeight,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[BackButton(color: Colors.white)],
+                children: const [
+                  BackButton(color: Colors.white),
+                ],
               ),
             ),
             Expanded(
@@ -242,20 +119,20 @@ class _RegisterPageState extends State<RegisterPage>
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: nameTextField,
+                        child: nameTextField(registerBloc),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: emailTextField,
+                        child: emailTextField(registerBloc),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: passwordTextField,
+                        child: passwordTextField(registerBloc),
                       ),
-                      SizedBox(height: 32.0),
+                      const SizedBox(height: 32.0),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: registerButton,
+                        child: registerButton(registerBloc),
                       ),
                     ],
                   ),
@@ -265,6 +142,137 @@ class _RegisterPageState extends State<RegisterPage>
           ],
         ),
       ),
+    );
+  }
+
+  void handleMessage(RegisterMessage message) async {
+    if (message is RegisterSuccessMessage) {
+      scaffoldKey.showSnackBar('Register successfully');
+      await delay(1000);
+      Navigator.pop<String>(context, message.email);
+    }
+    if (message is RegisterErrorMessage) {
+      scaffoldKey.showSnackBar(message.message);
+    }
+    if (message is RegisterInvalidInformationMessage) {
+      scaffoldKey.showSnackBar('Invalid information');
+    }
+  }
+
+  Widget emailTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
+      stream: registerBloc.emailError$,
+      builder: (context, snapshot) {
+        return TextField(
+          onChanged: registerBloc.emailChanged,
+          autocorrect: true,
+          decoration: InputDecoration(
+            prefixIcon: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8.0),
+              child: Icon(Icons.email),
+            ),
+            labelText: 'Email',
+            errorText: snapshot.data,
+          ),
+          keyboardType: TextInputType.emailAddress,
+          maxLines: 1,
+          style: TextStyle(fontSize: 16.0),
+          focusNode: emailFocusNode,
+          onSubmitted: (_) {
+            FocusScope.of(context).requestFocus(passwordFocusNode);
+          },
+          textInputAction: TextInputAction.next,
+        );
+      },
+    );
+  }
+
+  Widget passwordTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
+      stream: registerBloc.passwordError$,
+      builder: (context, snapshot) {
+        return PasswordTextField(
+          errorText: snapshot.data,
+          labelText: 'Password',
+          onChanged: registerBloc.passwordChanged,
+          focusNode: passwordFocusNode,
+          onSubmitted: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          textInputAction: TextInputAction.done,
+        );
+      },
+    );
+  }
+
+  Widget registerButton(RegisterBloc registerBloc) {
+    return AnimatedBuilder(
+      animation: buttonSqueezeAnimation,
+      child: MaterialButton(
+        onPressed: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+          registerBloc.submitRegister();
+        },
+        color: Theme.of(context).backgroundColor,
+        child: Text(
+          'REGISTER',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
+        splashColor: Theme.of(context).accentColor,
+      ),
+      builder: (context, child) {
+        final value = buttonSqueezeAnimation.value;
+
+        return Container(
+          width: value,
+          height: 60.0,
+          child: Material(
+            elevation: 5.0,
+            clipBehavior: Clip.antiAlias,
+            shadowColor: Theme.of(context).accentColor,
+            borderRadius: BorderRadius.circular(24.0),
+            child: value > 75.0
+                ? child
+                : Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget nameTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
+      stream: registerBloc.nameError$,
+      builder: (context, snapshot) {
+        return TextField(
+          autocorrect: true,
+          onChanged: registerBloc.nameChanged,
+          decoration: InputDecoration(
+            labelText: 'Name',
+            errorText: snapshot.data,
+            prefixIcon: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8.0),
+              child: Icon(Icons.person),
+            ),
+          ),
+          keyboardType: TextInputType.text,
+          maxLines: 1,
+          style: TextStyle(fontSize: 16.0),
+          autofocus: true,
+          onSubmitted: (_) {
+            FocusScope.of(context).requestFocus(emailFocusNode);
+          },
+          textInputAction: TextInputAction.next,
+        );
+      },
     );
   }
 }

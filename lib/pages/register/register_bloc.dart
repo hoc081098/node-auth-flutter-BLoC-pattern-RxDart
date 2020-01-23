@@ -2,19 +2,25 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/data.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/register_use_case.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:node_auth/utils/streams.dart';
+
 // ignore_for_file: close_sinks
 
-/// BLoC handle validate form and register
-class RegisterBloc {
+/// BLoC handles validating form and register
+class RegisterBloc extends MyBaseBloc {
   /// Input functions
-  final void Function(String) nameChanged;
-  final void Function(String) emailChanged;
-  final void Function(String) passwordChanged;
-  final void Function() submitRegister;
+  final Function1<String, void> nameChanged;
+  final Function1<String, void> emailChanged;
+  final Function1<String, void> passwordChanged;
+  final Function0<void> submitRegister;
 
   /// Streams
   final Stream<String> emailError$;
@@ -23,24 +29,21 @@ class RegisterBloc {
   final Stream<RegisterMessage> message$;
   final Stream<bool> isLoading$;
 
-  /// Clean up
-  final void Function() dispose;
-
   RegisterBloc._({
+    @required Function0<void> dispose,
     @required this.emailChanged,
     @required this.passwordChanged,
     @required this.submitRegister,
     @required this.emailError$,
     @required this.passwordError$,
     @required this.message$,
-    @required this.dispose,
     @required this.isLoading$,
     @required this.nameChanged,
     @required this.nameError$,
-  });
+  }) : super(dispose);
 
-  factory RegisterBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory RegisterBloc(final RegisterUseCase registerUser) {
+    assert(registerUser != null);
 
     /// Controllers
     final emailController = PublishSubject<String>();
@@ -86,12 +89,11 @@ class RegisterBloc {
           .where((isValid) => isValid)
           .withLatestFrom(registerUser$, (_, RegisterUser user) => user)
           .exhaustMap(
-            (user) => userRepository
-                .registerUser(
-                  email: user.email,
-                  password: user.password,
-                  name: user.name,
-                )
+            (user) => registerUser(
+              email: user.email,
+              password: user.password,
+              name: user.name,
+            )
                 .doOnListen(() => isLoadingController.add(true))
                 .doOnData((_) => isLoadingController.add(false))
                 .map((result) => _responseToMessage(result, user.email)),
@@ -125,30 +127,25 @@ class RegisterBloc {
         .distinct()
         .share();
 
-    final streams = <String, Stream>{
+    final subscriptions = <String, Stream>{
       'emailError': emailError$,
       'passwordError': passwordError$,
       'nameError': nameError$,
       'isValidSubmit': isValidSubmit$,
       'message': message$,
       'isLoading': isLoadingController,
-    };
-    final subscriptions = streams.keys.map((tag) {
-      return streams[tag].listen((data) {
-        print('[DEBUG] [$tag] = $data');
-      });
-    }).toList();
+    }.debug();
 
     return RegisterBloc._(
-      emailChanged: emailController.add,
+      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
+      nameChanged: trim.pipe(nameController.add),
+      emailChanged: trim.pipe(emailController.add),
       passwordChanged: passwordController.add,
       submitRegister: () => submitRegisterController.add(null),
       emailError$: emailError$,
       passwordError$: passwordError$,
       message$: message$,
-      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       isLoading$: isLoadingController,
-      nameChanged: nameController.add,
       nameError$: nameError$,
     );
   }
@@ -160,6 +157,6 @@ class RegisterBloc {
     if (result is Failure) {
       return RegisterErrorMessage(result.message, result.error);
     }
-    return RegisterErrorMessage("Unknown result $result");
+    return RegisterErrorMessage('Unknown result $result');
   }
 }

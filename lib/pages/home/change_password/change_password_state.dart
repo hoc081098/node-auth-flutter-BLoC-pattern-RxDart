@@ -14,6 +14,7 @@ abstract class ChangePasswordState
 
   ChangePasswordState._();
 
-  factory ChangePasswordState([updates(ChangePasswordStateBuilder b)]) =
+  factory ChangePasswordState(
+          [void Function(ChangePasswordStateBuilder) updates]) =
       _$ChangePasswordState;
 }

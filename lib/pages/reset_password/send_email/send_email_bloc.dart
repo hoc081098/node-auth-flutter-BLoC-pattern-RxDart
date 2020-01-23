@@ -4,41 +4,37 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/data.dart';
-import 'package:node_auth/pages/login/reset_password/send_email.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
+import 'package:node_auth/my_base_bloc.dart';
+import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
+import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SendEmailBloc {
+class SendEmailBloc extends MyBaseBloc {
   ///
-  ///
-  ///
-  final void Function() submit;
-  final void Function(String) emailChanged;
+  final Function0<void> submit;
+  final Function1<String, void> emailChanged;
 
-  ///
-  ///
   ///
   final Stream<String> emailError$;
   final Stream<SendEmailMessage> message$;
   final Stream<bool> isLoading$;
 
-  ///
-  ///
-  ///
-  final void Function() dispose;
-
-  const SendEmailBloc._({
+  SendEmailBloc._({
     @required this.submit,
     @required this.emailChanged,
     @required this.emailError$,
     @required this.message$,
     @required this.isLoading$,
-    @required this.dispose,
-  });
+    @required Function0<void> dispose,
+  }) : super(dispose);
 
-  factory SendEmailBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory SendEmailBloc(
+      final SendResetPasswordEmailUseCase sendResetPasswordEmail) {
+    assert(sendResetPasswordEmail != null);
 
     final emailS = PublishSubject<String>();
     final submitS = PublishSubject<void>();
@@ -60,7 +56,7 @@ class SendEmailBloc {
         (email) {
           return send(
             email,
-            userRepository,
+            sendResetPasswordEmail,
             isLoadingS,
           );
         },
@@ -69,7 +65,7 @@ class SendEmailBloc {
 
     return SendEmailBloc._(
       dispose: DisposeBag([emailS, submitS, isLoadingS]).dispose,
-      emailChanged: emailS.add,
+      emailChanged: trim.pipe(emailS.add),
       emailError$: emailError$,
       submit: () => submitS.add(null),
       message$: message$,
@@ -79,7 +75,7 @@ class SendEmailBloc {
 
   static Stream<SendEmailMessage> send(
     String email,
-    UserRepository userRepository,
+    SendResetPasswordEmailUseCase sendResetPasswordEmail,
     Sink<bool> isLoadingController,
   ) {
     SendEmailMessage _resultToMessage(result) {
@@ -92,8 +88,7 @@ class SendEmailBloc {
       return SendEmailErrorMessage('An error occurred!');
     }
 
-    return userRepository
-        .sendResetPasswordEmail(email)
+    return sendResetPasswordEmail(email)
         .doOnListen(() => isLoadingController.add(true))
         .doOnData((_) => isLoadingController.add(false))
         .map(_resultToMessage);

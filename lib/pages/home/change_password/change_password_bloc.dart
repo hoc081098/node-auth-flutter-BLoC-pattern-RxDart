@@ -2,10 +2,15 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/data.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/change_password_use_case.dart';
+import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
+import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
+import 'package:node_auth/utils/streams.dart';
 
 bool _isValidPassword(String password) {
   return password.length >= 6;
@@ -13,32 +18,30 @@ bool _isValidPassword(String password) {
 
 // ignore_for_file: close_sinks
 
-class ChangePasswordBloc {
+/// BLoC that handles changing password
+class ChangePasswordBloc extends MyBaseBloc {
   /// Input functions
-  final void Function() changePassword;
-  final void Function(String) passwordChanged;
-  final void Function(String) newPasswordChanged;
+  final Function0<void> changePassword;
+  final Function1<String, void> passwordChanged;
+  final Function1<String, void> newPasswordChanged;
 
   /// Output stream
   final Stream<ChangePasswordState> changePasswordState$;
   final Stream<String> passwordError$;
   final Stream<String> newPasswordError$;
 
-  /// Clean up
-  final void Function() dispose;
-
   ChangePasswordBloc._({
     @required this.changePassword,
     @required this.changePasswordState$,
-    @required this.dispose,
+    @required Function0<void> dispose,
     @required this.passwordChanged,
     @required this.newPasswordChanged,
     @required this.passwordError$,
     @required this.newPasswordError$,
-  });
+  }) : super(dispose);
 
-  factory ChangePasswordBloc(UserRepository userRepository) {
-    assert(userRepository != null);
+  factory ChangePasswordBloc(final ChangePasswordUseCase changePassword) {
+    assert(ChangePasswordUseCase != null);
 
     /// Controllers
     final passwordS = PublishSubject<String>();
@@ -56,7 +59,7 @@ class ChangePasswordBloc {
       (String password, String newPassword) => Tuple2(password, newPassword),
     ).share();
 
-    final ValueStream<bool> isValidSubmit$ = both$.map((both) {
+    final isValidSubmit$ = both$.map((both) {
       final password = both.item1;
       final newPassword = both.item2;
       return _isValidPassword(newPassword) &&
@@ -68,7 +71,7 @@ class ChangePasswordBloc {
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
-        .exhaustMap((both) => _performChangePassword(userRepository, both))
+        .exhaustMap((both) => _performChangePassword(changePassword, both))
         .share();
 
     final passwordError$ = both$
@@ -107,23 +110,18 @@ class ChangePasswordBloc {
         .distinct()
         .share();
 
-    final streams = <String, Stream>{
+    final subscriptions = <String, Stream>{
       'newPasswordError': newPasswordError$,
       'passwordError': passwordError$,
       'isValidSubmit': isValidSubmit$,
       'both': both$,
       'changePasswordState': changePasswordState$,
-    };
-    final subscriptions = streams.keys.map((tag) {
-      return streams[tag].listen((data) {
-        print('[DEBUG] [$tag] = $data');
-      });
-    }).toList();
+    }.debug();
 
     return ChangePasswordBloc._(
+      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       changePassword: () => submitChangePasswordS.add(null),
       changePasswordState$: changePasswordState$,
-      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
       passwordChanged: passwordS.add,
       newPasswordChanged: newPasswordS.add,
       passwordError$: passwordError$,
@@ -132,7 +130,7 @@ class ChangePasswordBloc {
   }
 
   static Stream<ChangePasswordState> _performChangePassword(
-    UserRepository userRepository,
+    ChangePasswordUseCase changePassword,
     Tuple2<String, String> both,
   ) {
     print('[DEBUG] change password both=$both');
@@ -150,13 +148,12 @@ class ChangePasswordBloc {
         return ChangePasswordState((b) => b
           ..isLoading = false
           ..error = result.error
-          ..message = 'Error when change passwor: ${result.message}');
+          ..message = 'Error when change password: ${result.message}');
       }
       return null;
     }
 
-    return userRepository
-        .changePassword(password: both.item1, newPassword: both.item2)
+    return changePassword(password: both.item1, newPassword: both.item2)
         .map(resultToState)
         .startWith(
           ChangePasswordState((b) => b

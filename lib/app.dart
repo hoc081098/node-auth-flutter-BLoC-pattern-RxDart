@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:node_auth/data/data.dart';
+import 'package:node_auth/domain/models/auth_state.dart';
+import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
+import 'package:node_auth/domain/usecases/login_use_case.dart';
+import 'package:node_auth/domain/usecases/logout_use_case.dart';
+import 'package:node_auth/domain/usecases/register_use_case.dart';
+import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
+import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 import 'package:node_auth/pages/register/register.dart';
 
 class MyApp extends StatelessWidget {
@@ -11,42 +17,53 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        accentColor: const Color(0xFF00e676),
-      ),
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        '/': (context) => const Home(),
-        '/register_page': (context) {
-          return RegisterPage(
-            initBloc: () {
-              return RegisterBloc(
-                Provider.of<UserRepository>(context),
-              );
-            },
-          );
-        },
-        '/home_page': (context) {
-          return HomePage(
-            initBloc: () {
-              return HomeBloc(Provider.of<UserRepository>(context));
-            },
-          );
-        },
-        '/login_page': (context) {
-          return LoginPage(
-            initBloc: () {
-              return LoginBloc(Provider.of<UserRepository>(context));
-            },
-          );
-        },
-        '/reset_password_page': (context) {
-          return ResetPasswordPage();
-        },
+    final routes = <String, WidgetBuilder>{
+      '/': (context) => const Home(),
+      RegisterPage.routeName: (context) {
+        final registerUser = Provider.of<RegisterUseCase>(context);
+
+        return BlocProvider<RegisterBloc>(
+          child: const RegisterPage(),
+          initBloc: () => RegisterBloc(registerUser),
+        );
       },
+      HomePage.routeName: (context) {
+        final logout = Provider.of<LogoutUseCase>(context);
+        final getAuthState = Provider.of<GetAuthStateUseCase>(context);
+        final uploadImage = Provider.of<UploadImageUseCase>(context);
+
+        return BlocProvider<HomeBloc>(
+          child: const HomePage(),
+          initBloc: () => HomeBloc(
+            logout,
+            getAuthState,
+            uploadImage,
+          ),
+        );
+      },
+      LoginPage.routeName: (context) {
+        final login = Provider.of<LoginUseCase>(context);
+        return BlocProvider<LoginBloc>(
+          initBloc: () => LoginBloc(login),
+          child: const LoginPage(),
+        );
+      },
+      ResetPasswordPage.routeName: (context) {
+        return const ResetPasswordPage();
+      },
+    };
+
+    return Provider<Map<String, WidgetBuilder>>(
+      value: routes,
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          accentColor: const Color(0xFF00e676),
+        ),
+        initialRoute: '/',
+        routes: routes,
+      ),
     );
   }
 }
@@ -56,8 +73,9 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRepository = Provider.of<UserRepository>(context);
-    final future = userRepository.authenticationState$.first;
+    final getAuthState = Provider.of<GetAuthStateUseCase>(context);
+    final routes = Provider.of<Map<String, WidgetBuilder>>(context);
+    final future = getAuthState().first;
 
     return FutureBuilder<AuthenticationState>(
       future: future,
@@ -76,14 +94,17 @@ class Home extends StatelessWidget {
             ),
           );
         }
+
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home [2] >> [NotAuthenticated]');
-          return LoginPage(initBloc: () => LoginBloc(userRepository));
+          return routes[LoginPage.routeName](context);
         }
+
         if (snapshot.data is AuthenticatedState) {
           print('[HOME] home [3] >> [Authenticated]');
-          return HomePage(initBloc: () => HomeBloc(userRepository));
+          return routes[HomePage.routeName](context);
         }
+
         return Container(width: 0, height: 0);
       },
     );

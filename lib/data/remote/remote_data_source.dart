@@ -1,13 +1,16 @@
 import 'dart:io';
 
-import 'package:node_auth/data/models/token_response.dart';
-import 'package:node_auth/data/models/user.dart';
+import 'package:node_auth/data/remote/response/token_response.dart';
+import 'package:node_auth/data/remote/response/user_response.dart';
 
 abstract class RemoteDataSource {
   Future<TokenResponse> loginUser(String email, String password);
 
   Future<TokenResponse> registerUser(
-      String name, String email, String password);
+    String name,
+    String email,
+    String password,
+  );
 
   Future<TokenResponse> changePassword(
     String email,
@@ -22,7 +25,7 @@ abstract class RemoteDataSource {
     String newPassword,
   });
 
-  Future<User> getUserProfile(String email, String token);
+  Future<UserResponse> getUserProfile(String email, String token);
 
-  Future<User> uploadImage(File file, String email);
+  Future<UserResponse> uploadImage(File file, String email);
 }

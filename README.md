@@ -1,6 +1,10 @@
 # node_auth
 
-:snowflake: :snowflake: [BLOC_PATTERN] [RXDART] [STREAM] :whale2: :whale2: Simple auth app flutter, server node.js, BLoC pattern, RxDart :cyclone: :cyclone: Functionalities: LOGIN, REGISTER, CHANGE PASSWORD, CHANGE AVATAR, FORGOT PASSWORD
+ - ❄️ ❄️ `BLoC pattern` `rxdart` `stream` 🐋 🐋 Simple auth app flutter, server node.js, BLoC pattern, RxDart
+ - Functionalities: `LOGIN`, `REGISTER`, `CHANGE PASSWORD`, `CHANGE AVATAR`, `FORGOT PASSWORD` 🌀 🌀
+
+[![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
+![GitHub stars](https://img.shields.io/github/stars/hoc081098/node-auth-flutter-BLoC-pattern-RxDart?style=social)
 
 ## Video demo:
 

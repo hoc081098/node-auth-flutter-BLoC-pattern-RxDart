@@ -1,43 +1,43 @@
 import 'dart:io';
 
+import 'package:node_auth/data/exception/local_data_source_exception.dart';
+import 'package:node_auth/data/exception/remote_data_source_exception.dart';
+import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
+import 'package:node_auth/data/local/entities/user_entity.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
-import 'package:node_auth/data/models/auth_state.dart';
-import 'package:node_auth/data/models/local_data_source_exception.dart';
-import 'package:node_auth/data/models/remote_data_source_exception.dart';
-import 'package:node_auth/data/models/result.dart';
-import 'package:node_auth/data/models/token_response.dart';
-import 'package:node_auth/data/models/user.dart';
-import 'package:node_auth/data/models/user_and_token.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
-import 'package:node_auth/data/user_repository.dart';
+import 'package:node_auth/data/remote/response/token_response.dart';
+import 'package:node_auth/data/remote/response/user_response.dart';
+import 'package:node_auth/domain/models/auth_state.dart';
+import 'package:node_auth/domain/models/user.dart';
+import 'package:node_auth/domain/models/user_and_token.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/utils/result.dart';
 import 'package:rxdart/rxdart.dart';
+
+part 'mappers.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
   final LocalDataSource _localDataSource;
-  final ValueConnectableStream<AuthenticationState> _authenticationState$;
+  @override
+  final ValueConnectableStream<AuthenticationState> authenticationState$;
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   )   : assert(_remoteDataSource != null),
         assert(_localDataSource != null),
-        _authenticationState$ = _localDataSource.userAndToken$
-            .map((userAndToken) => userAndToken == null
-                ? const UnauthenticatedState()
-                : AuthenticatedState(userAndToken))
-            .onErrorReturn(const UnauthenticatedState())
+        authenticationState$ = _localDataSource.userAndToken$
+            .map(_Mappers.userAndTokenEntityToDomainAuthState)
+            .onErrorReturn(UnauthenticatedState())
             .publishValue() {
     _init();
 
-    _authenticationState$
+    authenticationState$
         .listen((state) => print('[USER_REPOSITORY] state=$state'));
-    _authenticationState$.connect();
+    authenticationState$.connect();
   }
-
-  @override
-  ValueStream<AuthenticationState> get authenticationState$ =>
-      _authenticationState$;
 
   @override
   Stream<Result<void>> login({
@@ -65,9 +65,10 @@ class UserRepositoryImpl implements UserRepository {
 
     if (userAndToken == null) {
       return Stream.value(
-        const Failure(
-          'Require login!',
-          'Email or token is null',
+        Failure(
+          (b) => b
+            ..message = 'Require login!'
+            ..error = 'Email or token is null',
         ),
       );
     }
@@ -78,9 +79,9 @@ class UserRepositoryImpl implements UserRepository {
         userAndToken.user.email,
       ),
     ).asyncMap((result) async {
-      if (result is Success<User>) {
+      if (result is Success<UserResponse>) {
         await _localDataSource.saveUserAndToken(
-          UserAndToken(
+          _Mappers.userResponseToUserAndTokenEntity(
             result.result,
             userAndToken.token,
           ),
@@ -99,9 +100,10 @@ class UserRepositoryImpl implements UserRepository {
 
     if (userAndToken == null) {
       return Stream.value(
-        const Failure(
-          'Require login!',
-          'Email or token is null',
+        Failure(
+          (b) => b
+            ..message = 'Require login!'
+            ..error = 'Email or token is null',
         ),
       );
     }
@@ -144,15 +146,16 @@ class UserRepositoryImpl implements UserRepository {
 
     if (tokenResult is Success<TokenResponse>) {
       final token = tokenResult.result.token;
+
       return _execute(
         () => _remoteDataSource.getUserProfile(
           email,
           token,
         ),
       ).asyncMap((userResult) async {
-        if (userResult is Success<User>) {
+        if (userResult is Success<UserResponse>) {
           await _localDataSource.saveUserAndToken(
-            UserAndToken(
+            _Mappers.userResponseToUserAndTokenEntity(
               userResult.result,
               token,
             ),
@@ -169,7 +172,7 @@ class UserRepositoryImpl implements UserRepository {
   /// Helpers functions
   ///
 
-  UserAndToken get _userAndToken => _authenticationState$.value?.userAndToken;
+  UserAndToken get _userAndToken => authenticationState$.value?.userAndToken;
 
   ///
   /// Execute [factory] when listen to observable,
@@ -180,7 +183,7 @@ class UserRepositoryImpl implements UserRepository {
     return Rx.defer(() {
       return Stream.fromFuture(factory())
           .doOnError(_handleUnauthenticatedError)
-          .map<Result<T>>((result) => Success<T>(result))
+          .map<Result<T>>((result) => Success<T>((b) => b.result = result))
           .onErrorReturnWith(_errorToResult);
     });
   }
@@ -202,12 +205,18 @@ class UserRepositoryImpl implements UserRepository {
   ///
   static Failure<T> _errorToResult<T>(e) {
     if (e is RemoteDataSourceException) {
-      return Failure(e.message, e);
+      return Failure((b) => b
+        ..message = e.message
+        ..error = e);
     }
     if (e is LocalDataSourceException) {
-      return Failure(e.message, e);
+      return Failure((b) => b
+        ..message = e.message
+        ..error = e);
     }
-    return Failure(e.toString(), e);
+    return Failure((b) => b
+      ..message = e.toString()
+      ..error = e);
   }
 
   ///
@@ -230,7 +239,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       print('$tag userProfile server=$userProfile');
       await _localDataSource.saveUserAndToken(
-        UserAndToken(
+        _Mappers.userResponseToUserAndTokenEntity(
           userProfile,
           userAndToken.token,
         ),

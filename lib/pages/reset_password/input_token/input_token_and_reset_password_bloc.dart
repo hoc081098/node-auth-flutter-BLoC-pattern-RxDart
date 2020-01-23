@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/data/data.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
+import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
+import 'package:node_auth/my_base_bloc.dart';
+import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
@@ -28,19 +32,17 @@ class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
 
 //ignore_for_file: close_sinks
 
-class InputTokenAndResetPasswordBloc {
-  final void Function(String) emailChanged;
-  final void Function(String) passwordChanged;
-  final void Function(String) tokenChanged;
-  final void Function() submit;
+class InputTokenAndResetPasswordBloc extends MyBaseBloc {
+  final Function1<String, void> emailChanged;
+  final Function1<String, void> passwordChanged;
+  final Function1<String, void> tokenChanged;
+  final Function0<void> submit;
 
   final Stream<String> emailError$;
   final Stream<String> passwordError$;
   final Stream<String> tokenError$;
   final Stream<bool> isLoading$;
   final Stream<InputTokenAndResetPasswordMessage> message$;
-
-  final void Function() dispose;
 
   InputTokenAndResetPasswordBloc._({
     @required this.emailChanged,
@@ -49,14 +51,15 @@ class InputTokenAndResetPasswordBloc {
     @required this.emailError$,
     @required this.passwordError$,
     @required this.tokenError$,
-    @required this.dispose,
+    @required Function0<void> dispose,
     @required this.submit,
     @required this.isLoading$,
     @required this.message$,
-  });
+  }) : super(dispose);
 
-  factory InputTokenAndResetPasswordBloc(final UserRepository userRepository) {
-    assert(userRepository != null);
+  factory InputTokenAndResetPasswordBloc(
+      final ResetPasswordUseCase resetPassword) {
+    assert(resetPassword != null);
 
     final emailSubject = BehaviorSubject<String>.seeded('');
     final tokenSubject = BehaviorSubject<String>.seeded('');
@@ -94,7 +97,7 @@ class InputTokenAndResetPasswordBloc {
             emailSubject.value, tokenSubject.value, passwordSubject.value))
         .share();
 
-    allFieldsAreValid(Tuple3<String, String, String> tuple3) {
+    bool allFieldsAreValid(Tuple3<String, String, String> tuple3) {
       return Validator.isValidEmail(tuple3.item1) &&
           tuple3.item2.isNotEmpty &&
           Validator.isValidPassword(tuple3.item3);
@@ -107,7 +110,7 @@ class InputTokenAndResetPasswordBloc {
       allField$
           .where(allFieldsAreValid)
           .exhaustMap((tuple3) => _sendResetPasswordRequest(
-                userRepository,
+                resetPassword,
                 tuple3,
                 isLoadingSubject,
               )),
@@ -115,7 +118,7 @@ class InputTokenAndResetPasswordBloc {
 
     return InputTokenAndResetPasswordBloc._(
       dispose: DisposeBag(subjects).dispose,
-      emailChanged: emailSubject.add,
+      emailChanged: trim.pipe(emailSubject.add),
       tokenChanged: tokenSubject.add,
       passwordChanged: passwordSubject.add,
       submit: () => submitSubject.add(null),
@@ -128,11 +131,11 @@ class InputTokenAndResetPasswordBloc {
   }
 
   static Stream<InputTokenAndResetPasswordMessage> _sendResetPasswordRequest(
-    UserRepository repository,
+    ResetPasswordUseCase resetPassword,
     Tuple3<String, String, String> tuple3,
     Sink<bool> isLoadingSink,
   ) async* {
-    _toMessage([result, String email]) {
+    InputTokenAndResetPasswordMessage _toMessage([result, String email]) {
       if (result is Success) {
         return ResetPasswordSuccess(email);
       }
@@ -144,13 +147,11 @@ class InputTokenAndResetPasswordBloc {
 
     isLoadingSink.add(true);
     try {
-      final result = await repository
-          .resetPassword(
-            email: tuple3.item1,
-            token: tuple3.item2,
-            newPassword: tuple3.item3,
-          )
-          .first;
+      final result = await resetPassword(
+        email: tuple3.item1,
+        token: tuple3.item2,
+        newPassword: tuple3.item3,
+      ).first;
       yield _toMessage(result, tuple3.item1);
     } catch (e) {
       yield _toMessage();

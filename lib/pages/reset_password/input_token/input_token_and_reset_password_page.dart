@@ -1,18 +1,18 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
-import 'package:node_auth/pages/login/reset_password/input_token_and_reset_password_bloc.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
+import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:node_auth/utils/snackbar.dart';
 
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
-  final ValueGetter<InputTokenAndResetPasswordBloc> initBloc;
 
-  const InputTokenAndResetPasswordPage({
-    Key key,
-    @required this.toggle,
-    @required this.initBloc,
-  }) : super(key: key);
+  const InputTokenAndResetPasswordPage({Key key, @required this.toggle})
+      : super(key: key);
 
   @override
   _InputTokenAndResetPasswordPageState createState() =>
@@ -22,87 +22,74 @@ class InputTokenAndResetPasswordPage extends StatefulWidget {
 class _InputTokenAndResetPasswordPageState
     extends State<InputTokenAndResetPasswordPage>
     with SingleTickerProviderStateMixin<InputTokenAndResetPasswordPage> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  DisposeBag disposeBag;
 
-  InputTokenAndResetPasswordBloc _resetPasswordBloc;
-  List<StreamSubscription> _subscriptions;
+  FocusNode tokenFocusNode;
+  FocusNode passwordFocusNode;
 
-  FocusNode _tokenFocusNode;
-  FocusNode _passwordFocusNode;
-
-  AnimationController _fadeController;
-  Animation<double> _fadeAnim;
+  AnimationController fadeController;
+  Animation<double> fadeAnim;
 
   @override
   void initState() {
     super.initState();
 
-    _fadeController = AnimationController(
+    fadeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
+    fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         curve: Curves.fastOutSlowIn,
-        parent: _fadeController,
+        parent: fadeController,
       ),
     );
 
-    _tokenFocusNode = FocusNode();
-    _passwordFocusNode = FocusNode();
-
-    _resetPasswordBloc = widget.initBloc();
-    _subscriptions = <StreamSubscription>[
-      _resetPasswordBloc.message$.listen((message) async {
-        await _showSnackBar(_getMessageString(message));
-        if (message is ResetPasswordSuccess) {
-          Navigator.pop<String>(context, message.email);
-        }
-      }),
-      _resetPasswordBloc.isLoading$.listen((isLoading) {
-        if (isLoading) {
-          _fadeController.forward();
-        } else {
-          _fadeController.reverse();
-        }
-      }),
-    ];
+    tokenFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
   }
 
-  static String _getMessageString(InputTokenAndResetPasswordMessage msg) {
-    if (msg is InvalidInformation) {
-      return 'Invalid information. Try again';
-    }
-    if (msg is ResetPasswordSuccess) {
-      return 'Reset password successfully';
-    }
-    if (msg is ResetPasswordFailure) {
-      return msg.message;
-    }
-    return 'An unexpected error has occurred';
-  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  Future<void> _showSnackBar(String message) => _scaffoldKey.currentState
-      ?.showSnackBar(
-        SnackBar(
-          content: Text(message),
-          duration: const Duration(seconds: 2),
-        ),
-      )
-      ?.closed;
+    disposeBag ??= () {
+      final resetPasswordBloc =
+          BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
+      return DisposeBag([
+        resetPasswordBloc.message$.listen((message) async {
+          scaffoldKey.showSnackBar(_getMessageString(message));
+          await delay(1000);
+          if (message is ResetPasswordSuccess) {
+            Navigator.pop<String>(context, message.email);
+          }
+        }),
+        resetPasswordBloc.isLoading$.listen((isLoading) {
+          if (isLoading) {
+            fadeController.forward();
+          } else {
+            fadeController.reverse();
+          }
+        }),
+      ]);
+    }();
+  }
 
   @override
   void dispose() {
-    _subscriptions.forEach((s) => s.cancel());
-    _fadeController.dispose();
-    _resetPasswordBloc.dispose();
+    fadeController.dispose();
+    disposeBag.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final resetPasswordBloc =
+        BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
+
     final emailTextField = StreamBuilder<String>(
-      stream: _resetPasswordBloc.emailError$,
+      stream: resetPasswordBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
           autocorrect: true,
@@ -117,10 +104,10 @@ class _InputTokenAndResetPasswordPageState
           keyboardType: TextInputType.emailAddress,
           maxLines: 1,
           autofocus: true,
-          onChanged: _resetPasswordBloc.emailChanged,
+          onChanged: resetPasswordBloc.emailChanged,
           textInputAction: TextInputAction.next,
           onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_tokenFocusNode);
+            FocusScope.of(context).requestFocus(tokenFocusNode);
           },
           style: TextStyle(fontSize: 16.0),
         );
@@ -128,7 +115,7 @@ class _InputTokenAndResetPasswordPageState
     );
 
     final tokenTextField = StreamBuilder<String>(
-      stream: _resetPasswordBloc.tokenError$,
+      stream: resetPasswordBloc.tokenError$,
       builder: (context, snapshot) {
         return TextField(
           autocorrect: true,
@@ -142,11 +129,11 @@ class _InputTokenAndResetPasswordPageState
           ),
           keyboardType: TextInputType.text,
           maxLines: 1,
-          focusNode: _tokenFocusNode,
-          onChanged: _resetPasswordBloc.tokenChanged,
+          focusNode: tokenFocusNode,
+          onChanged: resetPasswordBloc.tokenChanged,
           textInputAction: TextInputAction.next,
           onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_passwordFocusNode);
+            FocusScope.of(context).requestFocus(passwordFocusNode);
           },
           style: TextStyle(fontSize: 16.0),
         );
@@ -154,23 +141,23 @@ class _InputTokenAndResetPasswordPageState
     );
 
     final passwordTextField = StreamBuilder<String>(
-      stream: _resetPasswordBloc.passwordError$,
+      stream: resetPasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
           errorText: snapshot.data,
-          onChanged: _resetPasswordBloc.passwordChanged,
+          onChanged: resetPasswordBloc.passwordChanged,
           labelText: 'Password',
           onSubmitted: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           textInputAction: TextInputAction.done,
-          focusNode: _passwordFocusNode,
+          focusNode: passwordFocusNode,
         );
       },
     );
 
     return Scaffold(
-      key: _scaffoldKey,
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Reset password'),
       ),
@@ -207,7 +194,7 @@ class _InputTokenAndResetPasswordPageState
                 ),
                 Center(
                   child: FadeTransition(
-                    opacity: _fadeAnim,
+                    opacity: fadeAnim,
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: CircularProgressIndicator(
@@ -226,7 +213,7 @@ class _InputTokenAndResetPasswordPageState
                     ),
                     color: Theme.of(context).cardColor,
                     splashColor: Theme.of(context).accentColor,
-                    onPressed: _resetPasswordBloc.submit,
+                    onPressed: resetPasswordBloc.submit,
                   ),
                 ),
                 SizedBox(height: 8),
@@ -250,5 +237,18 @@ class _InputTokenAndResetPasswordPageState
         ),
       ),
     );
+  }
+
+  static String _getMessageString(InputTokenAndResetPasswordMessage msg) {
+    if (msg is InvalidInformation) {
+      return 'Invalid information. Try again';
+    }
+    if (msg is ResetPasswordSuccess) {
+      return 'Reset password successfully';
+    }
+    if (msg is ResetPasswordFailure) {
+      return msg.message;
+    }
+    return 'An unexpected error has occurred';
   }
 }
