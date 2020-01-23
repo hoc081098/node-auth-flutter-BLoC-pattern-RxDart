@@ -21,7 +21,8 @@ class ResetPasswordPage extends StatefulWidget {
 
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage> {
-  /// Observable of bool values, true if current page is request email page
+  /// Observable of bool values,
+  /// Emits true if current page is request email page
   /// and reset password page otherwise
   final requestEmailS = PublishSubject<void>();
   DistinctValueConnectableStream<bool> requestEmail$;
@@ -101,20 +102,20 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
     super.dispose();
   }
 
+  void onToggle() => requestEmailS.add(null);
+
   @override
   Widget build(BuildContext context) {
     final userRepository = Provider.of<UserRepository>(context);
 
     final sendEmailPage = BlocProvider<SendEmailBloc>(
       initBloc: () => SendEmailBloc(userRepository),
-      child: SendEmailPage(toggle: () => requestEmailS.add(null)),
+      child: SendEmailPage(toggle: onToggle),
     );
 
     final resetPasswordPage = BlocProvider<InputTokenAndResetPasswordBloc>(
       initBloc: () => InputTokenAndResetPasswordBloc(userRepository),
-      child: InputTokenAndResetPasswordPage(
-        toggle: () => requestEmailS.add(null),
-      ),
+      child: InputTokenAndResetPasswordPage(toggle: onToggle),
     );
 
     return Stack(
