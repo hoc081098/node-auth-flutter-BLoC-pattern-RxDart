@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/data/user_repository.dart';
-import 'package:node_auth/pages/login/reset_password/input_token/input_token_and_reset_password.dart';
-import 'package:node_auth/pages/login/reset_password/send_email/send_email.dart';
+import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
+import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ResetPasswordPage extends StatefulWidget {

@@ -6,7 +6,7 @@ import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/data/data.dart';
-import 'package:node_auth/pages/login/reset_password/send_email/send_email.dart';
+import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';

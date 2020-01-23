@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:node_auth/pages/login/reset_password/send_email/send_email.dart';
+import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/snackbar.dart';
 
 class SendEmailPage extends StatefulWidget {
@@ -141,12 +141,8 @@ class _SendEmailPageState extends State<SendEmailPage>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    color: Theme
-                        .of(context)
-                        .cardColor,
-                    splashColor: Theme
-                        .of(context)
-                        .accentColor,
+                    color: Theme.of(context).cardColor,
+                    splashColor: Theme.of(context).accentColor,
                     onPressed: bloc.submit,
                   ),
                 ),
@@ -156,12 +152,8 @@ class _SendEmailPageState extends State<SendEmailPage>
                   child: RaisedButton(
                     child: Text('Input received token'),
                     padding: const EdgeInsets.all(16),
-                    color: Theme
-                        .of(context)
-                        .cardColor,
-                    splashColor: Theme
-                        .of(context)
-                        .accentColor,
+                    color: Theme.of(context).cardColor,
+                    splashColor: Theme.of(context).accentColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

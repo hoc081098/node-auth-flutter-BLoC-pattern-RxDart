@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/pages/login/reset_password/reset_password_page.dart';
+import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
