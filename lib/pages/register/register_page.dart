@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage>
     subscriptions ??= () {
       final registerBloc = BlocProvider.of<RegisterBloc>(context);
       return [
-        registerBloc.message$.listen(_handleMessage),
+        registerBloc.message$.listen(handleMessage),
         registerBloc.isLoading$.listen((isLoading) {
           if (isLoading) {
             registerButtonController
@@ -81,7 +81,85 @@ class _RegisterPageState extends State<RegisterPage>
   Widget build(BuildContext context) {
     final registerBloc = BlocProvider.of<RegisterBloc>(context);
 
-    final emailTextField = StreamBuilder<String>(
+    return Scaffold(
+      key: scaffoldKey,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/bg.jpg'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              Colors.black.withAlpha(0xBF),
+              BlendMode.darken,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+              color: Colors.transparent,
+              width: double.infinity,
+              height: kToolbarHeight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  BackButton(color: Colors.white),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: nameTextField(registerBloc),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: emailTextField(registerBloc),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: passwordTextField(registerBloc),
+                      ),
+                      const SizedBox(height: 32.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: registerButton(registerBloc),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void handleMessage(RegisterMessage message) async {
+    if (message is RegisterSuccessMessage) {
+      scaffoldKey.showSnackBar('Register successfully');
+      await delay(1000);
+      Navigator.pop<String>(context, message.email);
+    }
+    if (message is RegisterErrorMessage) {
+      scaffoldKey.showSnackBar(message.message);
+    }
+    if (message is RegisterInvalidInformationMessage) {
+      scaffoldKey.showSnackBar('Invalid information');
+    }
+  }
+
+  Widget emailTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
       stream: registerBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -106,8 +184,10 @@ class _RegisterPageState extends State<RegisterPage>
         );
       },
     );
+  }
 
-    final passwordTextField = StreamBuilder<String>(
+  Widget passwordTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
       stream: registerBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -122,8 +202,10 @@ class _RegisterPageState extends State<RegisterPage>
         );
       },
     );
+  }
 
-    final registerButton = AnimatedBuilder(
+  Widget registerButton(RegisterBloc registerBloc) {
+    return AnimatedBuilder(
       animation: buttonSqueezeAnimation,
       child: MaterialButton(
         onPressed: () {
@@ -163,8 +245,10 @@ class _RegisterPageState extends State<RegisterPage>
         );
       },
     );
+  }
 
-    final nameTextField = StreamBuilder<String>(
+  Widget nameTextField(RegisterBloc registerBloc) {
+    return StreamBuilder<String>(
       stream: registerBloc.nameError$,
       builder: (context, snapshot) {
         return TextField(
@@ -189,79 +273,5 @@ class _RegisterPageState extends State<RegisterPage>
         );
       },
     );
-
-    return Scaffold(
-      key: scaffoldKey,
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
-              BlendMode.darken,
-            ),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              color: Colors.transparent,
-              width: double.infinity,
-              height: kToolbarHeight,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[BackButton(color: Colors.white)],
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: nameTextField,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: emailTextField,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: passwordTextField,
-                      ),
-                      SizedBox(height: 32.0),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: registerButton,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _handleMessage(RegisterMessage message) async {
-    if (message is RegisterSuccessMessage) {
-      scaffoldKey.showSnackBar('Register successfully');
-      await delay(1000);
-      Navigator.pop<String>(context, message.email);
-    }
-    if (message is RegisterErrorMessage) {
-      scaffoldKey.showSnackBar(message.message);
-    }
-    if (message is RegisterInvalidInformationMessage) {
-      scaffoldKey.showSnackBar('Invalid information');
-    }
   }
 }

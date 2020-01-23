@@ -61,7 +61,7 @@ class _MyLoginPageState extends State<LoginPage>
     subscriptions ??= () {
       final loginBloc = BlocProvider.of<LoginBloc>(context);
       return [
-        loginBloc.message$.listen(_handleMessage),
+        loginBloc.message$.listen(handleMessage),
         loginBloc.isLoading$.listen((isLoading) {
           if (isLoading) {
             loginButtonController
@@ -149,7 +149,7 @@ class _MyLoginPageState extends State<LoginPage>
     );
   }
 
-  void _handleMessage(message) async {
+  void handleMessage(message) async {
     if (message is LoginSuccessMessage) {
       scaffoldKey.showSnackBar('Login successfully');
       await delay(1000);

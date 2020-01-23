@@ -16,6 +16,7 @@ bool _isValidPassword(String password) {
 
 // ignore_for_file: close_sinks
 
+/// BLoC that handles changing password
 class ChangePasswordBloc extends MyBaseBloc {
   /// Input functions
   final Function0<void> changePassword;

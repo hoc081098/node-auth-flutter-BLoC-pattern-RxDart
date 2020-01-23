@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage>
     super.didChangeDependencies();
 
     subscription ??=
-        BlocProvider.of<HomeBloc>(context).message$.listen(_handleMessage);
+        BlocProvider.of<HomeBloc>(context).message$.listen(handleMessage);
   }
 
   @override
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage>
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: RaisedButton.icon(
-                onPressed: _showChangePassword,
+                onPressed: showChangePassword,
                 label: Text('Change password'),
                 icon: Icon(Icons.lock_outline),
                 color: Theme.of(context).backgroundColor,
@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _handleMessage(HomeMessage message) async {
+  void handleMessage(HomeMessage message) async {
     print('[DEBUG] homeBloc message=$message');
 
     if (message is LogoutMessage) {
@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  void _showChangePassword() {
+  void showChangePassword() {
     showModalBottomSheet(
       isScrollControlled: true,
       shape: RoundedRectangleBorder(

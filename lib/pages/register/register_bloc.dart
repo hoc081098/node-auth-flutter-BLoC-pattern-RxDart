@@ -12,7 +12,7 @@ import 'package:node_auth/utils/streams.dart';
 
 // ignore_for_file: close_sinks
 
-/// BLoC handle validate form and register
+/// BLoC handles validating form and register
 class RegisterBloc extends MyBaseBloc {
   /// Input functions
   final Function1<String, void> nameChanged;
