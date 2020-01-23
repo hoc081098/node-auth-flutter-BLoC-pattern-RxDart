@@ -167,8 +167,9 @@ class _HomePageState extends State<HomePage>
       context: context,
       builder: (context) {
         final repository = Provider.of<UserRepository>(context);
-        return ChangePasswordBottomSheet(
+        return BlocProvider<ChangePasswordBloc>(
           initBloc: () => ChangePasswordBloc(repository),
+          child: const ChangePasswordBottomSheet(),
         );
       },
       backgroundColor: Theme.of(context).canvasColor,

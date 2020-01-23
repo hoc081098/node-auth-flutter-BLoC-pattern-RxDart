@@ -1,16 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 
 class ChangePasswordBottomSheet extends StatefulWidget {
-  final ChangePasswordBloc Function() initBloc;
-
-  const ChangePasswordBottomSheet({
-    Key key,
-    @required this.initBloc,
-  }) : super(key: key);
+  const ChangePasswordBottomSheet({Key key}) : super(key: key);
 
   @override
   _ChangePasswordBottomSheetState createState() =>
@@ -19,67 +15,71 @@ class ChangePasswordBottomSheet extends StatefulWidget {
 
 class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     with SingleTickerProviderStateMixin<ChangePasswordBottomSheet> {
-  AnimationController _fadeMessageController;
-  Animation<double> _messageOpacity;
+  AnimationController fadeMessageController;
+  Animation<double> messageOpacity;
 
-  ChangePasswordBloc _changePasswordBloc;
-  StreamSubscription _subscription;
-
-  FocusNode _newPasswordFocusNode;
+  StreamSubscription subscription;
+  FocusNode newPasswordFocusNode;
 
   @override
   void initState() {
     super.initState();
 
-    _fadeMessageController = AnimationController(
+    fadeMessageController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    _messageOpacity = Tween(
+    messageOpacity = Tween(
       begin: 1.0,
       end: 0.0,
     ).animate(
       CurvedAnimation(
-        parent: _fadeMessageController,
+        parent: fadeMessageController,
         curve: Curves.bounceIn,
       ),
     );
 
-    _changePasswordBloc = widget.initBloc();
-    _subscription =
-        _changePasswordBloc.changePasswordState$.listen((state) async {
+    newPasswordFocusNode = FocusNode();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    subscription ??= BlocProvider.of<ChangePasswordBloc>(context)
+        .changePasswordState$
+        .listen((state) async {
       if (state.message != null) {
-        _fadeMessageController.reset();
-        await _fadeMessageController.forward();
+        fadeMessageController.reset();
+        await fadeMessageController.forward();
 
         if (state?.error == null) {
           Navigator.of(context).pop();
         }
       }
     });
-
-    _newPasswordFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
-    _fadeMessageController.dispose();
-    _changePasswordBloc.dispose();
+    subscription.cancel();
+    fadeMessageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final changePasswordBloc = BlocProvider.of<ChangePasswordBloc>(context);
+
     final passwordTextField = StreamBuilder<String>(
-      stream: _changePasswordBloc.passwordError$,
+      stream: changePasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
           errorText: snapshot.data,
-          onChanged: _changePasswordBloc.passwordChanged,
+          onChanged: changePasswordBloc.passwordChanged,
           labelText: 'Old password',
           onSubmitted: () {
-            FocusScope.of(context).requestFocus(_newPasswordFocusNode);
+            FocusScope.of(context).requestFocus(newPasswordFocusNode);
           },
           textInputAction: TextInputAction.next,
           focusNode: null,
@@ -88,13 +88,13 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     );
 
     final newPasswordTextField = StreamBuilder<String>(
-      stream: _changePasswordBloc.newPasswordError$,
+      stream: changePasswordBloc.newPasswordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
           errorText: snapshot.data,
-          onChanged: _changePasswordBloc.newPasswordChanged,
+          onChanged: changePasswordBloc.newPasswordChanged,
           labelText: 'New password',
-          focusNode: _newPasswordFocusNode,
+          focusNode: newPasswordFocusNode,
           onSubmitted: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
@@ -104,14 +104,14 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     );
 
     final messageText = StreamBuilder<ChangePasswordState>(
-      stream: _changePasswordBloc.changePasswordState$,
+      stream: changePasswordBloc.changePasswordState$,
       builder: (context, snapshot) {
         final message = snapshot.data?.message;
         if (message != null) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: FadeTransition(
-              opacity: _messageOpacity,
+              opacity: messageOpacity,
               child: Text(
                 message,
                 style: TextStyle(
@@ -127,7 +127,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     );
 
     final changePasswordButton = StreamBuilder<ChangePasswordState>(
-      stream: _changePasswordBloc.changePasswordState$,
+      stream: changePasswordBloc.changePasswordState$,
       builder: (context, snapshot) {
         if (!snapshot.hasData || !snapshot.data.isLoading) {
           return RaisedButton(
@@ -135,7 +135,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             elevation: 8,
             onPressed: () {
               FocusScope.of(context).requestFocus(FocusNode());
-              _changePasswordBloc.changePassword();
+              changePasswordBloc.changePassword();
             },
             child: Text(
               'Change password',
