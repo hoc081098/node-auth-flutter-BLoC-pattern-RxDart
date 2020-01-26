@@ -22,7 +22,7 @@ dependencies:
   distinct_value_connectable_stream: ^1.0.3+1
   flutter_provider: ^1.1.1
   rx_shared_preferences: ^1.1.0
-  disposebag: ^1.1.1
+  disposebag: ^1.1.1+1
   flutter_bloc_pattern: ^1.1.0
 
 dev_dependencies:
