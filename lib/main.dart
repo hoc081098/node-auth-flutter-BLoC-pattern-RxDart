@@ -17,20 +17,20 @@ import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  final rxPrefs = RxSharedPreferences(
-    SharedPreferences.getInstance(),
-    DefaultLogger(),
-  );
-
+  // construct RemoteDataSource
   const RemoteDataSource remoteDataSource = ApiService();
+
+  // construct LocalDataSource
+  final rxPrefs = RxSharedPreferences.getInstance();
   final LocalDataSource localDataSource = SharedPrefUtil(rxPrefs);
+
+  // construct UserRepository
   final UserRepository userRepository = UserRepositoryImpl(
     remoteDataSource,
     localDataSource,
