@@ -1,12 +1,10 @@
-import 'dart:async';
-
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/utils/delay.dart';
-import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:node_auth/utils/snackbar.dart';
+import 'package:node_auth/widgets/password_textfield.dart';
 
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;

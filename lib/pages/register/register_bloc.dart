@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/register_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:node_auth/utils/streams.dart';
 
 // ignore_for_file: close_sinks
 

@@ -91,7 +91,7 @@ class HomeUserProfile extends StatelessWidget {
           Expanded(
             child: Text(
               'Loging out...',
-              style: Theme.of(context).textTheme.subhead,
+              style: Theme.of(context).textTheme.subtitle1,
               textAlign: TextAlign.center,
             ),
           ),

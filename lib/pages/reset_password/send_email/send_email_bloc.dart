@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';

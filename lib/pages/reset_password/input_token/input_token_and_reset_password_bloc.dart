@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/utils/result.dart';

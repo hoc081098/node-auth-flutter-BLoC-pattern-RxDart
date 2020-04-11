@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/pages/home/home.dart';
@@ -111,7 +110,7 @@ class _HomePageState extends State<HomePage>
                   'Flutter auth BLoC pattern RxDart',
                   style: Theme.of(context)
                       .textTheme
-                      .subhead
+                      .subtitle1
                       .copyWith(fontSize: 16),
                 ),
               ),
