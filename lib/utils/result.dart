@@ -1,5 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'result.g.dart';
 
@@ -26,4 +27,22 @@ abstract class Failure<T>
   Failure._();
 
   factory Failure([void Function(FailureBuilder<T>) updates]) = _$Failure<T>;
+}
+
+extension FlatMapResultExtension<T> on Stream<Result<T>> {
+  Stream<Result<R>> flatMapResult<R>(Stream<Result<R>> Function(T result) mapper) {
+    ArgumentError.checkNotNull(mapper, 'mapper');
+    return flatMap((result) {
+      if (result is Failure<T>) {
+        final failure = Failure<R>((b) => b
+          ..message = result.message
+          ..error = result.error);
+        return Stream.value(failure);
+      }
+      if (result is Success<T>) {
+        return mapper(result.result);
+      }
+      return Stream.error('Cannot handle result: $result');
+    });
+  }
 }

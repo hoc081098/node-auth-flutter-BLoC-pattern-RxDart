@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/data/constants.dart';
+import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/pages/home/home_bloc.dart';
 
@@ -16,10 +17,15 @@ class HomeUserProfile extends StatelessWidget {
       color: Colors.black.withOpacity(0.5),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RxStreamBuilder<User>(
-          stream: homeBloc.user$,
+        child: RxStreamBuilder<AuthenticationState>(
+          stream: homeBloc.authState$,
           builder: (context, snapshot) {
-            final user = snapshot.data;
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final user = snapshot.data.userAndToken?.user;
             return user == null
                 ? _buildUnauthenticated(context)
                 : _buildProfile(user, homeBloc);

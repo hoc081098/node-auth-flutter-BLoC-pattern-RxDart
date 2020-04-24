@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
+import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
@@ -9,8 +10,8 @@ import 'package:node_auth/domain/usecases/register_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 import 'package:node_auth/pages/register/register.dart';
+import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
       },
       HomePage.routeName: (context) {
         final logout = Provider.of<LogoutUseCase>(context);
-        final getAuthState = Provider.of<GetAuthStateUseCase>(context);
+        final getAuthState = Provider.of<GetAuthStateStreamUseCase>(context);
         final uploadImage = Provider.of<UploadImageUseCase>(context);
 
         return BlocProvider<HomeBloc>(
@@ -75,10 +76,9 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     final getAuthState = Provider.of<GetAuthStateUseCase>(context);
     final routes = Provider.of<Map<String, WidgetBuilder>>(context);
-    final future = getAuthState().first;
 
     return FutureBuilder<AuthenticationState>(
-      future: future,
+      future: getAuthState(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           print('[HOME] home [1] >> [waiting...]');

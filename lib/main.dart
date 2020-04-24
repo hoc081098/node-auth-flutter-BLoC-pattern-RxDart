@@ -9,6 +9,7 @@ import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/user_repository_imp.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
+import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
@@ -42,6 +43,9 @@ void main() async {
         Provider<LoginUseCase>(value: LoginUseCase(userRepository)),
         Provider<RegisterUseCase>(value: RegisterUseCase(userRepository)),
         Provider<LogoutUseCase>(value: LogoutUseCase(userRepository)),
+        Provider<GetAuthStateStreamUseCase>(
+          value: GetAuthStateStreamUseCase(userRepository),
+        ),
         Provider<GetAuthStateUseCase>(
           value: GetAuthStateUseCase(userRepository),
         ),

@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/utils/result.dart';
-import 'package:rxdart/rxdart.dart';
 
 abstract class UserRepository {
-  ValueStream<AuthenticationState> get authenticationState$;
+  Stream<AuthenticationState> get authenticationState$;
+
+  Future<AuthenticationState> get authenticationState;
 
   Stream<Result<void>> login({
     @required String email,

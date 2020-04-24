@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:meta/meta.dart';
-import 'package:node_auth/domain/models/user.dart';
-import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
+import 'package:node_auth/domain/models/auth_state.dart';
+import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/my_base_bloc.dart';
@@ -23,20 +23,20 @@ class HomeBloc extends MyBaseBloc {
   final Function0<void> logout;
 
   /// Output stream
-  final ValueStream<User> user$;
+  final ValueStream<AuthenticationState> authState$;
   final Stream<HomeMessage> message$;
 
   HomeBloc._({
     @required this.changeAvatar,
     @required this.message$,
     @required this.logout,
-    @required this.user$,
+    @required this.authState$,
     @required Function0<void> dispose,
   }) : super(dispose);
 
   factory HomeBloc(
     final LogoutUseCase logout,
-    final GetAuthStateUseCase getAuthState,
+    final GetAuthStateStreamUseCase getAuthState,
     final UploadImageUseCase uploadImage,
   ) {
     assert(logout != null);
@@ -60,19 +60,16 @@ class HomeBloc extends MyBaseBloc {
         .switchMap(uploadImage)
         .map(_resultToChangeAvatarMessage);
 
-    final user$ = authenticationState$
-        .map((state) => state.userAndToken?.user)
-        .publishValueSeededDistinct(
-            seedValue: authenticationState$.value?.userAndToken?.user);
+    final authState$ = authenticationState$.publishValueDistinct();
 
     final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
 
     return HomeBloc._(
       changeAvatar: changeAvatarS.add,
       logout: () => logoutS.add(true),
-      user$: user$,
+      authState$: authState$,
       dispose: DisposeBag([
-        user$.connect(),
+        authState$.connect(),
         message$.connect(),
         changeAvatarS,
         logoutS,

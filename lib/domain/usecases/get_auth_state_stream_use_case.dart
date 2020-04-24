@@ -1,10 +1,10 @@
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 
-class GetAuthStateUseCase {
+class GetAuthStateStreamUseCase {
   final UserRepository _userRepository;
 
-  const GetAuthStateUseCase(this._userRepository);
+  const GetAuthStateStreamUseCase(this._userRepository);
 
-  Future<AuthenticationState> call() => _userRepository.authenticationState;
+  Stream<AuthenticationState> call() => _userRepository.authenticationState$;
 }
