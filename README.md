@@ -10,6 +10,8 @@
 
 [Youtube](https://youtu.be/OvsDKfy0aOs)
 
+## Download apk [here](https://github.com/hoc081098/hoc081098.github.io/blob/master/node_auth/app-release.apk)
+
 ## Screenshots
 
 |  |  |  |
