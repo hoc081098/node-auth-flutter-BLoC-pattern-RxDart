@@ -10,14 +10,7 @@ class SharedPrefUtil implements LocalDataSource {
   static const _kUserTokenKey = 'com.hoc.node_auth_flutter.user_and_token';
   final RxSharedPreferences _rxPrefs;
 
-  @override
-  final Stream<UserAndTokenEntity> userAndToken$;
-
-  SharedPrefUtil(this._rxPrefs)
-      : userAndToken$ = _rxPrefs
-            .getStringStream(_kUserTokenKey)
-            .map(_toEntity)
-            .onErrorReturn(null);
+  const SharedPrefUtil(this._rxPrefs);
 
   @override
   Future<void> removeUserAndToken() async {
@@ -57,4 +50,10 @@ class SharedPrefUtil implements LocalDataSource {
   static UserAndTokenEntity _toEntity(String jsonString) => jsonString == null
       ? null
       : UserAndTokenEntity.fromJson(json.decode(jsonString));
+
+  @override
+  Stream<UserAndTokenEntity> get userAndToken$ => _rxPrefs
+      .getStringStream(_kUserTokenKey)
+      .map(_toEntity)
+      .onErrorReturn(null);
 }

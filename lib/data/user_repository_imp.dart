@@ -36,11 +36,11 @@ class UserRepositoryImpl implements UserRepository {
         assert(_localDataSource != null),
         authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
-            .onErrorReturn(UnauthenticatedState()) {
+            .onErrorReturn(UnauthenticatedState())
+            .publishValue()
+              ..listen((state) => print('[USER_REPOSITORY] state=$state'))
+              ..connect() {
     _init();
-
-    authenticationState$
-        .listen((state) => print('[USER_REPOSITORY] state=$state'));
   }
 
   @override
@@ -221,7 +221,7 @@ class UserRepositoryImpl implements UserRepository {
     const tag = '[USER_REPOSITORY] { init }';
 
     try {
-      final userAndToken = await _localDataSource.userAndToken$.first;
+      final userAndToken = await _localDataSource.userAndToken;
       print('$tag userAndToken local=$userAndToken');
 
       if (userAndToken == null) {
