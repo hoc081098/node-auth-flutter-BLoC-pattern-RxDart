@@ -2,12 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photos</string>
-  <key>NSCameraUsageDescription</key>
-  <string>This app needs access to your camera</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>This app needs access to your microphone</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photos</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -47,8 +43,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow choose image</string>
 </dict>
 </plist>
