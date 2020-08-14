@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
@@ -107,11 +109,14 @@ class HomeUserProfile extends StatelessWidget {
   }
 
   void _pickAndUploadImage(HomeBloc homeBloc) async {
-    final imageFile = await ImagePicker.pickImage(
+    final imageFile = await ImagePicker().getImage(
       source: ImageSource.gallery,
       maxWidth: 720.0,
       maxHeight: 720.0,
     );
-    homeBloc.changeAvatar(imageFile);
+    if (imageFile == null) {
+      return;
+    }
+    homeBloc.changeAvatar(File(imageFile.path));
   }
 }

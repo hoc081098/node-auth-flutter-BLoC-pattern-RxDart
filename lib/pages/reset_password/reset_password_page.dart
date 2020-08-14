@@ -1,7 +1,7 @@
-import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
@@ -19,13 +19,12 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage>
-    with SingleTickerProviderStateMixin<ResetPasswordPage> {
+    with SingleTickerProviderStateMixin<ResetPasswordPage>, DisposeBagMixin {
   /// Observable of bool values,
   /// Emits true if current page is request email page
   /// and reset password page otherwise
   final requestEmailS = PublishSubject<void>();
   DistinctValueConnectableStream<bool> requestEmail$;
-  DisposeBag disposeBag;
 
   AnimationController animationController;
   Animation<Offset> animationPosition;
@@ -82,7 +81,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
         .scan((acc, e, _) => !acc, true)
         .publishValueSeededDistinct(seedValue: true);
 
-    disposeBag = DisposeBag([
+    bag.addAll([
       requestEmail$.listen((requestEmailPage) {
         if (requestEmailPage) {
           animationController.reverse();
@@ -96,7 +95,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
 
   @override
   void dispose() {
-    disposeBag.dispose();
     animationController.dispose();
     super.dispose();
   }

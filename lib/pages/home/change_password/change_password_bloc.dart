@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
-import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
@@ -18,7 +18,7 @@ bool _isValidPassword(String password) {
 // ignore_for_file: close_sinks
 
 /// BLoC that handles changing password
-class ChangePasswordBloc extends MyBaseBloc {
+class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   /// Input functions
   final Function0<void> changePassword;
   final Function1<String, void> passwordChanged;

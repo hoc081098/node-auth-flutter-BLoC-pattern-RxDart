@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
-import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
@@ -14,7 +14,7 @@ import 'package:rxdart/rxdart.dart';
 // ignore_for_file: close_sinks
 
 /// BLoC that handles validating form and login
-class LoginBloc extends MyBaseBloc {
+class LoginBloc extends DisposeCallbackBaseBloc {
   /// Input functions
   final Function1<String, void> emailChanged;
   final Function1<String, void> passwordChanged;

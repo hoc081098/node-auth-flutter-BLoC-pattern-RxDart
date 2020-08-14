@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
-import 'package:node_auth/my_base_bloc.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
@@ -31,7 +31,7 @@ class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
 
 //ignore_for_file: close_sinks
 
-class InputTokenAndResetPasswordBloc extends MyBaseBloc {
+class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
   final Function1<String, void> emailChanged;
   final Function1<String, void> passwordChanged;
   final Function1<String, void> tokenChanged;
