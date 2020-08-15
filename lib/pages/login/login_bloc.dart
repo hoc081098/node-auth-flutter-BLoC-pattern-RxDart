@@ -117,7 +117,7 @@ class LoginBloc extends DisposeCallbackBaseBloc {
     }.debug();
 
     return LoginBloc._(
-      dispose: DisposeBag([...controllers, subscriptions]).dispose,
+      dispose: DisposeBag([...controllers, ...subscriptions]).dispose,
       emailChanged: trim.pipe(emailController.add),
       passwordChanged: passwordController.add,
       submitLogin: () => submitLoginController.add(null),
