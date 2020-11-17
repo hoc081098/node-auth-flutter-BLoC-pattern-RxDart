@@ -1,4 +1,5 @@
-import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
@@ -20,11 +21,7 @@ class ResetPasswordPage extends StatefulWidget {
 
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage>, DisposeBagMixin {
-  /// Observable of bool values,
-  /// Emits true if current page is request email page
-  /// and reset password page otherwise
-  final requestEmailS = PublishSubject<void>();
-  DistinctValueConnectableStream<bool> requestEmail$;
+  final requestEmailS = StreamController<void>(sync: true);
 
   AnimationController animationController;
   Animation<Offset> animationPosition;
@@ -77,26 +74,22 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       ),
     );
 
-    requestEmail$ = requestEmailS
+    /// Stream of bool values.
+    /// Emits true if current page is request email page.
+    /// Otherwise, it is reset password page.
+    requestEmailS.stream
         .scan((acc, e, _) => !acc, true)
-        .publishValueSeededDistinct(seedValue: true);
-
-    bag.addAll([
-      requestEmail$.listen((requestEmailPage) {
-        if (requestEmailPage) {
-          animationController.reverse();
-        } else {
-          animationController.forward();
-        }
-      }),
-      requestEmail$.connect(),
-    ]);
+        .listen((requestEmailPage) => requestEmailPage
+            ? animationController.reverse()
+            : animationController.forward())
+        .disposedBy(bag);
+    requestEmailS.disposedBy(bag);
   }
 
   @override
   void dispose() {
-    animationController.dispose();
     super.dispose();
+    animationController.dispose();
   }
 
   void onToggle() => requestEmailS.add(null);

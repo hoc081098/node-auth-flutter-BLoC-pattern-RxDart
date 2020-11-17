@@ -28,6 +28,7 @@ void main() async {
   const RemoteDataSource remoteDataSource = ApiService();
 
   // construct LocalDataSource
+  RxSharedPreferencesConfigs.logger = null;
   final rxPrefs = RxSharedPreferences.getInstance();
   final LocalDataSource localDataSource = SharedPrefUtil(rxPrefs);
 

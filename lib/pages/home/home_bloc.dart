@@ -23,7 +23,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   final Function0<void> logout;
 
   /// Output stream
-  final ValueStream<AuthenticationState> authState$;
+  final DistinctValueStream<AuthenticationState> authState$;
   final Stream<HomeMessage> message$;
 
   HomeBloc._({
@@ -60,7 +60,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
         .switchMap(uploadImage)
         .map(_resultToChangeAvatarMessage);
 
-    final authState$ = authenticationState$.publishValueDistinct();
+    final authState$ = authenticationState$.publishValueDistinct(null);
 
     final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
 
