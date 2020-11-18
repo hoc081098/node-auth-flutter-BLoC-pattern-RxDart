@@ -174,14 +174,11 @@ class UserRepositoryImpl implements UserRepository {
   /// if future is successful, emit [Success]
   /// if future complete with error, emit [Failure]
   ///
-  Stream<Result<T>> _execute<T>(Future<T> Function() factory) {
-    return Rx.defer(() {
-      return Stream.fromFuture(factory())
+  Stream<Result<T>> _execute<T>(Future<T> Function() factory) =>
+      Rx.fromCallable(factory)
           .doOnError(_handleUnauthenticatedError)
           .map<Result<T>>((result) => Success<T>((b) => b.result = result))
           .onErrorReturnWith(_errorToResult);
-    });
-  }
 
   ///
   /// Like error http interceptor
