@@ -1,3 +1,4 @@
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_provider/flutter_provider.dart';
@@ -21,6 +22,7 @@ import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  DisposeBag.logger = null;
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
