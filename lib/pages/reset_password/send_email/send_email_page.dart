@@ -86,7 +86,7 @@ class _SendEmailPageState extends State<SendEmailPage>
           onChanged: bloc.emailChanged,
           textInputAction: TextInputAction.done,
           onSubmitted: (_) {
-            FocusScope.of(context).requestFocus(FocusNode());
+            FocusScope.of(context).unfocus();
           },
           style: TextStyle(fontSize: 16.0),
         );

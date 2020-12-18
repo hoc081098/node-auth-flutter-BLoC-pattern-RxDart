@@ -96,7 +96,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
           labelText: 'New password',
           focusNode: newPasswordFocusNode,
           onSubmitted: () {
-            FocusScope.of(context).requestFocus(FocusNode());
+            FocusScope.of(context).unfocus();
           },
           textInputAction: TextInputAction.done,
         );
@@ -134,7 +134,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             padding: const EdgeInsets.all(12),
             elevation: 8,
             onPressed: () {
-              FocusScope.of(context).requestFocus(FocusNode());
+              FocusScope.of(context).unfocus();
               changePasswordBloc.changePassword();
             },
             child: Text(

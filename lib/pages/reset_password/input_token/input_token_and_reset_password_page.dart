@@ -146,7 +146,7 @@ class _InputTokenAndResetPasswordPageState
           onChanged: resetPasswordBloc.passwordChanged,
           labelText: 'Password',
           onSubmitted: () {
-            FocusScope.of(context).requestFocus(FocusNode());
+            FocusScope.of(context).unfocus();
           },
           textInputAction: TextInputAction.done,
           focusNode: passwordFocusNode,

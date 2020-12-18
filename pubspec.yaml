@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
     
-  cupertino_icons: ^1.0.0
+  cupertino_icons: ^1.0.2
 
   path: ^1.7.0
   http: ^0.12.2
@@ -22,7 +22,7 @@ dependencies:
 
   distinct_value_connectable_stream: ^1.2.0-beta02
   flutter_provider: ^1.1.1
-  rx_shared_preferences: ^1.3.3
+  rx_shared_preferences: ^1.3.4
   disposebag: ^1.4.0
   flutter_disposebag: ^1.0.0
   flutter_bloc_pattern: ^1.2.0

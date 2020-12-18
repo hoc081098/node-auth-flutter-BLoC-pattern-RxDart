@@ -175,7 +175,7 @@ packages:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.2"
   dart_style:
     dependency: transitive
     description:
@@ -491,7 +491,14 @@ packages:
       name: rx_shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.3"
+    version: "1.3.4"
+  rx_storage:
+    dependency: transitive
+    description:
+      name: rx_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   rxdart:
     dependency: "direct main"
     description:
