@@ -489,17 +489,17 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: refactor_generic2
-      resolved-ref: "01ac542f0c59c12d5283035aa0343585388c1666"
+      ref: "838b0fce1837a1d50fa9e8276535775975805915"
+      resolved-ref: "838b0fce1837a1d50fa9e8276535775975805915"
       url: "https://github.com/hoc081098/rx_shared_preferences.git"
     source: git
     version: "1.3.4"
   rx_storage:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: refactor
-      resolved-ref: "2dfc16e5a84ac6eaa61ac1aaa81889b557e49fbb"
+      ref: "13fc234757ae2e93e973f9385b459c5ce9c724df"
+      resolved-ref: "13fc234757ae2e93e973f9385b459c5ce9c724df"
       url: "https://github.com/Flutter-Dart-Open-Source/rx_storage.git"
     source: git
     version: "0.0.1"
