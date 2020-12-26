@@ -30,9 +30,7 @@ class SharedPrefUtil implements LocalDataSource {
   Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) async {
     bool result;
     try {
-      result =
-          await _rxPrefs.setString(_kUserTokenKey, json.encode(userAndToken));
-      print('Saved $userAndToken');
+      result = await _rxPrefs.write(_kUserTokenKey, userAndToken, _toString);
     } catch (e) {
       throw LocalDataSourceException('Cannot save user and token', e);
     }
@@ -42,16 +40,17 @@ class SharedPrefUtil implements LocalDataSource {
   }
 
   @override
-  Future<UserAndTokenEntity> get userAndToken => _rxPrefs
-      .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .catchError((_) => null);
+  Future<UserAndTokenEntity> get userAndToken =>
+      _rxPrefs.read(_kUserTokenKey, _toEntity).catchError((_) => null);
 
   static UserAndTokenEntity _toEntity(dynamic jsonString) => jsonString == null
       ? null
       : UserAndTokenEntity.fromJson(json.decode(jsonString));
 
+  static String _toString(UserAndTokenEntity entity) =>
+      entity == null ? null : jsonEncode(entity);
+
   @override
-  Stream<UserAndTokenEntity> get userAndToken$ => _rxPrefs
-      .observe<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .onErrorReturn(null);
+  Stream<UserAndTokenEntity> get userAndToken$ =>
+      _rxPrefs.observe(_kUserTokenKey, _toEntity).onErrorReturn(null);
 }
