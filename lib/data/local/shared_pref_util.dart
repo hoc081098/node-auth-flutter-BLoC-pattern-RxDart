@@ -43,17 +43,15 @@ class SharedPrefUtil implements LocalDataSource {
 
   @override
   Future<UserAndTokenEntity> get userAndToken => _rxPrefs
-      .getString(_kUserTokenKey)
-      .then(_toEntity)
+      .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
       .catchError((_) => null);
 
-  static UserAndTokenEntity _toEntity(String jsonString) => jsonString == null
+  static UserAndTokenEntity _toEntity(dynamic jsonString) => jsonString == null
       ? null
       : UserAndTokenEntity.fromJson(json.decode(jsonString));
 
   @override
   Stream<UserAndTokenEntity> get userAndToken$ => _rxPrefs
-      .getStringStream(_kUserTokenKey)
-      .map(_toEntity)
+      .observe<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
       .onErrorReturn(null);
 }

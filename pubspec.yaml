@@ -29,6 +29,10 @@ dependencies:
 
 dependency_overrides:
   rxdart: 0.25.0
+  rx_shared_preferences:
+    git:
+      url: https://github.com/hoc081098/rx_shared_preferences.git
+      ref: refactor_generic2
 
 dev_dependencies:
   pedantic: ^1.9.0
