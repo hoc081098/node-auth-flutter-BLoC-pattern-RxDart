@@ -96,17 +96,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
 
   @override
   Widget build(BuildContext context) {
-    final sendResetPasswordEmail =
-        Provider.of<SendResetPasswordEmailUseCase>(context);
-    final resetPassword = Provider.of<ResetPasswordUseCase>(context);
-
     final sendEmailPage = BlocProvider<SendEmailBloc>(
-      initBloc: () => SendEmailBloc(sendResetPasswordEmail),
+      initBloc: (context) => SendEmailBloc(
+        SendResetPasswordEmailUseCase(context.get()),
+      ),
       child: SendEmailPage(toggle: onToggle),
     );
 
     final resetPasswordPage = BlocProvider<InputTokenAndResetPasswordBloc>(
-      initBloc: () => InputTokenAndResetPasswordBloc(resetPassword),
+      initBloc: (context) => InputTokenAndResetPasswordBloc(
+        ResetPasswordUseCase(context.get()),
+      ),
       child: InputTokenAndResetPasswordPage(toggle: onToggle),
     );
 

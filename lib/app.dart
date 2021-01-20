@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
+import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_use_case.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
@@ -19,33 +20,38 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final routes = <String, WidgetBuilder>{
-      '/': (context) => const Home(),
-      RegisterPage.routeName: (context) {
-        final registerUser = Provider.of<RegisterUseCase>(context);
-
-        return BlocProvider<RegisterBloc>(
-          child: const RegisterPage(),
-          initBloc: () => RegisterBloc(registerUser),
+      Navigator.defaultRouteName: (context) {
+        return Provider<GetAuthStateUseCase>.factory(
+          (context) => GetAuthStateUseCase(context.get()),
+          child: const Home(),
         );
       },
-      HomePage.routeName: (context) {
-        final logout = Provider.of<LogoutUseCase>(context);
-        final getAuthState = Provider.of<GetAuthStateStreamUseCase>(context);
-        final uploadImage = Provider.of<UploadImageUseCase>(context);
-
-        return BlocProvider<HomeBloc>(
-          child: const HomePage(),
-          initBloc: () => HomeBloc(
-            logout,
-            getAuthState,
-            uploadImage,
+      RegisterPage.routeName: (context) {
+        return BlocProvider<RegisterBloc>(
+          child: const RegisterPage(),
+          initBloc: (context) => RegisterBloc(
+            RegisterUseCase(context.get()),
           ),
         );
       },
+      HomePage.routeName: (context) {
+        return BlocProvider<HomeBloc>(
+          child: const HomePage(),
+          initBloc: (context) {
+            final userRepository = context.get<UserRepository>();
+            return HomeBloc(
+              LogoutUseCase(userRepository),
+              GetAuthStateStreamUseCase(userRepository),
+              UploadImageUseCase(userRepository),
+            );
+          },
+        );
+      },
       LoginPage.routeName: (context) {
-        final login = Provider.of<LoginUseCase>(context);
         return BlocProvider<LoginBloc>(
-          initBloc: () => LoginBloc(login),
+          initBloc: (context) => LoginBloc(
+            LoginUseCase(context.get()),
+          ),
           child: const LoginPage(),
         );
       },
@@ -54,8 +60,8 @@ class MyApp extends StatelessWidget {
       },
     };
 
-    return Provider<Map<String, WidgetBuilder>>(
-      value: routes,
+    return Provider<Map<String, WidgetBuilder>>.value(
+      routes,
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(

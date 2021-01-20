@@ -21,13 +21,13 @@ class HomeUserProfile extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: RxStreamBuilder<AuthenticationState>(
           stream: homeBloc.authState$,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
+          builder: (context, data) {
+            if (data == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            final user = snapshot.data.userAndToken?.user;
+            final user = data.userAndToken?.user;
             return user == null
                 ? _buildUnauthenticated(context)
                 : _buildProfile(user, homeBloc);

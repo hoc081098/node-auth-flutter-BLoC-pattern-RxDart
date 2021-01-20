@@ -166,9 +166,10 @@ class _HomePageState extends State<HomePage>
       ),
       context: context,
       builder: (context) {
-        final changePassword = Provider.of<ChangePasswordUseCase>(context);
         return BlocProvider<ChangePasswordBloc>(
-          initBloc: () => ChangePasswordBloc(changePassword),
+          initBloc: (context) => ChangePasswordBloc(
+            ChangePasswordUseCase(context.get()),
+          ),
           child: const ChangePasswordBottomSheet(),
         );
       },
