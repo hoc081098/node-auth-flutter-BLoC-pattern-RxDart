@@ -505,14 +505,14 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.25.0"
+    version: "0.26.0-nullsafety.1"
   rxdart_ext:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rxdart_ext
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1-nullsafety.2"
+    version: "0.0.1-nullsafety.3"
   shared_preferences:
     dependency: "direct main"
     description:

@@ -18,8 +18,8 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
   AnimationController fadeMessageController;
   Animation<double> messageOpacity;
 
-  StreamSubscription subscription;
-  FocusNode newPasswordFocusNode;
+  StreamSubscription<void> subscription;
+  final newPasswordFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -38,8 +38,6 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
         curve: Curves.bounceIn,
       ),
     );
-
-    newPasswordFocusNode = FocusNode();
   }
 
   @override
@@ -50,11 +48,13 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
         .changePasswordState$
         .listen((state) async {
       if (state.message != null) {
+        final navigatorState = Navigator.of(context);
+
         fadeMessageController.reset();
         await fadeMessageController.forward();
 
         if (state?.error == null) {
-          Navigator.of(context).pop();
+          navigatorState.pop();
         }
       }
     });
@@ -62,9 +62,10 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
 
   @override
   void dispose() {
+    super.dispose();
     subscription.cancel();
     fadeMessageController.dispose();
-    super.dispose();
+    newPasswordFocusNode.dispose();
   }
 
   @override

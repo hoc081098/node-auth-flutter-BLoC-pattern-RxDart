@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class RegisterPage extends StatefulWidget {
   static const routeName = '/register_page';
@@ -16,15 +20,13 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage>
-    with SingleTickerProviderStateMixin {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  DisposeBag disposeBag;
-
+    with SingleTickerProviderStateMixin, DisposeBagMixin {
   AnimationController registerButtonController;
   Animation<double> buttonSqueezeAnimation;
+  Object listen;
 
-  FocusNode emailFocusNode;
-  FocusNode passwordFocusNode;
+  final emailFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -43,37 +45,32 @@ class _RegisterPageState extends State<RegisterPage>
         curve: Interval(0.0, 0.250),
       ),
     );
-
-    emailFocusNode = FocusNode();
-    passwordFocusNode = FocusNode();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    disposeBag ??= () {
-      final registerBloc = BlocProvider.of<RegisterBloc>(context);
-      return DisposeBag([
-        registerBloc.message$.listen(handleMessage),
-        registerBloc.isLoading$.listen((isLoading) {
-          if (isLoading) {
-            registerButtonController
-              ..reset()
-              ..forward();
-          } else {
-            registerButtonController.reverse();
-          }
-        }),
-      ]);
-    }();
+    listen ??= [
+      context.bloc<RegisterBloc>().message$.flatMap(handleMessage).collect(),
+      context.bloc<RegisterBloc>().isLoading$.listen((isLoading) {
+        if (isLoading) {
+          registerButtonController
+            ..reset()
+            ..forward();
+        } else {
+          registerButtonController.reverse();
+        }
+      }),
+    ].disposedBy(bag);
   }
 
   @override
   void dispose() {
-    disposeBag.dispose();
-    registerButtonController.dispose();
     super.dispose();
+    registerButtonController.dispose();
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
   }
 
   @override
@@ -81,7 +78,6 @@ class _RegisterPageState extends State<RegisterPage>
     final registerBloc = BlocProvider.of<RegisterBloc>(context);
 
     return Scaffold(
-      key: scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -143,17 +139,17 @@ class _RegisterPageState extends State<RegisterPage>
     );
   }
 
-  void handleMessage(RegisterMessage message) async {
+  Stream<void> handleMessage(RegisterMessage message) async* {
     if (message is RegisterSuccessMessage) {
-      scaffoldKey.showSnackBar('Register successfully');
+      context.showSnackBar('Register successfully');
       await delay(1000);
       Navigator.pop<String>(context, message.email);
     }
     if (message is RegisterErrorMessage) {
-      scaffoldKey.showSnackBar(message.message);
+      context.showSnackBar(message.message);
     }
     if (message is RegisterInvalidInformationMessage) {
-      scaffoldKey.showSnackBar('Invalid information');
+      context.showSnackBar('Invalid information');
     }
   }
 

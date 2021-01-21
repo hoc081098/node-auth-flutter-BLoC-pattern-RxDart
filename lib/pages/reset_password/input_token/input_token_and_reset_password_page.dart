@@ -1,10 +1,12 @@
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
@@ -19,15 +21,15 @@ class InputTokenAndResetPasswordPage extends StatefulWidget {
 
 class _InputTokenAndResetPasswordPageState
     extends State<InputTokenAndResetPasswordPage>
-    with SingleTickerProviderStateMixin<InputTokenAndResetPasswordPage> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  DisposeBag disposeBag;
-
-  FocusNode tokenFocusNode;
-  FocusNode passwordFocusNode;
+    with
+        SingleTickerProviderStateMixin<InputTokenAndResetPasswordPage>,
+        DisposeBagMixin {
+  final tokenFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
 
   AnimationController fadeController;
   Animation<double> fadeAnim;
+  Object listen;
 
   @override
   void initState() {
@@ -43,42 +45,42 @@ class _InputTokenAndResetPasswordPageState
         parent: fadeController,
       ),
     );
-
-    tokenFocusNode = FocusNode();
-    passwordFocusNode = FocusNode();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    disposeBag ??= () {
-      final resetPasswordBloc =
-          BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
-      return DisposeBag([
-        resetPasswordBloc.message$.listen((message) async {
-          scaffoldKey.showSnackBar(_getMessageString(message));
-          await delay(1000);
-          if (message is ResetPasswordSuccess) {
-            Navigator.pop<String>(context, message.email);
-          }
-        }),
-        resetPasswordBloc.isLoading$.listen((isLoading) {
-          if (isLoading) {
-            fadeController.forward();
-          } else {
-            fadeController.reverse();
-          }
-        }),
-      ]);
-    }();
+    listen ??= [
+      context
+          .bloc<InputTokenAndResetPasswordBloc>()
+          .message$
+          .flatMap((message) async* {
+        context.showSnackBar(_getMessageString(message));
+        await delay(1000);
+        if (message is ResetPasswordSuccess) {
+          Navigator.pop<String>(context, message.email);
+        }
+      }).collect(),
+      context
+          .bloc<InputTokenAndResetPasswordBloc>()
+          .isLoading$
+          .listen((isLoading) {
+        if (isLoading) {
+          fadeController.forward();
+        } else {
+          fadeController.reverse();
+        }
+      }),
+    ].disposedBy(bag);
   }
 
   @override
   void dispose() {
-    fadeController.dispose();
-    disposeBag.dispose();
     super.dispose();
+    fadeController.dispose();
+    tokenFocusNode.dispose();
+    passwordFocusNode.dispose();
   }
 
   @override
@@ -155,7 +157,6 @@ class _InputTokenAndResetPasswordPageState
     );
 
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Reset password'),
       ),

@@ -68,7 +68,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           accentColor: const Color(0xFF00e676),
         ),
-        initialRoute: '/',
         routes: routes,
       ),
     );

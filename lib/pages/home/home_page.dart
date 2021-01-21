@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
@@ -10,6 +11,7 @@ import 'package:node_auth/pages/home/home_profile_widget.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
@@ -21,11 +23,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin<HomePage> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+    with SingleTickerProviderStateMixin<HomePage>, DisposeBagMixin {
   AnimationController rotateLogoController;
-
-  StreamSubscription subscription;
+  Object listen;
 
   @override
   void initState() {
@@ -41,14 +41,16 @@ class _HomePageState extends State<HomePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    subscription ??=
-        BlocProvider.of<HomeBloc>(context).message$.listen(handleMessage);
+    listen ??= BlocProvider.of<HomeBloc>(context)
+        .message$
+        .flatMap(handleMessage)
+        .collect()
+        .disposedBy(bag);
   }
 
   @override
   void dispose() {
     rotateLogoController.dispose();
-    subscription.cancel();
     super.dispose();
   }
 
@@ -58,7 +60,6 @@ class _HomePageState extends State<HomePage>
     final logoSize = MediaQuery.of(context).size.width / 2;
 
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Home'),
       ),
@@ -127,28 +128,30 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void handleMessage(HomeMessage message) async {
+  Stream<void> handleMessage(HomeMessage message) async* {
     print('[DEBUG] homeBloc message=$message');
 
     if (message is LogoutMessage) {
       if (message is LogoutSuccessMessage) {
-        scaffoldKey.showSnackBar('Logout successfully!');
+        context.showSnackBar('Logout successfully!');
         await delay(1000);
+
+        context.hideCurrentSnackBar();
         await Navigator.of(context).pushNamedAndRemoveUntil(
           LoginPage.routeName,
           (_) => false,
         );
       }
       if (message is LogoutErrorMessage) {
-        scaffoldKey.showSnackBar('Error when logout: ${message.message}');
+        context.showSnackBar('Error when logout: ${message.message}');
       }
     }
     if (message is UpdateAvatarMessage) {
       if (message is UpdateAvatarSuccessMessage) {
-        scaffoldKey.showSnackBar('Upload image successfully!');
+        context.showSnackBar('Upload image successfully!');
       }
       if (message is UpdateAvatarErrorMessage) {
-        scaffoldKey.showSnackBar('Error when upload image: ${message.message}');
+        context.showSnackBar('Error when upload image: ${message.message}');
       }
     }
   }
