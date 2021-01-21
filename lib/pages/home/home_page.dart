@@ -135,6 +135,7 @@ class _HomePageState extends State<HomePage>
       if (message is LogoutSuccessMessage) {
         context.showSnackBar('Logout successfully!');
         await delay(1000);
+        yield null;
 
         context.hideCurrentSnackBar();
         await Navigator.of(context).pushNamedAndRemoveUntil(

@@ -58,6 +58,8 @@ class _InputTokenAndResetPasswordPageState
           .flatMap((message) async* {
         context.showSnackBar(_getMessageString(message));
         await delay(1000);
+        yield null;
+
         if (message is ResetPasswordSuccess) {
           Navigator.pop<String>(context, message.email);
         }

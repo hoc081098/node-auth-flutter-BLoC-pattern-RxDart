@@ -146,6 +146,7 @@ class _MyLoginPageState extends State<LoginPage>
     if (message is LoginSuccessMessage) {
       context.showSnackBar('Login successfully');
       await delay(1000);
+      yield null;
 
       context.hideCurrentSnackBar();
       await Navigator.of(context).pushReplacementNamed(HomePage.routeName);

@@ -143,6 +143,7 @@ class _RegisterPageState extends State<RegisterPage>
     if (message is RegisterSuccessMessage) {
       context.showSnackBar('Register successfully');
       await delay(1000);
+      yield null;
       Navigator.pop<String>(context, message.email);
     }
     if (message is RegisterErrorMessage) {
