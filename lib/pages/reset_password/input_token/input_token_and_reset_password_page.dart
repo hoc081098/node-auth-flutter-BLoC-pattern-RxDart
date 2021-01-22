@@ -79,10 +79,10 @@ class _InputTokenAndResetPasswordPageState
 
   @override
   void dispose() {
-    super.dispose();
     fadeController.dispose();
     tokenFocusNode.dispose();
     passwordFocusNode.dispose();
+    super.dispose();
   }
 
   @override

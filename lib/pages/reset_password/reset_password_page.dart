@@ -91,8 +91,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
 
   @override
   void dispose() {
-    super.dispose();
     animationController.dispose();
+    super.dispose();
   }
 
   void onToggle() => requestEmailS.add(null);

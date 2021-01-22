@@ -67,10 +67,10 @@ class _RegisterPageState extends State<RegisterPage>
 
   @override
   void dispose() {
-    super.dispose();
     registerButtonController.dispose();
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
+    super.dispose();
   }
 
   @override

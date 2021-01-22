@@ -72,9 +72,9 @@ class _MyLoginPageState extends State<LoginPage>
 
   @override
   void dispose() {
-    super.dispose();
     passwordFocusNode.dispose();
     loginButtonController.dispose();
+    super.dispose();
   }
 
   @override

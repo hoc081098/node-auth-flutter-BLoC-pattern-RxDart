@@ -1,9 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ChangePasswordBottomSheet extends StatefulWidget {
   const ChangePasswordBottomSheet({Key key}) : super(key: key);
@@ -14,11 +14,13 @@ class ChangePasswordBottomSheet extends StatefulWidget {
 }
 
 class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
-    with SingleTickerProviderStateMixin<ChangePasswordBottomSheet> {
+    with
+        SingleTickerProviderStateMixin<ChangePasswordBottomSheet>,
+        DisposeBagMixin {
   AnimationController fadeMessageController;
   Animation<double> messageOpacity;
+  Object listen;
 
-  StreamSubscription<void> subscription;
   final newPasswordFocusNode = FocusNode();
 
   @override
@@ -44,28 +46,28 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    subscription ??= BlocProvider.of<ChangePasswordBloc>(context)
+    listen ??= BlocProvider.of<ChangePasswordBloc>(context)
         .changePasswordState$
-        .listen((state) async {
-      if (state.message != null) {
-        final navigatorState = Navigator.of(context);
+        .flatMap((state) async* {
+          if (state.message != null) {
+            fadeMessageController.reset();
+            await fadeMessageController.forward();
+            yield null;
 
-        fadeMessageController.reset();
-        await fadeMessageController.forward();
-
-        if (state?.error == null) {
-          navigatorState.pop();
-        }
-      }
-    });
+            if (state?.error == null) {
+              Navigator.of(context).pop();
+            }
+          }
+        })
+        .collect()
+        .disposedBy(bag);
   }
 
   @override
   void dispose() {
-    super.dispose();
-    subscription.cancel();
     fadeMessageController.dispose();
     newPasswordFocusNode.dispose();
+    super.dispose();
   }
 
   @override

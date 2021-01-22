@@ -58,8 +58,8 @@ class _SendEmailPageState extends State<SendEmailPage>
 
   @override
   void dispose() {
-    super.dispose();
     fadeController.dispose();
+    super.dispose();
   }
 
   @override
