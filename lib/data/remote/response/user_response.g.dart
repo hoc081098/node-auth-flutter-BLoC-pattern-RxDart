@@ -27,11 +27,13 @@ class _$UserResponseSerializer implements StructuredSerializer<UserResponse> {
       'created_at',
       serializers.serialize(object.createdAt,
           specifiedType: const FullType(DateTime)),
-      'image_url',
-      serializers.serialize(object.imageUrl,
-          specifiedType: const FullType(String)),
     ];
-
+    if (object.imageUrl != null) {
+      result
+        ..add('image_url')
+        ..add(serializers.serialize(object.imageUrl,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
@@ -92,9 +94,6 @@ class _$UserResponse extends UserResponse {
     }
     if (createdAt == null) {
       throw new BuiltValueNullFieldError('UserResponse', 'createdAt');
-    }
-    if (imageUrl == null) {
-      throw new BuiltValueNullFieldError('UserResponse', 'imageUrl');
     }
   }
 
