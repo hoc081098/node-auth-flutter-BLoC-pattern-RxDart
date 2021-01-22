@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
@@ -22,6 +23,7 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage>, DisposeBagMixin {
   final requestEmailS = StreamController<void>(sync: true);
+  DistinctValueStream<bool> requestEmail$;
 
   AnimationController animationController;
   Animation<Offset> animationPosition;
@@ -35,7 +37,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
 
     animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
     animationPosition = Tween(
       begin: Offset(2.0, 0),
@@ -77,12 +79,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
     /// Stream of bool values.
     /// Emits true if current page is request email page.
     /// Otherwise, it is reset password page.
-    requestEmailS.stream
+    requestEmail$ = requestEmailS.stream
         .scan((acc, e, _) => !acc, true)
-        .listen((requestEmailPage) => requestEmailPage
+        .doOnData((requestEmailPage) => requestEmailPage
             ? animationController.reverse()
             : animationController.forward())
-        .disposedBy(bag);
+        .publishValueDistinct(true)
+          ..connect().disposedBy(bag);
     requestEmailS.disposedBy(bag);
   }
 
@@ -110,25 +113,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       child: InputTokenAndResetPasswordPage(toggle: onToggle),
     );
 
-    return Stack(
-      children: <Widget>[
-        Positioned.fill(child: sendEmailPage),
-        Positioned.fill(
-          child: RotationTransition(
-            child: SlideTransition(
-              position: animationPosition,
-              child: ScaleTransition(
-                scale: animationScale,
-                child: FadeTransition(
-                  opacity: animationOpacity,
-                  child: resetPasswordPage,
+    return Scaffold(
+      appBar: AppBar(
+        title: RxStreamBuilder<bool>(
+          stream: requestEmail$,
+          builder: (context, requestEmailPage) {
+            assert(requestEmailPage != null);
+            return Text(requestEmailPage ? 'Request email' : 'Reset password');
+          },
+        ),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Positioned.fill(child: sendEmailPage),
+          Positioned.fill(
+            child: RotationTransition(
+              child: SlideTransition(
+                position: animationPosition,
+                child: ScaleTransition(
+                  scale: animationScale,
+                  child: FadeTransition(
+                    opacity: animationOpacity,
+                    child: resetPasswordPage,
+                  ),
                 ),
               ),
+              turns: animationTurns,
             ),
-            turns: animationTurns,
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }

@@ -27,5 +27,9 @@ abstract class RemoteDataSource {
 
   Future<UserResponse> getUserProfile(String email, String token);
 
-  Future<UserResponse> uploadImage(File file, String email);
+  Future<UserResponse> uploadImage(
+    File file,
+    String email,
+    String token,
+  );
 }

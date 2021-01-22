@@ -7,6 +7,7 @@ import 'package:node_auth/data/constants.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/pages/home/home_bloc.dart';
+import 'package:octo_image/octo_image.dart';
 
 class HomeUserProfile extends StatelessWidget {
   const HomeUserProfile({Key key}) : super(key: key);
@@ -30,34 +31,59 @@ class HomeUserProfile extends StatelessWidget {
             final user = data.userAndToken?.user;
             return user == null
                 ? _buildUnauthenticated(context)
-                : _buildProfile(user, homeBloc);
+                : _buildProfile(user, homeBloc, context);
           },
         ),
       ),
     );
   }
 
-  Widget _buildProfile(User user, HomeBloc homeBloc) {
+  Widget _buildProfile(User user, HomeBloc homeBloc, BuildContext context) {
+    final image = OctoImage(
+      image: user.imageUrl != null
+          ? NetworkImage(
+              Uri.https(
+                baseUrl,
+                user.imageUrl,
+              ).toString(),
+            )
+          : AssetImage('assets/user.png'),
+      fit: BoxFit.cover,
+      width: 90.0,
+      height: 90.0,
+      progressIndicatorBuilder: (_, __) => Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      ),
+      errorBuilder: (_, __, ___) {
+        final themeData = Theme.of(context);
+
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.error,
+                color: themeData.accentColor,
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Error',
+                style: themeData.textTheme.subtitle2.copyWith(fontSize: 12),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         ClipOval(
           child: GestureDetector(
-            child: user.imageUrl != null
-                ? Image.network(
-                    Uri.https(
-                      baseUrl,
-                      user.imageUrl,
-                    ).toString(),
-                    fit: BoxFit.cover,
-                    width: 90.0,
-                    height: 90.0,
-                  )
-                : Image.asset(
-                    'assets/user.png',
-                    width: 90.0,
-                    height: 90.0,
-                  ),
+            child: image,
             onTap: () => _pickAndUploadImage(homeBloc),
           ),
         ),

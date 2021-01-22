@@ -103,6 +103,7 @@ class UserRepositoryImpl implements UserRepository {
         () => _remoteDataSource.uploadImage(
           image,
           userAndToken.user.email,
+          userAndToken.token,
         ),
       ).flatMapResult(
         (user) => _execute(

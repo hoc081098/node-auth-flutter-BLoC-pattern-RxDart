@@ -2,11 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show debugPrint;
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
 import 'package:node_auth/data/constants.dart';
-import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 import 'package:node_auth/data/remote/network_utils.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/remote/response/token_response.dart';
@@ -121,30 +117,16 @@ class ApiService implements RemoteDataSource {
   Future<UserResponse> uploadImage(
     File file,
     String email,
+    String token,
   ) async {
     final url = Uri.https(baseUrl, '/users/upload');
-    final stream = http.ByteStream(file.openRead());
-    final length = await file.length();
-    final request = http.MultipartRequest('POST', url)
-      ..fields['user'] = email
-      ..files.add(
-        http.MultipartFile(
-          'my_image',
-          stream,
-          length,
-          filename: path.basename(file.path),
-        ),
-      );
-    final streamedResponse = await request.send();
-    final statusCode = streamedResponse.statusCode;
-    final decoded = json.decode(await streamedResponse.stream.bytesToString());
-
-    debugPrint('decoded: $decoded');
-
-    if (statusCode < 200 || statusCode >= 300) {
-      throw RemoteDataSourceException(statusCode, decoded['message']);
-    }
-
+    final decoded = await NetworkUtils.multipartPost(
+      url,
+      file,
+      'my_image',
+      fields: {'user': email},
+      headers: {xAccessToken: token},
+    );
     return UserResponse.fromJson(decoded);
   }
 }

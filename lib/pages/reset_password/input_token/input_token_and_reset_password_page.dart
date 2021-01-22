@@ -158,82 +158,77 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Reset password'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
-              BlendMode.darken,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withAlpha(0xBF),
+            BlendMode.darken,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: emailTextField,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tokenTextField,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: passwordTextField,
-                ),
-                Center(
-                  child: FadeTransition(
-                    opacity: fadeAnim,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Submit'),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: emailTextField,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tokenTextField,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: passwordTextField,
+              ),
+              Center(
+                child: FadeTransition(
+                  opacity: fadeAnim,
+                  child: Padding(
                     padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    onPressed: resetPasswordBloc.submit,
                   ),
                 ),
-                SizedBox(height: 8),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Request email'),
-                    padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onPressed: widget.toggle,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Submit'),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  onPressed: resetPasswordBloc.submit,
                 ),
-                SizedBox(height: 24),
-              ],
-            ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Request email'),
+                  padding: const EdgeInsets.all(16),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  onPressed: widget.toggle,
+                ),
+              ),
+              SizedBox(height: 24),
+            ],
           ),
         ),
       ),

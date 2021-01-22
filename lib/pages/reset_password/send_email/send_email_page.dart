@@ -92,72 +92,67 @@ class _SendEmailPageState extends State<SendEmailPage>
       },
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Request email'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
-              BlendMode.darken,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withAlpha(0xBF),
+            BlendMode.darken,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: emailTextField,
-                ),
-                Center(
-                  child: FadeTransition(
-                    opacity: fadeAnim,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: emailTextField,
+              ),
+              Center(
+                child: FadeTransition(
+                  opacity: fadeAnim,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Send'),
-                    padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    onPressed: bloc.submit,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Send'),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  onPressed: bloc.submit,
                 ),
-                SizedBox(height: 8),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Input received token'),
-                    padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onPressed: widget.toggle,
+              ),
+              SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Input received token'),
+                  padding: const EdgeInsets.all(16),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  onPressed: widget.toggle,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
