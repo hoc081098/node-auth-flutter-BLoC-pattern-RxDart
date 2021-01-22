@@ -14,6 +14,7 @@ abstract class UserEntity implements Built<UserEntity, UserEntityBuilder> {
   @BuiltValueField(wireName: 'created_at')
   DateTime get createdAt;
 
+  @nullable
   @BuiltValueField(wireName: 'image_url')
   String get imageUrl;
 

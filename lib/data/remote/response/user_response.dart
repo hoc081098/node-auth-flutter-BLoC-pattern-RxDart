@@ -15,6 +15,7 @@ abstract class UserResponse
   @BuiltValueField(wireName: 'created_at')
   DateTime get createdAt;
 
+  @nullable
   @BuiltValueField(wireName: 'image_url')
   String get imageUrl;
 

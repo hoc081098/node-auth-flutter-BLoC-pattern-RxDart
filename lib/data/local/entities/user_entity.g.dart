@@ -26,11 +26,13 @@ class _$UserEntitySerializer implements StructuredSerializer<UserEntity> {
       'created_at',
       serializers.serialize(object.createdAt,
           specifiedType: const FullType(DateTime)),
-      'image_url',
-      serializers.serialize(object.imageUrl,
-          specifiedType: const FullType(String)),
     ];
-
+    if (object.imageUrl != null) {
+      result
+        ..add('image_url')
+        ..add(serializers.serialize(object.imageUrl,
+            specifiedType: const FullType(String)));
+    }
     return result;
   }
 
@@ -91,9 +93,6 @@ class _$UserEntity extends UserEntity {
     }
     if (createdAt == null) {
       throw new BuiltValueNullFieldError('UserEntity', 'createdAt');
-    }
-    if (imageUrl == null) {
-      throw new BuiltValueNullFieldError('UserEntity', 'imageUrl');
     }
   }
 

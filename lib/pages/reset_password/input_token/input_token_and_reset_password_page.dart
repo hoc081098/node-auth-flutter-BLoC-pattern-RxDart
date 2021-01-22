@@ -1,10 +1,12 @@
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
@@ -19,15 +21,15 @@ class InputTokenAndResetPasswordPage extends StatefulWidget {
 
 class _InputTokenAndResetPasswordPageState
     extends State<InputTokenAndResetPasswordPage>
-    with SingleTickerProviderStateMixin<InputTokenAndResetPasswordPage> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  DisposeBag disposeBag;
-
-  FocusNode tokenFocusNode;
-  FocusNode passwordFocusNode;
+    with
+        SingleTickerProviderStateMixin<InputTokenAndResetPasswordPage>,
+        DisposeBagMixin {
+  final tokenFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
 
   AnimationController fadeController;
   Animation<double> fadeAnim;
+  Object listen;
 
   @override
   void initState() {
@@ -43,41 +45,43 @@ class _InputTokenAndResetPasswordPageState
         parent: fadeController,
       ),
     );
-
-    tokenFocusNode = FocusNode();
-    passwordFocusNode = FocusNode();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    disposeBag ??= () {
-      final resetPasswordBloc =
-          BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
-      return DisposeBag([
-        resetPasswordBloc.message$.listen((message) async {
-          scaffoldKey.showSnackBar(_getMessageString(message));
-          await delay(1000);
-          if (message is ResetPasswordSuccess) {
-            Navigator.pop<String>(context, message.email);
-          }
-        }),
-        resetPasswordBloc.isLoading$.listen((isLoading) {
-          if (isLoading) {
-            fadeController.forward();
-          } else {
-            fadeController.reverse();
-          }
-        }),
-      ]);
-    }();
+    listen ??= [
+      context
+          .bloc<InputTokenAndResetPasswordBloc>()
+          .message$
+          .flatMap((message) async* {
+        context.showSnackBar(_getMessageString(message));
+        await delay(1000);
+        yield null;
+
+        if (message is ResetPasswordSuccess) {
+          Navigator.pop<String>(context, message.email);
+        }
+      }).collect(),
+      context
+          .bloc<InputTokenAndResetPasswordBloc>()
+          .isLoading$
+          .listen((isLoading) {
+        if (isLoading) {
+          fadeController.forward();
+        } else {
+          fadeController.reverse();
+        }
+      }),
+    ].disposedBy(bag);
   }
 
   @override
   void dispose() {
     fadeController.dispose();
-    disposeBag.dispose();
+    tokenFocusNode.dispose();
+    passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -154,83 +158,77 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Text('Reset password'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
-              BlendMode.darken,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withAlpha(0xBF),
+            BlendMode.darken,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: emailTextField,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tokenTextField,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: passwordTextField,
-                ),
-                Center(
-                  child: FadeTransition(
-                    opacity: fadeAnim,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Submit'),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: emailTextField,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tokenTextField,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: passwordTextField,
+              ),
+              Center(
+                child: FadeTransition(
+                  opacity: fadeAnim,
+                  child: Padding(
                     padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    onPressed: resetPasswordBloc.submit,
                   ),
                 ),
-                SizedBox(height: 8),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Request email'),
-                    padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onPressed: widget.toggle,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Submit'),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  onPressed: resetPasswordBloc.submit,
                 ),
-                SizedBox(height: 24),
-              ],
-            ),
+              ),
+              SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Request email'),
+                  padding: const EdgeInsets.all(16),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  onPressed: widget.toggle,
+                ),
+              ),
+              SizedBox(height: 24),
+            ],
           ),
         ),
       ),

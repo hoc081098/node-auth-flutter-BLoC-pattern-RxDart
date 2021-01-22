@@ -29,9 +29,6 @@ class _$User extends User {
     if (createdAt == null) {
       throw new BuiltValueNullFieldError('User', 'createdAt');
     }
-    if (imageUrl == null) {
-      throw new BuiltValueNullFieldError('User', 'imageUrl');
-    }
   }
 
   @override

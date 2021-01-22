@@ -1,6 +1,7 @@
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/snackbar.dart';
 
@@ -14,12 +15,10 @@ class SendEmailPage extends StatefulWidget {
 }
 
 class _SendEmailPageState extends State<SendEmailPage>
-    with SingleTickerProviderStateMixin {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  DisposeBag disposeBag;
-
+    with SingleTickerProviderStateMixin, DisposeBagMixin {
   AnimationController fadeController;
   Animation<double> fadeAnim;
+  Object listen;
 
   @override
   void initState() {
@@ -41,24 +40,24 @@ class _SendEmailPageState extends State<SendEmailPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    disposeBag ??= () {
-      final bloc = BlocProvider.of<SendEmailBloc>(context);
-      return DisposeBag([
-        bloc.message$.map(_getMessageString).listen(scaffoldKey.showSnackBar),
-        bloc.isLoading$.listen((isLoading) {
-          if (isLoading) {
-            fadeController.forward();
-          } else {
-            fadeController.reverse();
-          }
-        }),
-      ]);
-    }();
+    listen ??= [
+      context
+          .bloc<SendEmailBloc>()
+          .message$
+          .map(_getMessageString)
+          .listen(context.showSnackBar),
+      context.bloc<SendEmailBloc>().isLoading$.listen((isLoading) {
+        if (isLoading) {
+          fadeController.forward();
+        } else {
+          fadeController.reverse();
+        }
+      }),
+    ].disposedBy(bag);
   }
 
   @override
   void dispose() {
-    disposeBag.dispose();
     fadeController.dispose();
     super.dispose();
   }
@@ -93,73 +92,67 @@ class _SendEmailPageState extends State<SendEmailPage>
       },
     );
 
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Text('Request email'),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
-              BlendMode.darken,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withAlpha(0xBF),
+            BlendMode.darken,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: emailTextField,
-                ),
-                Center(
-                  child: FadeTransition(
-                    opacity: fadeAnim,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: emailTextField,
+              ),
+              Center(
+                child: FadeTransition(
+                  opacity: fadeAnim,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Send'),
-                    padding: const EdgeInsets.all(16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    onPressed: bloc.submit,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Send'),
+                  padding: const EdgeInsets.all(16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  onPressed: bloc.submit,
                 ),
-                SizedBox(height: 8),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: RaisedButton(
-                    child: Text('Input received token'),
-                    padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).cardColor,
-                    splashColor: Theme.of(context).accentColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    onPressed: widget.toggle,
+              ),
+              SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: RaisedButton(
+                  child: Text('Input received token'),
+                  padding: const EdgeInsets.all(16),
+                  color: Theme.of(context).cardColor,
+                  splashColor: Theme.of(context).accentColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  onPressed: widget.toggle,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -171,7 +164,7 @@ class _SendEmailPageState extends State<SendEmailPage>
       return 'Invalid information. Try again';
     }
     if (msg is SendEmailSuccessMessage) {
-      return 'Email sended. Check your email inbox and go to reset password page';
+      return 'Email sent. Check your email inbox and go to reset password page';
     }
     if (msg is SendEmailErrorMessage) {
       return msg.message;

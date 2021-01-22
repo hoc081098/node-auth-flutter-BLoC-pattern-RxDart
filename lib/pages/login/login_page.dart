@@ -1,6 +1,8 @@
-import 'package:disposebag/disposebag.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/pages/register/register.dart';
@@ -8,6 +10,7 @@ import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login_page';
@@ -19,15 +22,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _MyLoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin<LoginPage> {
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  DisposeBag disposeBag;
-
+    with SingleTickerProviderStateMixin<LoginPage>, DisposeBagMixin {
   AnimationController loginButtonController;
   Animation<double> buttonSqueezeAnimation;
+  Object listen;
 
-  FocusNode passwordFocusNode;
-  TextEditingController emailController;
+  final passwordFocusNode = FocusNode();
+  final emailController = TextEditingController();
 
   @override
   void initState() {
@@ -49,36 +50,30 @@ class _MyLoginPageState extends State<LoginPage>
         ),
       ),
     );
-
-    passwordFocusNode = FocusNode();
-    emailController = TextEditingController();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    disposeBag ??= () {
-      final loginBloc = BlocProvider.of<LoginBloc>(context);
-      return DisposeBag([
-        loginBloc.message$.listen(handleMessage),
-        loginBloc.isLoading$.listen((isLoading) {
-          if (isLoading) {
-            loginButtonController
-              ..reset()
-              ..forward();
-          } else {
-            loginButtonController.reverse();
-          }
-        })
-      ]);
-    }();
+    listen ??= [
+      context.bloc<LoginBloc>().message$.flatMap(handleMessage).collect(),
+      context.bloc<LoginBloc>().isLoading$.listen((isLoading) {
+        if (isLoading) {
+          loginButtonController
+            ..reset()
+            ..forward();
+        } else {
+          loginButtonController.reverse();
+        }
+      })
+    ].disposedBy(bag);
   }
 
   @override
   void dispose() {
+    passwordFocusNode.dispose();
     loginButtonController.dispose();
-    disposeBag.dispose();
     super.dispose();
   }
 
@@ -87,7 +82,6 @@ class _MyLoginPageState extends State<LoginPage>
     final loginBloc = BlocProvider.of<LoginBloc>(context);
 
     return Scaffold(
-      key: scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -148,17 +142,20 @@ class _MyLoginPageState extends State<LoginPage>
     );
   }
 
-  void handleMessage(message) async {
+  Stream<void> handleMessage(message) async* {
     if (message is LoginSuccessMessage) {
-      scaffoldKey.showSnackBar('Login successfully');
+      context.showSnackBar('Login successfully');
       await delay(1000);
+      yield null;
+
+      context.hideCurrentSnackBar();
       await Navigator.of(context).pushReplacementNamed(HomePage.routeName);
     }
     if (message is LoginErrorMessage) {
-      scaffoldKey.showSnackBar(message.message);
+      context.showSnackBar(message.message);
     }
     if (message is InvalidInformationMessage) {
-      scaffoldKey.showSnackBar('Invalid information');
+      context.showSnackBar('Invalid information');
     }
   }
 
@@ -255,6 +252,7 @@ class _MyLoginPageState extends State<LoginPage>
   Widget needAnAccount(LoginBloc loginBloc) {
     return FlatButton(
       onPressed: () async {
+        context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(
           context,
           RegisterPage.routeName,
@@ -280,6 +278,7 @@ class _MyLoginPageState extends State<LoginPage>
   Widget forgotPassword(LoginBloc loginBloc) {
     return FlatButton(
       onPressed: () async {
+        context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(
           context,
           ResetPasswordPage.routeName,
