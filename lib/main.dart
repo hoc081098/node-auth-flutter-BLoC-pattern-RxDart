@@ -1,4 +1,4 @@
-import 'package:disposebag/disposebag.dart' show DisposeBag, defaultLogger;
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart'
     show debugPrint, debugPrintSynchronously, kReleaseMode;
 import 'package:flutter/material.dart';
@@ -11,8 +11,7 @@ import 'package:node_auth/data/remote/api_service.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/user_repository_imp.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
-import 'package:rx_shared_preferences/rx_shared_preferences.dart'
-    show DefaultLogger, RxSharedPreferences, RxSharedPreferencesConfigs;
+import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,8 +41,10 @@ void main() async {
 
 void _setupLoggers() {
   // set loggers to `null` to disable logging.
-  DisposeBag.logger = kReleaseMode ? null : defaultLogger;
+  DisposeBagConfigs.logger = kReleaseMode ? null : disposeBagDefaultLogger;
+
   RxSharedPreferencesConfigs.logger =
-      kReleaseMode ? null : const DefaultLogger();
+      kReleaseMode ? null : const RxSharedPreferencesDefaultLogger();
+
   debugPrint = kReleaseMode ? null : debugPrintSynchronously;
 }

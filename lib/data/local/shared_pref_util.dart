@@ -13,35 +13,27 @@ class SharedPrefUtil implements LocalDataSource {
   const SharedPrefUtil(this._rxPrefs);
 
   @override
-  Future<void> removeUserAndToken() async {
-    bool result;
-    try {
-      result = await _rxPrefs.remove(_kUserTokenKey);
-    } catch (e) {
-      throw LocalDataSourceException('Cannot delete user and token', e);
-    }
+  Future<void> removeUserAndToken() =>
+      _rxPrefs.remove(_kUserTokenKey).onError((e, s) =>
+          throw LocalDataSourceException('Cannot delete user and token', e));
 
-    if (!result) {
-      throw LocalDataSourceException('Cannot delete user and token');
-    }
+  @override
+  Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) {
+    return _rxPrefs
+        .write<UserAndTokenEntity>(_kUserTokenKey, userAndToken, _toString)
+        .onError((e, s) =>
+            throw LocalDataSourceException('Cannot save user and token', e));
   }
 
   @override
-  Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) async {
-    bool result;
-    try {
-      result = await _rxPrefs.write(_kUserTokenKey, userAndToken, _toString);
-    } catch (e) {
-      throw LocalDataSourceException('Cannot save user and token', e);
-    }
-    if (!result) {
-      throw LocalDataSourceException('Cannot save user and token');
-    }
-  }
+  Future<UserAndTokenEntity> get userAndToken => _rxPrefs
+      .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
+      .catchError((_) => null);
 
   @override
-  Future<UserAndTokenEntity> get userAndToken =>
-      _rxPrefs.read(_kUserTokenKey, _toEntity).catchError((_) => null);
+  Stream<UserAndTokenEntity> get userAndToken$ => _rxPrefs
+      .observe<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
+      .onErrorReturn(null);
 
   static UserAndTokenEntity _toEntity(dynamic jsonString) => jsonString == null
       ? null
@@ -49,8 +41,4 @@ class SharedPrefUtil implements LocalDataSource {
 
   static String _toString(UserAndTokenEntity entity) =>
       entity == null ? null : jsonEncode(entity);
-
-  @override
-  Stream<UserAndTokenEntity> get userAndToken$ =>
-      _rxPrefs.observe(_kUserTokenKey, _toEntity).onErrorReturn(null);
 }
