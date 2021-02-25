@@ -15,12 +15,35 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
+      
       - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
-      - run: dart --version
-      - run: flutter --version
-      - run: flutter pub get
-      - run: flutter packages pub run build_runner build --delete-conflicting-outputs
-      - run: flutter build apk
+  
+      - name: Print Dart SDK version
+        run: dart --version
+        
+      - name: Print Flutter SDK version
+        run: flutter --version
+      
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Format code
+        run: flutter format lib --set-exit-if-changed
+        
+      - name: Analyze
+        run: flutter analyze lib --fatal-infos
+      
+      - name: Gen code
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+      
+      - name: Build APK
+        run: flutter build apk --no-shrink
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: build/app/outputs/apk/release/app-release.apk
 
