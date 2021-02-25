@@ -82,26 +82,26 @@ class _HomePageState extends State<HomePage>
               height: 48.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
-              child: RaisedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: showChangePassword,
                 label: Text('Change password'),
                 icon: Icon(Icons.lock_outline),
-                color: Theme.of(context).backgroundColor,
-                colorBrightness: Brightness.dark,
-                splashColor: Colors.white.withOpacity(0.5),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).backgroundColor,
+                ),
               ),
             ),
             Container(
               height: 48.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
-              child: RaisedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: homeBloc.logout,
                 label: Text('Logout'),
                 icon: Icon(Icons.exit_to_app),
-                color: Theme.of(context).backgroundColor,
-                colorBrightness: Brightness.dark,
-                splashColor: Colors.white.withOpacity(0.5),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).backgroundColor,
+                ),
               ),
             ),
             Center(

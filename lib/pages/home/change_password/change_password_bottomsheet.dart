@@ -133,9 +133,11 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       stream: changePasswordBloc.changePasswordState$,
       builder: (context, snapshot) {
         if (!snapshot.hasData || !snapshot.data.isLoading) {
-          return RaisedButton(
-            padding: const EdgeInsets.all(12),
-            elevation: 8,
+          return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(12),
+              elevation: 4,
+            ),
             onPressed: () {
               FocusScope.of(context).unfocus();
               changePasswordBloc.changePassword();
@@ -150,29 +152,28 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: passwordTextField,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: newPasswordTextField,
-            ),
-            messageText,
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: changePasswordButton,
-            )
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: passwordTextField,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: newPasswordTextField,
+          ),
+          messageText,
+          Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: changePasswordButton,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).viewInsets.bottom,
+          )
+        ],
       ),
     );
   }

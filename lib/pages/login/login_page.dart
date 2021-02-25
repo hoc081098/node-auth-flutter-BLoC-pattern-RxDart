@@ -250,7 +250,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget needAnAccount(LoginBloc loginBloc) {
-    return FlatButton(
+    return TextButton(
       onPressed: () async {
         context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(
@@ -276,7 +276,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget forgotPassword(LoginBloc loginBloc) {
-    return FlatButton(
+    return TextButton(
       onPressed: () async {
         context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(

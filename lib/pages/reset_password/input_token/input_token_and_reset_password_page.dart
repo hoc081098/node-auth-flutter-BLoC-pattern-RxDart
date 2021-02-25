@@ -158,6 +158,25 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
+    final overlayColor = MaterialStateProperty.resolveWith((states) {
+      if (states.contains(MaterialState.hovered)) {
+        return Theme.of(context).accentColor.withOpacity(0.5);
+      }
+      if (states.contains(MaterialState.focused) ||
+          states.contains(MaterialState.pressed)) {
+        return Theme.of(context).accentColor.withOpacity(0.8);
+      }
+      return null;
+    });
+
+    final buttonStyle = ElevatedButton.styleFrom(
+      padding: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      primary: Theme.of(context).cardColor,
+    ).copyWith(overlayColor: overlayColor);
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -202,28 +221,18 @@ class _InputTokenAndResetPasswordPageState
               ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: RaisedButton(
+                child: ElevatedButton(
                   child: Text('Submit'),
-                  padding: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  color: Theme.of(context).cardColor,
-                  splashColor: Theme.of(context).accentColor,
+                  style: buttonStyle,
                   onPressed: resetPasswordBloc.submit,
                 ),
               ),
               SizedBox(height: 8),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: RaisedButton(
+                child: ElevatedButton(
                   child: Text('Request email'),
-                  padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).cardColor,
-                  splashColor: Theme.of(context).accentColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  style: buttonStyle,
                   onPressed: widget.toggle,
                 ),
               ),
