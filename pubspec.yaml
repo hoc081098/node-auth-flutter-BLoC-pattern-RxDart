@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 2.0.0+2
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -14,38 +14,28 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   path: ^1.8.0
-  http: ^0.13.0
-  built_value: ^7.1.0
-  tuple: ^1.0.3
-  rxdart: ^0.25.0
-  image_picker: ^0.7.0
-  shared_preferences: ^0.5.12+4
-  octo_image: ^0.3.0
+  http: ^0.13.1
+  built_value: ^8.0.4
+  tuple: ^2.0.0
+  rxdart: ^0.26.0
+  image_picker: ^0.7.4
+  shared_preferences: ^2.0.5
+  octo_image: ^1.0.0+1
 
-  distinct_value_connectable_stream: ^1.2.0-nullsafety.5
-  flutter_provider: ^2.0.0-nullsafety.0
+  distinct_value_connectable_stream: ^1.2.0
+  flutter_provider: ^2.0.0
   rx_shared_preferences: ^2.0.0-nullsafety.0
-  disposebag: ^1.5.0-nullsafety.1
-  flutter_disposebag: ^1.1.0-nullsafety.1
-  flutter_bloc_pattern: ^2.0.0-nullsafety.1
-  rxdart_ext: ^0.0.1-nullsafety.7
-
-dependency_overrides:
-  analyzer: ^0.41.1
-  http_parser: ^4.0.0
-  rxdart: ^0.26.0-nullsafety.1
-  shared_preferences:
-    git:
-      url: https://github.com/Flutter-Dart-Open-Source/plugins.git
-      path: packages/shared_preferences/shared_preferences
-      ref: 051e38e939272c6c60546c4689d9a15e01df17ad
+  disposebag: ^1.5.0
+  flutter_disposebag: ^1.1.0
+  flutter_bloc_pattern: ^2.0.0
+  rxdart_ext: ^0.0.1
 
 dev_dependencies:
-  pedantic: ^1.10.0
+  pedantic: ^1.11.0
   flutter_test:
     sdk: flutter
-  build_runner: ^1.10.2
-  built_value_generator: ^7.1.0
+  build_runner: ^1.12.2
+  built_value_generator: ^8.0.4
 
 flutter:
   uses-material-design: true

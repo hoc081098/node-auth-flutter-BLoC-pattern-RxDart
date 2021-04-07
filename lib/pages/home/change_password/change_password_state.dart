@@ -4,11 +4,9 @@ part 'change_password_state.g.dart';
 
 abstract class ChangePasswordState
     implements Built<ChangePasswordState, ChangePasswordStateBuilder> {
-  @nullable
-  Object get error;
+  Object? get error;
 
-  @nullable
-  String get message;
+  String? get message;
 
   bool get isLoading;
 

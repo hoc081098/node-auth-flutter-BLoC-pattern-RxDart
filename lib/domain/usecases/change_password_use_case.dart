@@ -8,8 +8,8 @@ class ChangePasswordUseCase {
   const ChangePasswordUseCase(this._userRepository);
 
   Stream<Result<void>> call({
-    @required String password,
-    @required String newPassword,
+    required String password,
+    required String newPassword,
   }) =>
       _userRepository.changePassword(
         password: password,

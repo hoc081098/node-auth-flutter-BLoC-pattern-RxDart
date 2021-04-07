@@ -8,9 +8,9 @@ class RegisterUseCase {
   const RegisterUseCase(this._userRepository);
 
   Stream<Result<void>> call({
-    @required String name,
-    @required String email,
-    @required String password,
+    required String name,
+    required String email,
+    required String password,
   }) =>
       _userRepository.registerUser(
         name: name,

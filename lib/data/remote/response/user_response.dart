@@ -15,9 +15,8 @@ abstract class UserResponse
   @BuiltValueField(wireName: 'created_at')
   DateTime get createdAt;
 
-  @nullable
   @BuiltValueField(wireName: 'image_url')
-  String get imageUrl;
+  String? get imageUrl;
 
   static Serializer<UserResponse> get serializer => _$userResponseSerializer;
 
@@ -27,7 +26,8 @@ abstract class UserResponse
       _$UserResponse;
 
   factory UserResponse.fromJson(Map<String, dynamic> json) =>
-      serializers.deserializeWith<UserResponse>(serializer, json);
+      serializers.deserializeWith<UserResponse>(serializer, json)!;
 
-  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this);
+  Map<String, dynamic> toJson() =>
+      serializers.serializeWith(serializer, this) as Map<String, dynamic>;
 }

@@ -27,11 +27,11 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   final Stream<HomeMessage> message$;
 
   HomeBloc._({
-    @required this.changeAvatar,
-    @required this.message$,
-    @required this.logout,
-    @required this.authState$,
-    @required Function0<void> dispose,
+    required this.changeAvatar,
+    required this.message$,
+    required this.logout,
+    required this.authState$,
+    required Function0<void> dispose,
   }) : super(dispose);
 
   factory HomeBloc(
@@ -39,9 +39,6 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     final GetAuthStateStreamUseCase getAuthState,
     final UploadImageUseCase uploadImage,
   ) {
-    assert(logout != null);
-    assert(getAuthState != null);
-
     final changeAvatarS = PublishSubject<File>();
     final logoutS = PublishSubject<void>();
 

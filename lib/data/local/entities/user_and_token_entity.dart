@@ -23,7 +23,8 @@ abstract class UserAndTokenEntity
       _$UserAndTokenEntity;
 
   factory UserAndTokenEntity.fromJson(Map<String, dynamic> json) =>
-      serializers.deserializeWith(serializer, json);
+      serializers.deserializeWith<UserAndTokenEntity>(serializer, json)!;
 
-  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this);
+  Map<String, dynamic> toJson() =>
+      serializers.serializeWith(serializer, this) as Map<String, dynamic>;
 }

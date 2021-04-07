@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:tuple/tuple.dart';
 
 abstract class InputTokenAndResetPasswordMessage {}
@@ -26,7 +26,7 @@ class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
   final String message;
   final error;
 
-  const ResetPasswordFailure(this.message, [this.error]);
+  const ResetPasswordFailure(this.error, this.message);
 }
 
 //ignore_for_file: close_sinks
@@ -37,29 +37,27 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
   final Function1<String, void> tokenChanged;
   final Function0<void> submit;
 
-  final Stream<String> emailError$;
-  final Stream<String> passwordError$;
-  final Stream<String> tokenError$;
+  final Stream<String?> emailError$;
+  final Stream<String?> passwordError$;
+  final Stream<String?> tokenError$;
   final Stream<bool> isLoading$;
   final Stream<InputTokenAndResetPasswordMessage> message$;
 
   InputTokenAndResetPasswordBloc._({
-    @required this.emailChanged,
-    @required this.passwordChanged,
-    @required this.tokenChanged,
-    @required this.emailError$,
-    @required this.passwordError$,
-    @required this.tokenError$,
-    @required Function0<void> dispose,
-    @required this.submit,
-    @required this.isLoading$,
-    @required this.message$,
+    required this.emailChanged,
+    required this.passwordChanged,
+    required this.tokenChanged,
+    required this.emailError$,
+    required this.passwordError$,
+    required this.tokenError$,
+    required Function0<void> dispose,
+    required this.submit,
+    required this.isLoading$,
+    required this.message$,
   }) : super(dispose);
 
   factory InputTokenAndResetPasswordBloc(
       final ResetPasswordUseCase resetPassword) {
-    assert(resetPassword != null);
-
     final emailSubject = BehaviorSubject<String>.seeded('');
     final tokenSubject = BehaviorSubject<String>.seeded('');
     final passwordSubject = BehaviorSubject<String>.seeded('');
@@ -92,8 +90,8 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
     }).share();
 
     final allField$ = submitSubject
-        .map((_) => Tuple3(
-            emailSubject.value, tokenSubject.value, passwordSubject.value))
+        .map((_) => Tuple3(emailSubject.requireValue, tokenSubject.requireValue,
+            passwordSubject.requireValue))
         .share();
 
     bool allFieldsAreValid(Tuple3<String, String, String> tuple3) {
@@ -133,29 +131,19 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
     ResetPasswordUseCase resetPassword,
     Tuple3<String, String, String> tuple3,
     Sink<bool> isLoadingSink,
-  ) async* {
-    InputTokenAndResetPasswordMessage _toMessage([result, String email]) {
-      if (result is Success) {
-        return ResetPasswordSuccess(email);
-      }
-      if (result is Failure) {
-        return ResetPasswordFailure(result.message, result.error);
-      }
-      return ResetPasswordFailure('An error occurred!');
-    }
-
-    isLoadingSink.add(true);
-    try {
-      final result = await resetPassword(
-        email: tuple3.item1,
-        token: tuple3.item2,
-        newPassword: tuple3.item3,
-      ).first;
-      yield _toMessage(result, tuple3.item1);
-    } catch (e) {
-      yield _toMessage();
-    } finally {
-      isLoadingSink.add(false);
-    }
+  ) {
+    final email = tuple3.item1;
+    return resetPassword(
+            email: email, token: tuple3.item2, newPassword: tuple3.item3)
+        .doOn(
+          listen: () => isLoadingSink.add(true),
+          cancel: () => isLoadingSink.add(false),
+        )
+        .map(
+          (result) => result.fold(
+            (_) => ResetPasswordSuccess(email),
+            (error, message) => ResetPasswordFailure(error, message),
+          ),
+        );
   }
 }

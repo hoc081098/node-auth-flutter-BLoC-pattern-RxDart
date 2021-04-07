@@ -32,9 +32,7 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
-  )   : assert(_remoteDataSource != null),
-        assert(_localDataSource != null),
-        authenticationState$ = _localDataSource.userAndToken$
+  ) : authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
             .onErrorReturn(UnauthenticatedState())
             .publishValue()
@@ -45,8 +43,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Stream<Result<void>> login({
-    String email,
-    String password,
+    required String email,
+    required String password,
   }) {
     return _execute(
       () => _remoteDataSource.loginUser(
@@ -54,7 +52,7 @@ class UserRepositoryImpl implements UserRepository {
         password,
       ),
     ).flatMapResult((result) {
-      final token = result.token;
+      final token = result!.token!;
 
       return _execute(
         () => _remoteDataSource.getUserProfile(
@@ -65,7 +63,7 @@ class UserRepositoryImpl implements UserRepository {
         (user) => _execute(
           () => _localDataSource.saveUserAndToken(
             _Mappers.userResponseToUserAndTokenEntity(
-              user,
+              user!,
               token,
             ),
           ),
@@ -76,15 +74,15 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Stream<Result<void>> registerUser({
-    String name,
-    String email,
-    String password,
+    required String name,
+    required String email,
+    required String password,
   }) =>
       _execute(() => _remoteDataSource.registerUser(name, email, password));
 
   @override
   Stream<Result<void>> logout() =>
-      _execute(() => _localDataSource.removeUserAndToken());
+      _execute<void>(() => _localDataSource.removeUserAndToken());
 
   @override
   Stream<Result<void>> uploadImage(File image) {
@@ -109,7 +107,7 @@ class UserRepositoryImpl implements UserRepository {
         (user) => _execute(
           () => _localDataSource.saveUserAndToken(
             _Mappers.userResponseToUserAndTokenEntity(
-              user,
+              user!,
               userAndToken.token,
             ),
           ),
@@ -120,8 +118,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Stream<Result<void>> changePassword({
-    String password,
-    String newPassword,
+    required String password,
+    required String newPassword,
   }) {
     return _userAndToken.flatMapResult((userAndToken) {
       if (userAndToken == null) {
@@ -147,9 +145,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Stream<Result<void>> resetPassword({
-    String email,
-    String token,
-    String newPassword,
+    required String email,
+    required String token,
+    required String newPassword,
   }) =>
       _execute(
         () => _remoteDataSource.resetPassword(
@@ -167,7 +165,7 @@ class UserRepositoryImpl implements UserRepository {
   /// Helpers functions
   ///
 
-  Stream<Result<UserAndTokenEntity>> get _userAndToken =>
+  Stream<Result<UserAndTokenEntity?>> get _userAndToken =>
       _execute(() => _localDataSource.userAndToken);
 
   ///
@@ -178,13 +176,13 @@ class UserRepositoryImpl implements UserRepository {
   Stream<Result<T>> _execute<T>(Future<T> Function() factory) =>
       Rx.fromCallable(factory)
           .doOnError(_handleUnauthenticatedError)
-          .map<Result<T>>((result) => Success<T>((b) => b.result = result))
+          .map<Result<T>>((value) => Success<T>.of(value: value))
           .onErrorReturnWith(_errorToResult);
 
   ///
   /// Like error http interceptor
   ///
-  void _handleUnauthenticatedError(e, s) {
+  void _handleUnauthenticatedError(Object e, StackTrace? s) {
     if (e is RemoteDataSourceException &&
         e.statusCode == HttpStatus.unauthorized) {
       print(
@@ -196,20 +194,14 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Failure<T> _errorToResult<T>(e) {
+  static Failure<T> _errorToResult<T extends Object>(Object e) {
     if (e is RemoteDataSourceException) {
-      return Failure((b) => b
-        ..message = e.message
-        ..error = e);
+      return Failure.of(message: e.message, error: e);
     }
     if (e is LocalDataSourceException) {
-      return Failure((b) => b
-        ..message = e.message
-        ..error = e);
+      return Failure.of(message: e.message, error: e);
     }
-    return Failure((b) => b
-      ..message = e.toString()
-      ..error = e);
+    return Failure.of(message: e.toString(), error: e);
   }
 
   ///

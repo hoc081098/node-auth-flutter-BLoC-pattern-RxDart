@@ -46,5 +46,7 @@ void _setupLoggers() {
   RxSharedPreferencesConfigs.logger =
       kReleaseMode ? null : const RxSharedPreferencesDefaultLogger();
 
-  debugPrint = kReleaseMode ? null : debugPrintSynchronously;
+  debugPrint = kReleaseMode
+      ? (String? message, {int? wrapWidth}) {}
+      : debugPrintSynchronously;
 }

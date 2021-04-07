@@ -11,5 +11,6 @@ class SendEmailSuccessMessage implements SendEmailMessage {
 class SendEmailErrorMessage implements SendEmailMessage {
   final String message;
   final Object error;
-  const SendEmailErrorMessage(this.message, [this.error]);
+
+  const SendEmailErrorMessage(this.error, this.message);
 }

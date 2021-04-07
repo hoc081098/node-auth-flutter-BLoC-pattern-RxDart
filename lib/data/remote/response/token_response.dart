@@ -6,8 +6,7 @@ part 'token_response.g.dart';
 
 abstract class TokenResponse
     implements Built<TokenResponse, TokenResponseBuilder> {
-  @nullable
-  String get token;
+  String? get token;
 
   String get message;
 
@@ -19,7 +18,7 @@ abstract class TokenResponse
       _$TokenResponse;
 
   factory TokenResponse.fromJson(Map<String, dynamic> json) =>
-      serializers.deserializeWith(serializer, json);
+      serializers.deserializeWith<TokenResponse>(serializer, json)!;
 
-  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this);
+  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this) as Map<String, dynamic>;
 }

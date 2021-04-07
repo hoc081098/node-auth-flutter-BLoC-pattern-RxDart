@@ -8,7 +8,7 @@ import 'package:node_auth/utils/snackbar.dart';
 class SendEmailPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const SendEmailPage({Key key, @required this.toggle}) : super(key: key);
+  const SendEmailPage({Key? key, required this.toggle}) : super(key: key);
 
   @override
   _SendEmailPageState createState() => _SendEmailPageState();
@@ -16,9 +16,9 @@ class SendEmailPage extends StatefulWidget {
 
 class _SendEmailPageState extends State<SendEmailPage>
     with SingleTickerProviderStateMixin, DisposeBagMixin {
-  AnimationController fadeController;
-  Animation<double> fadeAnim;
-  Object listen;
+  late final AnimationController fadeController;
+  late final Animation<double> fadeAnim;
+  Object? listen;
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class _SendEmailPageState extends State<SendEmailPage>
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<SendEmailBloc>(context);
 
-    final emailTextField = StreamBuilder<String>(
+    final emailTextField = StreamBuilder<String?>(
       stream: bloc.emailError$,
       builder: (context, snapshot) {
         return TextField(

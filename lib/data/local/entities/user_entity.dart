@@ -14,9 +14,8 @@ abstract class UserEntity implements Built<UserEntity, UserEntityBuilder> {
   @BuiltValueField(wireName: 'created_at')
   DateTime get createdAt;
 
-  @nullable
   @BuiltValueField(wireName: 'image_url')
-  String get imageUrl;
+  String? get imageUrl;
 
   static Serializer<UserEntity> get serializer => _$userEntitySerializer;
 
@@ -25,7 +24,8 @@ abstract class UserEntity implements Built<UserEntity, UserEntityBuilder> {
   factory UserEntity([void Function(UserEntityBuilder) updates]) = _$UserEntity;
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>
-      serializers.deserializeWith<UserEntity>(serializer, json);
+      serializers.deserializeWith<UserEntity>(serializer, json)!;
 
-  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this);
+  Map<String, dynamic> toJson() =>
+      serializers.serializeWith(serializer, this) as Map<String, dynamic>;
 }

@@ -4,13 +4,13 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class SendEmailBloc extends DisposeCallbackBaseBloc {
   ///
@@ -18,17 +18,17 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
   final Function1<String, void> emailChanged;
 
   ///
-  final Stream<String> emailError$;
+  final Stream<String?> emailError$;
   final Stream<SendEmailMessage> message$;
   final Stream<bool> isLoading$;
 
   SendEmailBloc._({
-    @required this.submit,
-    @required this.emailChanged,
-    @required this.emailError$,
-    @required this.message$,
-    @required this.isLoading$,
-    @required Function0<void> dispose,
+    required this.submit,
+    required this.emailChanged,
+    required this.emailError$,
+    required this.message$,
+    required this.isLoading$,
+    required Function0<void> dispose,
   }) : super(dispose);
 
   factory SendEmailBloc(
@@ -77,19 +77,16 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
     SendResetPasswordEmailUseCase sendResetPasswordEmail,
     Sink<bool> isLoadingController,
   ) {
-    SendEmailMessage _resultToMessage(result) {
-      if (result is Success) {
-        return const SendEmailSuccessMessage();
-      }
-      if (result is Failure) {
-        return SendEmailErrorMessage(result.message, result.error);
-      }
-      return SendEmailErrorMessage('An error occurred!');
-    }
-
     return sendResetPasswordEmail(email)
-        .doOnListen(() => isLoadingController.add(true))
-        .doOnData((_) => isLoadingController.add(false))
-        .map(_resultToMessage);
+        .doOn(
+          listen: () => isLoadingController.add(true),
+          cancel: () => isLoadingController.add(false),
+        )
+        .map(
+          (result) => result.fold(
+            (_) => const SendEmailSuccessMessage(),
+            (error, message) => SendEmailErrorMessage(error, message),
+          ),
+        );
   }
 }

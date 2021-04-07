@@ -27,14 +27,14 @@ class LoginBloc extends DisposeCallbackBaseBloc {
   final Stream<bool> isLoading$;
 
   LoginBloc._({
-    @required Function0<void> dispose,
-    @required this.emailChanged,
-    @required this.passwordChanged,
-    @required this.submitLogin,
-    @required this.emailError$,
-    @required this.passwordError$,
-    @required this.message$,
-    @required this.isLoading$,
+    required Function0<void> dispose,
+    required this.emailChanged,
+    required this.passwordChanged,
+    required this.submitLogin,
+    required this.emailError$,
+    required this.passwordError$,
+    required this.message$,
+    required this.isLoading$,
   }) : super(dispose);
 
   factory LoginBloc(final LoginUseCase login) {

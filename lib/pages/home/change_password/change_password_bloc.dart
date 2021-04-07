@@ -30,13 +30,13 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   final Stream<String> newPasswordError$;
 
   ChangePasswordBloc._({
-    @required this.changePassword,
-    @required this.changePasswordState$,
-    @required Function0<void> dispose,
-    @required this.passwordChanged,
-    @required this.newPasswordChanged,
-    @required this.passwordError$,
-    @required this.newPasswordError$,
+    required this.changePassword,
+    required this.changePasswordState$,
+    required Function0<void> dispose,
+    required this.passwordChanged,
+    required this.newPasswordChanged,
+    required this.passwordError$,
+    required this.newPasswordError$,
   }) : super(dispose);
 
   factory ChangePasswordBloc(final ChangePasswordUseCase changePassword) {

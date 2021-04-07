@@ -16,7 +16,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
 
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,8 +24,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin<HomePage>, DisposeBagMixin {
-  AnimationController rotateLogoController;
-  Object listen;
+  late final AnimationController rotateLogoController;
+  Object? listen;
 
   @override
   void initState() {
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage>
                   'Flutter auth BLoC pattern RxDart',
                   style: Theme.of(context)
                       .textTheme
-                      .subtitle1
+                      .subtitle1!
                       .copyWith(fontSize: 16),
                 ),
               ),

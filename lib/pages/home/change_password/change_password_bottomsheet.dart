@@ -6,7 +6,7 @@ import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ChangePasswordBottomSheet extends StatefulWidget {
-  const ChangePasswordBottomSheet({Key key}) : super(key: key);
+  const ChangePasswordBottomSheet({Key? key}) : super(key: key);
 
   @override
   _ChangePasswordBottomSheetState createState() =>
@@ -17,9 +17,9 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     with
         SingleTickerProviderStateMixin<ChangePasswordBottomSheet>,
         DisposeBagMixin {
-  AnimationController fadeMessageController;
-  Animation<double> messageOpacity;
-  Object listen;
+  late final AnimationController fadeMessageController;
+  late final Animation<double> messageOpacity;
+  Object? listen;
 
   final newPasswordFocusNode = FocusNode();
 

@@ -11,7 +11,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const InputTokenAndResetPasswordPage({Key key, @required this.toggle})
+  const InputTokenAndResetPasswordPage({Key? key, required this.toggle})
       : super(key: key);
 
   @override
@@ -27,9 +27,9 @@ class _InputTokenAndResetPasswordPageState
   final tokenFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
 
-  AnimationController fadeController;
-  Animation<double> fadeAnim;
-  Object listen;
+  late final AnimationController fadeController;
+  late final Animation<double> fadeAnim;
+  Object? listen;
 
   @override
   void initState() {
@@ -90,7 +90,7 @@ class _InputTokenAndResetPasswordPageState
     final resetPasswordBloc =
         BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
 
-    final emailTextField = StreamBuilder<String>(
+    final emailTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -116,7 +116,7 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    final tokenTextField = StreamBuilder<String>(
+    final tokenTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.tokenError$,
       builder: (context, snapshot) {
         return TextField(
@@ -142,7 +142,7 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    final passwordTextField = StreamBuilder<String>(
+    final passwordTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(

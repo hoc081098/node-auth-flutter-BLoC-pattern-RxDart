@@ -3,7 +3,7 @@ part of 'user_repository_imp.dart';
 abstract class _Mappers {
   /// Entity -> Domain
   static AuthenticationState userAndTokenEntityToDomainAuthState(
-      UserAndTokenEntity entity) {
+      UserAndTokenEntity? entity) {
     if (entity == null) {
       return UnauthenticatedState();
     }

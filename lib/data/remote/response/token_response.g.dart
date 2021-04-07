@@ -16,17 +16,19 @@ class _$TokenResponseSerializer implements StructuredSerializer<TokenResponse> {
   final String wireName = 'TokenResponse';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, TokenResponse object,
+  Iterable<Object?> serialize(Serializers serializers, TokenResponse object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'message',
       serializers.serialize(object.message,
           specifiedType: const FullType(String)),
     ];
-    if (object.token != null) {
+    Object? value;
+    value = object.token;
+    if (value != null) {
       result
         ..add('token')
-        ..add(serializers.serialize(object.token,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
     return result;
@@ -34,7 +36,7 @@ class _$TokenResponseSerializer implements StructuredSerializer<TokenResponse> {
 
   @override
   TokenResponse deserialize(
-      Serializers serializers, Iterable<Object> serialized,
+      Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new TokenResponseBuilder();
 
@@ -42,7 +44,7 @@ class _$TokenResponseSerializer implements StructuredSerializer<TokenResponse> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'token':
           result.token = serializers.deserialize(value,
@@ -61,17 +63,15 @@ class _$TokenResponseSerializer implements StructuredSerializer<TokenResponse> {
 
 class _$TokenResponse extends TokenResponse {
   @override
-  final String token;
+  final String? token;
   @override
   final String message;
 
-  factory _$TokenResponse([void Function(TokenResponseBuilder) updates]) =>
+  factory _$TokenResponse([void Function(TokenResponseBuilder)? updates]) =>
       (new TokenResponseBuilder()..update(updates)).build();
 
-  _$TokenResponse._({this.token, this.message}) : super._() {
-    if (message == null) {
-      throw new BuiltValueNullFieldError('TokenResponse', 'message');
-    }
+  _$TokenResponse._({this.token, required this.message}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(message, 'TokenResponse', 'message');
   }
 
   @override
@@ -105,22 +105,23 @@ class _$TokenResponse extends TokenResponse {
 
 class TokenResponseBuilder
     implements Builder<TokenResponse, TokenResponseBuilder> {
-  _$TokenResponse _$v;
+  _$TokenResponse? _$v;
 
-  String _token;
-  String get token => _$this._token;
-  set token(String token) => _$this._token = token;
+  String? _token;
+  String? get token => _$this._token;
+  set token(String? token) => _$this._token = token;
 
-  String _message;
-  String get message => _$this._message;
-  set message(String message) => _$this._message = message;
+  String? _message;
+  String? get message => _$this._message;
+  set message(String? message) => _$this._message = message;
 
   TokenResponseBuilder();
 
   TokenResponseBuilder get _$this {
-    if (_$v != null) {
-      _token = _$v.token;
-      _message = _$v.message;
+    final $v = _$v;
+    if ($v != null) {
+      _token = $v.token;
+      _message = $v.message;
       _$v = null;
     }
     return this;
@@ -128,21 +129,22 @@ class TokenResponseBuilder
 
   @override
   void replace(TokenResponse other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$TokenResponse;
   }
 
   @override
-  void update(void Function(TokenResponseBuilder) updates) {
+  void update(void Function(TokenResponseBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
   _$TokenResponse build() {
-    final _$result =
-        _$v ?? new _$TokenResponse._(token: token, message: message);
+    final _$result = _$v ??
+        new _$TokenResponse._(
+            token: token,
+            message: BuiltValueNullFieldError.checkNotNull(
+                message, 'TokenResponse', 'message'));
     replace(_$result);
     return _$result;
   }

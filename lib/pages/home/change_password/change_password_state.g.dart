@@ -8,21 +8,20 @@ part of 'change_password_state.dart';
 
 class _$ChangePasswordState extends ChangePasswordState {
   @override
-  final Object error;
+  final Object? error;
   @override
-  final String message;
+  final String? message;
   @override
   final bool isLoading;
 
   factory _$ChangePasswordState(
-          [void Function(ChangePasswordStateBuilder) updates]) =>
+          [void Function(ChangePasswordStateBuilder)? updates]) =>
       (new ChangePasswordStateBuilder()..update(updates)).build();
 
-  _$ChangePasswordState._({this.error, this.message, this.isLoading})
+  _$ChangePasswordState._({this.error, this.message, required this.isLoading})
       : super._() {
-    if (isLoading == null) {
-      throw new BuiltValueNullFieldError('ChangePasswordState', 'isLoading');
-    }
+    BuiltValueNullFieldError.checkNotNull(
+        isLoading, 'ChangePasswordState', 'isLoading');
   }
 
   @override
@@ -61,27 +60,28 @@ class _$ChangePasswordState extends ChangePasswordState {
 
 class ChangePasswordStateBuilder
     implements Builder<ChangePasswordState, ChangePasswordStateBuilder> {
-  _$ChangePasswordState _$v;
+  _$ChangePasswordState? _$v;
 
-  Object _error;
-  Object get error => _$this._error;
-  set error(Object error) => _$this._error = error;
+  Object? _error;
+  Object? get error => _$this._error;
+  set error(Object? error) => _$this._error = error;
 
-  String _message;
-  String get message => _$this._message;
-  set message(String message) => _$this._message = message;
+  String? _message;
+  String? get message => _$this._message;
+  set message(String? message) => _$this._message = message;
 
-  bool _isLoading;
-  bool get isLoading => _$this._isLoading;
-  set isLoading(bool isLoading) => _$this._isLoading = isLoading;
+  bool? _isLoading;
+  bool? get isLoading => _$this._isLoading;
+  set isLoading(bool? isLoading) => _$this._isLoading = isLoading;
 
   ChangePasswordStateBuilder();
 
   ChangePasswordStateBuilder get _$this {
-    if (_$v != null) {
-      _error = _$v.error;
-      _message = _$v.message;
-      _isLoading = _$v.isLoading;
+    final $v = _$v;
+    if ($v != null) {
+      _error = $v.error;
+      _message = $v.message;
+      _isLoading = $v.isLoading;
       _$v = null;
     }
     return this;
@@ -89,14 +89,12 @@ class ChangePasswordStateBuilder
 
   @override
   void replace(ChangePasswordState other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ChangePasswordState;
   }
 
   @override
-  void update(void Function(ChangePasswordStateBuilder) updates) {
+  void update(void Function(ChangePasswordStateBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -104,7 +102,10 @@ class ChangePasswordStateBuilder
   _$ChangePasswordState build() {
     final _$result = _$v ??
         new _$ChangePasswordState._(
-            error: error, message: message, isLoading: isLoading);
+            error: error,
+            message: message,
+            isLoading: BuiltValueNullFieldError.checkNotNull(
+                isLoading, 'ChangePasswordState', 'isLoading'));
     replace(_$result);
     return _$result;
   }

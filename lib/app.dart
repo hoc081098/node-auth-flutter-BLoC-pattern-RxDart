@@ -15,7 +15,7 @@ import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
 }
 
 class Home extends StatelessWidget {
-  const Home({Key key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +102,12 @@ class Home extends StatelessWidget {
 
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home [2] >> [NotAuthenticated]');
-          return routes[LoginPage.routeName](context);
+          return routes[LoginPage.routeName]!(context);
         }
 
         if (snapshot.data is AuthenticatedState) {
           print('[HOME] home [3] >> [Authenticated]');
-          return routes[HomePage.routeName](context);
+          return routes[HomePage.routeName]!(context);
         }
 
         return Container(width: 0, height: 0);

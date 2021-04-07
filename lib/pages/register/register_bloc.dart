@@ -29,16 +29,16 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
   final Stream<bool> isLoading$;
 
   RegisterBloc._({
-    @required Function0<void> dispose,
-    @required this.emailChanged,
-    @required this.passwordChanged,
-    @required this.submitRegister,
-    @required this.emailError$,
-    @required this.passwordError$,
-    @required this.message$,
-    @required this.isLoading$,
-    @required this.nameChanged,
-    @required this.nameError$,
+    required Function0<void> dispose,
+    required this.emailChanged,
+    required this.passwordChanged,
+    required this.submitRegister,
+    required this.emailError$,
+    required this.passwordError$,
+    required this.message$,
+    required this.isLoading$,
+    required this.nameChanged,
+    required this.nameError$,
   }) : super(dispose);
 
   factory RegisterBloc(final RegisterUseCase registerUser) {

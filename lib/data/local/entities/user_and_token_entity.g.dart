@@ -17,9 +17,10 @@ class _$UserAndTokenEntitySerializer
   final String wireName = 'UserAndTokenEntity';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, UserAndTokenEntity object,
+  Iterable<Object?> serialize(
+      Serializers serializers, UserAndTokenEntity object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'token',
       serializers.serialize(object.token,
           specifiedType: const FullType(String)),
@@ -33,7 +34,7 @@ class _$UserAndTokenEntitySerializer
 
   @override
   UserAndTokenEntity deserialize(
-      Serializers serializers, Iterable<Object> serialized,
+      Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new UserAndTokenEntityBuilder();
 
@@ -41,7 +42,7 @@ class _$UserAndTokenEntitySerializer
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'token':
           result.token = serializers.deserialize(value,
@@ -49,7 +50,7 @@ class _$UserAndTokenEntitySerializer
           break;
         case 'user':
           result.user.replace(serializers.deserialize(value,
-              specifiedType: const FullType(UserEntity)) as UserEntity);
+              specifiedType: const FullType(UserEntity))! as UserEntity);
           break;
       }
     }
@@ -65,16 +66,13 @@ class _$UserAndTokenEntity extends UserAndTokenEntity {
   final UserEntity user;
 
   factory _$UserAndTokenEntity(
-          [void Function(UserAndTokenEntityBuilder) updates]) =>
+          [void Function(UserAndTokenEntityBuilder)? updates]) =>
       (new UserAndTokenEntityBuilder()..update(updates)).build();
 
-  _$UserAndTokenEntity._({this.token, this.user}) : super._() {
-    if (token == null) {
-      throw new BuiltValueNullFieldError('UserAndTokenEntity', 'token');
-    }
-    if (user == null) {
-      throw new BuiltValueNullFieldError('UserAndTokenEntity', 'user');
-    }
+  _$UserAndTokenEntity._({required this.token, required this.user})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(token, 'UserAndTokenEntity', 'token');
+    BuiltValueNullFieldError.checkNotNull(user, 'UserAndTokenEntity', 'user');
   }
 
   @override
@@ -110,22 +108,23 @@ class _$UserAndTokenEntity extends UserAndTokenEntity {
 
 class UserAndTokenEntityBuilder
     implements Builder<UserAndTokenEntity, UserAndTokenEntityBuilder> {
-  _$UserAndTokenEntity _$v;
+  _$UserAndTokenEntity? _$v;
 
-  String _token;
-  String get token => _$this._token;
-  set token(String token) => _$this._token = token;
+  String? _token;
+  String? get token => _$this._token;
+  set token(String? token) => _$this._token = token;
 
-  UserEntityBuilder _user;
+  UserEntityBuilder? _user;
   UserEntityBuilder get user => _$this._user ??= new UserEntityBuilder();
-  set user(UserEntityBuilder user) => _$this._user = user;
+  set user(UserEntityBuilder? user) => _$this._user = user;
 
   UserAndTokenEntityBuilder();
 
   UserAndTokenEntityBuilder get _$this {
-    if (_$v != null) {
-      _token = _$v.token;
-      _user = _$v.user?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _token = $v.token;
+      _user = $v.user.toBuilder();
       _$v = null;
     }
     return this;
@@ -133,14 +132,12 @@ class UserAndTokenEntityBuilder
 
   @override
   void replace(UserAndTokenEntity other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserAndTokenEntity;
   }
 
   @override
-  void update(void Function(UserAndTokenEntityBuilder) updates) {
+  void update(void Function(UserAndTokenEntityBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -148,10 +145,13 @@ class UserAndTokenEntityBuilder
   _$UserAndTokenEntity build() {
     _$UserAndTokenEntity _$result;
     try {
-      _$result =
-          _$v ?? new _$UserAndTokenEntity._(token: token, user: user.build());
+      _$result = _$v ??
+          new _$UserAndTokenEntity._(
+              token: BuiltValueNullFieldError.checkNotNull(
+                  token, 'UserAndTokenEntity', 'token'),
+              user: user.build());
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'user';
         user.build();

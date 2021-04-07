@@ -8,8 +8,8 @@ class LoginUseCase {
   const LoginUseCase(this._userRepository);
 
   Stream<Result<void>> call({
-    @required String email,
-    @required String password,
+    required String email,
+    required String password,
   }) =>
       _userRepository.login(email: email, password: password);
 }
