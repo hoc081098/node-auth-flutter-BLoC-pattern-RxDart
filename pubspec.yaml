@@ -31,6 +31,7 @@ dependencies:
   rxdart_ext: ^0.0.1-nullsafety.7
 
 dependency_overrides:
+  analyzer: ^0.41.1
   http_parser: ^4.0.0
   rxdart: ^0.26.0-nullsafety.1
   shared_preferences:
