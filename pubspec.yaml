@@ -11,24 +11,25 @@ dependencies:
   flutter:
     sdk: flutter
     
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.3
 
   path: ^1.8.0
-  http: ^0.13.1
-  built_value: ^8.0.4
+  http: ^0.13.3
+  built_value: ^8.0.6
   tuple: ^2.0.0
-  rxdart: ^0.26.0
-  image_picker: ^0.7.4
+  rxdart: ^0.27.0
+  image_picker: ^0.7.5
   shared_preferences: ^2.0.5
   octo_image: ^1.0.0+1
 
-  distinct_value_connectable_stream: ^1.2.0
+  distinct_value_connectable_stream: ^1.3.0
   flutter_provider: ^2.0.0
-  rx_shared_preferences: ^2.0.0-nullsafety.0
+  rx_shared_preferences: ^2.1.0
   disposebag: ^1.5.0
   flutter_disposebag: ^1.1.0
-  flutter_bloc_pattern: ^2.0.0
-  rxdart_ext: ^0.0.1
+  flutter_bloc_pattern: ^2.1.0
+  rxdart_ext: ^0.1.0
+  did_change_dependencies: ^0.0.3
 
 dev_dependencies:
   pedantic: ^1.11.0

@@ -54,7 +54,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             await fadeMessageController.forward();
             yield null;
 
-            if (state?.error == null) {
+            if (state.error == null) {
               Navigator.of(context).pop();
             }
           }
@@ -74,7 +74,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
   Widget build(BuildContext context) {
     final changePasswordBloc = BlocProvider.of<ChangePasswordBloc>(context);
 
-    final passwordTextField = StreamBuilder<String>(
+    final passwordTextField = StreamBuilder<String?>(
       stream: changePasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -90,7 +90,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final newPasswordTextField = StreamBuilder<String>(
+    final newPasswordTextField = StreamBuilder<String?>(
       stream: changePasswordBloc.newPasswordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -129,10 +129,10 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final changePasswordButton = StreamBuilder<ChangePasswordState>(
+    final changePasswordButton = RxStreamBuilder<ChangePasswordState>(
       stream: changePasswordBloc.changePasswordState$,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data.isLoading) {
+      builder: (context, state) {
+        if (state.isLoading) {
           return ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(12),

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/utils/result.dart';
 

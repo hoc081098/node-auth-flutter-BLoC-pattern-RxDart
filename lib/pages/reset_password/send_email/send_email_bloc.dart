@@ -33,8 +33,6 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
 
   factory SendEmailBloc(
       final SendResetPasswordEmailUseCase sendResetPasswordEmail) {
-    assert(sendResetPasswordEmail != null);
-
     final emailS = PublishSubject<String>();
     final submitS = PublishSubject<void>();
     final isLoadingS = BehaviorSubject<bool>.seeded(false);

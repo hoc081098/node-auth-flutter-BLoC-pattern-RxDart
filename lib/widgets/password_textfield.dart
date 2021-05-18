@@ -6,7 +6,7 @@ class PasswordTextField extends StatefulWidget {
   final String labelText;
   final TextInputAction textInputAction;
   final VoidCallback onSubmitted;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   const PasswordTextField({
     Key? key,

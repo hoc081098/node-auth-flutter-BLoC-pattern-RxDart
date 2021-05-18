@@ -20,5 +20,6 @@ abstract class TokenResponse
   factory TokenResponse.fromJson(Map<String, dynamic> json) =>
       serializers.deserializeWith<TokenResponse>(serializer, json)!;
 
-  Map<String, dynamic> toJson() => serializers.serializeWith(serializer, this) as Map<String, dynamic>;
+  Map<String, dynamic> toJson() =>
+      serializers.serializeWith(serializer, this) as Map<String, dynamic>;
 }

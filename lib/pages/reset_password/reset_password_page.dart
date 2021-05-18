@@ -80,7 +80,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
     /// Emits true if current page is request email page.
     /// Otherwise, it is reset password page.
     requestEmail$ = requestEmailS.stream
-        .scan<bool>((acc, e, _) => !(acc!), true)
+        .scan<bool>((acc, e, _) => !acc, true)
         .doOnData((requestEmailPage) => requestEmailPage
             ? animationController.reverse()
             : animationController.forward())
@@ -118,7 +118,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
         title: RxStreamBuilder<bool>(
           stream: requestEmail$,
           builder: (context, requestEmailPage) {
-            return Text(requestEmailPage! ? 'Request email' : 'Reset password');
+            return Text(requestEmailPage ? 'Request email' : 'Reset password');
           },
         ),
       ),

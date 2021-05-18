@@ -90,8 +90,8 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
     }).share();
 
     final allField$ = submitSubject
-        .map((_) => Tuple3(emailSubject.requireValue, tokenSubject.requireValue,
-            passwordSubject.requireValue))
+        .map((_) => Tuple3(
+            emailSubject.value, tokenSubject.value, passwordSubject.value))
         .share();
 
     bool allFieldsAreValid(Tuple3<String, String, String> tuple3) {

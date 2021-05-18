@@ -20,7 +20,7 @@ class HomeUserProfile extends StatelessWidget {
       color: Colors.black.withOpacity(0.5),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RxStreamBuilder<AuthenticationState>(
+        child: RxStreamBuilder<AuthenticationState?>(
           stream: homeBloc.authState$,
           builder: (context, data) {
             if (data == null) {

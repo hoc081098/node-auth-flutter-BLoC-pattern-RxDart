@@ -194,7 +194,7 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Failure<T> _errorToResult<T extends Object>(Object e) {
+  static Failure<T> _errorToResult<T extends Object>(Object e, StackTrace s) {
     if (e is RemoteDataSourceException) {
       return Failure.of(message: e.message, error: e);
     }

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/register_use_case.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/utils/result.dart';
@@ -22,9 +21,9 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
   final Function0<void> submitRegister;
 
   /// Streams
-  final Stream<String> emailError$;
-  final Stream<String> passwordError$;
-  final Stream<String> nameError$;
+  final Stream<String?> emailError$;
+  final Stream<String?> passwordError$;
+  final Stream<String?> nameError$;
   final Stream<RegisterMessage> message$;
   final Stream<bool> isLoading$;
 
@@ -42,8 +41,6 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
   }) : super(dispose);
 
   factory RegisterBloc(final RegisterUseCase registerUser) {
-    assert(registerUser != null);
-
     /// Controllers
     final emailController = PublishSubject<String>();
     final nameController = PublishSubject<String>();
@@ -67,16 +64,17 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
       passwordController.stream.map(Validator.isValidPassword),
       isLoadingController.stream,
       nameController.stream.map(Validator.isValidUserName),
-      (isValidEmail, isValidPassword, isLoading, isValidName) {
-        return isValidEmail && isValidPassword && !isLoading && isValidName;
-      },
+      (bool isValidEmail, bool isValidPassword, bool isLoading,
+              bool isValidName) =>
+          isValidEmail && isValidPassword && !isLoading && isValidName,
     ).shareValueSeeded(false);
 
     final registerUser$ = Rx.combineLatest3(
       emailController.stream,
       passwordController.stream,
       nameController.stream,
-      (email, password, name) => RegisterUser(email, name, password),
+      (String email, String password, String name) =>
+          RegisterUser(email, name, password),
     );
 
     final submit$ = submitRegisterController.stream
@@ -149,13 +147,10 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static RegisterMessage _responseToMessage(Result result, String email) {
-    if (result is Success) {
-      return RegisterSuccessMessage(email);
-    }
-    if (result is Failure) {
-      return RegisterErrorMessage(result.message, result.error);
-    }
-    return RegisterErrorMessage('Unknown result $result');
+  static RegisterMessage _responseToMessage(Result<void> result, String email) {
+    return result.fold(
+      (value) => RegisterSuccessMessage(email),
+      (error, message) => RegisterErrorMessage(message, error),
+    );
   }
 }

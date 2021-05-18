@@ -15,27 +15,27 @@ class SharedPrefUtil implements LocalDataSource {
   @override
   Future<void> removeUserAndToken() =>
       _rxPrefs.remove(_kUserTokenKey).onError<Object>((e, s) =>
-          throw LocalDataSourceException('Cannot delete user and token', e));
+          throw LocalDataSourceException('Cannot delete user and token', e, s));
 
   @override
   Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) {
     return _rxPrefs
         .write<UserAndTokenEntity>(_kUserTokenKey, userAndToken, _toString)
         .onError<Object>((e, s) =>
-            throw LocalDataSourceException('Cannot save user and token', e));
+            throw LocalDataSourceException('Cannot save user and token', e, s));
   }
 
   @override
   Future<UserAndTokenEntity?> get userAndToken => _rxPrefs
       .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
       .onError<Object>((e, s) =>
-          throw LocalDataSourceException('Cannot read user and token', e));
+          throw LocalDataSourceException('Cannot read user and token', e, s));
 
   @override
   Stream<UserAndTokenEntity?> get userAndToken$ => _rxPrefs
       .observe<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .onErrorReturnWith((e) =>
-          throw LocalDataSourceException('Cannot read user and token', e));
+      .onErrorReturnWith((e, s) =>
+          throw LocalDataSourceException('Cannot read user and token', e, s));
 
   static UserAndTokenEntity? _toEntity(dynamic jsonString) => jsonString == null
       ? null

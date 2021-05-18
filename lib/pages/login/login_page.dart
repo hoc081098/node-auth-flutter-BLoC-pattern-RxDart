@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:did_change_dependencies/did_change_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
@@ -22,10 +23,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _MyLoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin<LoginPage>, DisposeBagMixin {
-  AnimationController loginButtonController;
-  Animation<double> buttonSqueezeAnimation;
-  Object listen;
+    with
+        SingleTickerProviderStateMixin<LoginPage>,
+        DisposeBagMixin,
+        DidChangeDependenciesStream {
+  late final AnimationController loginButtonController;
+  late final Animation<double> buttonSqueezeAnimation;
 
   final passwordFocusNode = FocusNode();
   final emailController = TextEditingController();
@@ -50,24 +53,24 @@ class _MyLoginPageState extends State<LoginPage>
         ),
       ),
     );
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<LoginBloc>().message$)
+        .exhaustMap(handleMessage)
+        .collect()
+        .disposedBy(bag);
 
-    listen ??= [
-      context.bloc<LoginBloc>().message$.flatMap(handleMessage).collect(),
-      context.bloc<LoginBloc>().isLoading$.listen((isLoading) {
-        if (isLoading) {
-          loginButtonController
-            ..reset()
-            ..forward();
-        } else {
-          loginButtonController.reverse();
-        }
-      })
-    ].disposedBy(bag);
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<LoginBloc>().isLoading$)
+        .listen((isLoading) {
+      if (isLoading) {
+        loginButtonController
+          ..reset()
+          ..forward();
+      } else {
+        loginButtonController.reverse();
+      }
+    }).disposedBy(bag);
   }
 
   @override
@@ -160,7 +163,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget emailTextField(LoginBloc loginBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: loginBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -189,7 +192,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget passwordTextField(LoginBloc loginBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: loginBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/utils/result.dart';
@@ -21,8 +20,8 @@ class LoginBloc extends DisposeCallbackBaseBloc {
   final Function0<void> submitLogin;
 
   /// Streams
-  final Stream<String> emailError$;
-  final Stream<String> passwordError$;
+  final Stream<String?> emailError$;
+  final Stream<String?> passwordError$;
   final Stream<LoginMessage> message$;
   final Stream<bool> isLoading$;
 
@@ -38,8 +37,6 @@ class LoginBloc extends DisposeCallbackBaseBloc {
   }) : super(dispose);
 
   factory LoginBloc(final LoginUseCase login) {
-    assert(login != null);
-
     /// Controllers
     final emailController = PublishSubject<String>();
     final passwordController = PublishSubject<String>();
@@ -60,14 +57,15 @@ class LoginBloc extends DisposeCallbackBaseBloc {
       emailController.stream.map(Validator.isValidEmail),
       passwordController.stream.map(Validator.isValidPassword),
       isLoadingController.stream,
-      (isValidEmail, isValidPassword, isLoading) =>
+      (bool isValidEmail, bool isValidPassword, bool isLoading) =>
           isValidEmail && isValidPassword && !isLoading,
     ).shareValueSeeded(false);
 
     final credential$ = Rx.combineLatest2(
       emailController.stream,
       passwordController.stream,
-      (email, password) => Credential(email: email, password: password),
+      (String email, String password) =>
+          Credential(email: email, password: password),
     );
 
     final submit$ = submitLoginController.stream
@@ -128,13 +126,10 @@ class LoginBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LoginMessage _responseToMessage(Result result) {
-    if (result is Success) {
-      return const LoginSuccessMessage();
-    }
-    if (result is Failure) {
-      return LoginErrorMessage(result.message, result.error);
-    }
-    return LoginErrorMessage('Unknown result $result');
+  static LoginMessage _responseToMessage(Result<void> result) {
+    return result.fold(
+      (value) => const LoginSuccessMessage(),
+      (error, message) => LoginErrorMessage(message, error),
+    );
   }
 }

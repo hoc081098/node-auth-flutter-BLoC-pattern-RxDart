@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/utils/result.dart';
@@ -25,9 +25,9 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   final Function1<String, void> newPasswordChanged;
 
   /// Output stream
-  final Stream<ChangePasswordState> changePasswordState$;
-  final Stream<String> passwordError$;
-  final Stream<String> newPasswordError$;
+  final DistinctValueStream<ChangePasswordState> changePasswordState$;
+  final Stream<String?> passwordError$;
+  final Stream<String?> newPasswordError$;
 
   ChangePasswordBloc._({
     required this.changePassword,
@@ -40,8 +40,6 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   }) : super(dispose);
 
   factory ChangePasswordBloc(final ChangePasswordUseCase changePassword) {
-    assert(ChangePasswordUseCase != null);
-
     /// Controllers
     final passwordS = PublishSubject<String>();
     final newPasswordS = PublishSubject<String>();
@@ -71,7 +69,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
         .exhaustMap((both) => _performChangePassword(changePassword, both))
-        .share();
+        .publishValueDistinct(ChangePasswordState((b) => b..isLoading = false));
 
     final passwordError$ = both$
         .map((tuple) {
@@ -134,22 +132,19 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   ) {
     print('[DEBUG] change password both=$both');
 
-    ChangePasswordState resultToState(result) {
+    ChangePasswordState resultToState(Result<void> result) {
       print('[DEBUG] change password result=$result');
 
-      if (result is Success) {
-        return ChangePasswordState((b) => b
+      return result.fold(
+        (value) => ChangePasswordState((b) => b
           ..isLoading = false
           ..error = null
-          ..message = 'Change password successfully!');
-      }
-      if (result is Failure) {
-        return ChangePasswordState((b) => b
+          ..message = 'Change password successfully!'),
+        (error, message) => ChangePasswordState((b) => b
           ..isLoading = false
-          ..error = result.error
-          ..message = 'Error when change password: ${result.message}');
-      }
-      return null;
+          ..error = error
+          ..message = 'Error when change password: ${message}'),
+      );
     }
 
     return changePassword(password: both.item1, newPassword: both.item2)

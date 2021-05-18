@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:did_change_dependencies/did_change_dependencies.dart';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
@@ -20,10 +21,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage>
-    with SingleTickerProviderStateMixin, DisposeBagMixin {
-  AnimationController registerButtonController;
-  Animation<double> buttonSqueezeAnimation;
-  Object listen;
+    with
+        SingleTickerProviderStateMixin,
+        DisposeBagMixin,
+        DidChangeDependenciesStream {
+  late AnimationController registerButtonController;
+  late Animation<double> buttonSqueezeAnimation;
 
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
@@ -45,24 +48,24 @@ class _RegisterPageState extends State<RegisterPage>
         curve: Interval(0.0, 0.250),
       ),
     );
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<RegisterBloc>().message$)
+        .exhaustMap(handleMessage)
+        .collect()
+        .disposedBy(bag);
 
-    listen ??= [
-      context.bloc<RegisterBloc>().message$.flatMap(handleMessage).collect(),
-      context.bloc<RegisterBloc>().isLoading$.listen((isLoading) {
-        if (isLoading) {
-          registerButtonController
-            ..reset()
-            ..forward();
-        } else {
-          registerButtonController.reverse();
-        }
-      }),
-    ].disposedBy(bag);
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<RegisterBloc>().isLoading$)
+        .listen((isLoading) {
+      if (isLoading) {
+        registerButtonController
+          ..reset()
+          ..forward();
+      } else {
+        registerButtonController.reverse();
+      }
+    }).disposedBy(bag);
   }
 
   @override
@@ -155,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Widget emailTextField(RegisterBloc registerBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: registerBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -183,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Widget passwordTextField(RegisterBloc registerBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: registerBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -244,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Widget nameTextField(RegisterBloc registerBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: registerBloc.nameError$,
       builder: (context, snapshot) {
         return TextField(
