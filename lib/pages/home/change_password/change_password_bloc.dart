@@ -143,7 +143,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         (error, message) => ChangePasswordState((b) => b
           ..isLoading = false
           ..error = error
-          ..message = 'Error when change password: ${message}'),
+          ..message = 'Error when change password: $message'),
       );
     }
 

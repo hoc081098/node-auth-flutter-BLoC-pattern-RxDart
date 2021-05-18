@@ -127,6 +127,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
           Positioned.fill(child: sendEmailPage),
           Positioned.fill(
             child: RotationTransition(
+              turns: animationTurns,
               child: SlideTransition(
                 position: animationPosition,
                 child: ScaleTransition(
@@ -137,7 +138,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                   ),
                 ),
               ),
-              turns: animationTurns,
             ),
           )
         ],

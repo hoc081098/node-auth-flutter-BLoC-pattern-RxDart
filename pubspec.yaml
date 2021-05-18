@@ -30,13 +30,14 @@ dependencies:
   flutter_bloc_pattern: ^2.1.0
   rxdart_ext: ^0.1.0
   did_change_dependencies: ^0.0.3
+  pedantic: ^1.11.0
 
 dev_dependencies:
-  pedantic: ^1.11.0
+  plugin_platform_interface: ^2.0.0
   flutter_test:
     sdk: flutter
   build_runner: ^1.12.2
-  built_value_generator: ^8.0.4
+  built_value_generator: ^8.0.6
 
 flutter:
   uses-material-design: true

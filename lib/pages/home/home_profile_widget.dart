@@ -85,8 +85,8 @@ class HomeUserProfile extends StatelessWidget {
       children: <Widget>[
         ClipOval(
           child: GestureDetector(
-            child: image,
             onTap: () => _pickAndUploadImage(homeBloc),
+            child: image,
           ),
         ),
         Expanded(

@@ -222,18 +222,18 @@ class _InputTokenAndResetPasswordPageState
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
-                  child: Text('Submit'),
                   style: buttonStyle,
                   onPressed: resetPasswordBloc.submit,
+                  child: Text('Submit'),
                 ),
               ),
               SizedBox(height: 8),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
-                  child: Text('Request email'),
                   style: buttonStyle,
                   onPressed: widget.toggle,
+                  child: Text('Request email'),
                 ),
               ),
               SizedBox(height: 24),

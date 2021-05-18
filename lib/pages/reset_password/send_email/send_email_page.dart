@@ -147,18 +147,18 @@ class _SendEmailPageState extends State<SendEmailPage>
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
-                  child: Text('Send'),
                   style: buttonStyle,
                   onPressed: bloc.submit,
+                  child: Text('Send'),
                 ),
               ),
               SizedBox(height: 8),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
-                  child: Text('Input received token'),
                   style: buttonStyle,
                   onPressed: widget.toggle,
+                  child: Text('Input received token'),
                 ),
               ),
             ],

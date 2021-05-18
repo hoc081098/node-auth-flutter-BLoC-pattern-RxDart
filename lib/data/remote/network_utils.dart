@@ -16,7 +16,7 @@ void _logRequest(
   Map<String, String>? multipartFields,
   List<http.MultipartFile>? multipartFiles,
 }) {
-  debugPrint('[http] --> ${method} ${url}');
+  debugPrint('[http] --> $method $url');
   debugPrint('${_indent}headers: $headers');
 
   if (method == 'POST' || method == 'PUT') {
@@ -24,10 +24,10 @@ void _logRequest(
 
     if (method == 'POST') {
       if (multipartFields != null) {
-        debugPrint('${_indent}multipartFields: ${multipartFields}');
+        debugPrint('${_indent}multipartFields: $multipartFields');
       }
       if (multipartFields != null) {
-        debugPrint('${_indent}multipartFiles: ${multipartFiles}');
+        debugPrint('${_indent}multipartFiles: $multipartFiles');
       }
     }
   }

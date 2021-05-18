@@ -206,21 +206,6 @@ class _RegisterPageState extends State<RegisterPage>
   Widget registerButton(RegisterBloc registerBloc) {
     return AnimatedBuilder(
       animation: buttonSqueezeAnimation,
-      child: MaterialButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          registerBloc.submitRegister();
-        },
-        color: Theme.of(context).backgroundColor,
-        child: Text(
-          'REGISTER',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-        splashColor: Theme.of(context).accentColor,
-      ),
       builder: (context, child) {
         final value = buttonSqueezeAnimation.value;
 
@@ -243,6 +228,21 @@ class _RegisterPageState extends State<RegisterPage>
           ),
         );
       },
+      child: MaterialButton(
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          registerBloc.submitRegister();
+        },
+        color: Theme.of(context).backgroundColor,
+        splashColor: Theme.of(context).accentColor,
+        child: Text(
+          'REGISTER',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
+      ),
     );
   }
 

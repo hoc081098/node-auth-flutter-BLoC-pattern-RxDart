@@ -28,15 +28,14 @@ class MyApp extends StatelessWidget {
       },
       RegisterPage.routeName: (context) {
         return BlocProvider<RegisterBloc>(
-          child: const RegisterPage(),
           initBloc: (context) => RegisterBloc(
             RegisterUseCase(context.get()),
           ),
+          child: const RegisterPage(),
         );
       },
       HomePage.routeName: (context) {
         return BlocProvider<HomeBloc>(
-          child: const HomePage(),
           initBloc: (context) {
             final userRepository = context.get<UserRepository>();
             return HomeBloc(
@@ -45,6 +44,7 @@ class MyApp extends StatelessWidget {
               UploadImageUseCase(userRepository),
             );
           },
+          child: const HomePage(),
         );
       },
       LoginPage.routeName: (context) {

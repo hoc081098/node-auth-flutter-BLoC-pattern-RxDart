@@ -212,21 +212,6 @@ class _MyLoginPageState extends State<LoginPage>
   Widget loginButton(LoginBloc loginBloc) {
     return AnimatedBuilder(
       animation: buttonSqueezeAnimation,
-      child: MaterialButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          loginBloc.submitLogin();
-        },
-        color: Theme.of(context).backgroundColor,
-        child: Text(
-          'LOGIN',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-        splashColor: Theme.of(context).accentColor,
-      ),
       builder: (context, child) {
         final value = buttonSqueezeAnimation.value;
 
@@ -249,6 +234,21 @@ class _MyLoginPageState extends State<LoginPage>
           ),
         );
       },
+      child: MaterialButton(
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          loginBloc.submitLogin();
+        },
+        color: Theme.of(context).backgroundColor,
+        splashColor: Theme.of(context).accentColor,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
+      ),
     );
   }
 
