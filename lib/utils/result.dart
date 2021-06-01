@@ -1,6 +1,6 @@
 import 'package:built_value/built_value.dart';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 part 'result.g.dart';
 
@@ -51,21 +51,26 @@ abstract class Failure<T>
   factory Failure([void Function(FailureBuilder<T>) updates]) = _$Failure<T>;
 }
 
-extension FlatMapResultExtension<T> on Stream<Result<T>> {
-  Stream<Result<R>> flatMapResult<R>(
-      Stream<Result<R>> Function(T? value) mapper) {
-    return flatMap((result) {
-      if (result is Failure<T>) {
-        final failure = Failure<R>.of(
-          message: result.message,
-          error: result.error,
-        );
-        return Stream.value(failure);
-      }
-      if (result is Success<T>) {
-        return mapper(result.value);
-      }
-      return Stream.error('Cannot handle result: $result');
-    });
+extension FlatMapResultExtension<T extends Object?> on Single<Result<T>> {
+  Single<Result<R>> flatMapResult<R>(
+    Single<Result<R>> Function(T? value) mapper,
+  ) {
+    return flatMapSingle(
+      (result) => result.fold(
+        mapper,
+        (error, message) => Single.value(
+          Failure<R>.of(
+            message: message,
+            error: error,
+          ),
+        ),
+      ),
+    );
   }
 }
+
+class Unit {
+  const Unit._();
+}
+
+const unit = Unit._();

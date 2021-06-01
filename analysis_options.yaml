@@ -1,4 +1,9 @@
 include: package:pedantic/analysis_options.1.11.0.yaml
+
+analyzer:
+  enable-experiment:
+    - nonfunction-type-aliases
+
 linter:
   rules:
     - prefer_final_locals

@@ -13,6 +13,8 @@ import 'package:node_auth/domain/models/user_and_token.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
+import 'package:tuple/tuple.dart';
 
 part 'mappers.dart';
 
@@ -42,34 +44,28 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Stream<Result<void>> login({
+  Single_Result_Unit login({
     required String email,
     required String password,
   }) {
-    return _execute(
-      () => _remoteDataSource.loginUser(
-        email,
-        password,
-      ),
-    ).flatMapResult((result) {
+    return _execute(() => _remoteDataSource.loginUser(email, password))
+        .flatMapResult((result) {
       final token = result!.token!;
-
-      return _execute(
-        () => _remoteDataSource.getUserProfile(
-          email,
-          token,
-        ),
-      ).flatMapResult(
-        (user) => _execute(
-          () => _localDataSource.saveUserAndToken(
-            _Mappers.userResponseToUserAndTokenEntity(
-              user!,
-              token,
-            ),
-          ),
-        ),
-      );
-    });
+      return _execute(() => _remoteDataSource
+          .getUserProfile(email, token)
+          .then((user) => Tuple2(user, token)));
+    }).flatMapResult(
+      (tuple) => _execute(
+        () => _localDataSource
+            .saveUserAndToken(
+              _Mappers.userResponseToUserAndTokenEntity(
+                tuple!.item1,
+                tuple.item2,
+              ),
+            )
+            .then((value) => unit),
+      ),
+    );
   }
 
   @override
@@ -173,9 +169,11 @@ class UserRepositoryImpl implements UserRepository {
   /// if future is successful, emit [Success]
   /// if future complete with error, emit [Failure]
   ///
-  Stream<Result<T>> _execute<T>(Future<T> Function() factory) =>
-      Rx.fromCallable(factory)
-          .doOnError(_handleUnauthenticatedError)
+  Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
+      Single.fromCallable(factory)
+          .doOnError(
+              _handleUnauthenticatedError) // TODO(single): remove singleOrError
+          .singleOrError()
           .map<Result<T>>((value) => Success<T>.of(value: value))
           .onErrorReturnWith(_errorToResult);
 

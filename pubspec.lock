@@ -28,7 +28,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.0"
+    version: "2.6.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -236,7 +236,7 @@ packages:
       name: flutter_bloc_pattern
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -316,7 +316,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.5"
+    version: "0.7.5+3"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -498,21 +498,23 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.0"
+    version: "0.27.1"
   rxdart_ext:
     dependency: "direct main"
     description:
-      name: rxdart_ext
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0"
+      path: "."
+      ref: b2c19235776bb50af60bc1f029766ee68f4f61c6
+      resolved-ref: b2c19235776bb50af60bc1f029766ee68f4f61c6
+      url: "https://github.com/hoc081098/rxdart_ext.git"
+    source: git
+    version: "0.1.1-dev.0"
   shared_preferences:
     dependency: "direct main"
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.0.6"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -580,7 +582,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
   stack_trace:
     dependency: transitive
     description:
@@ -622,7 +624,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.19"
+    version: "0.3.0"
   timing:
     dependency: transitive
     description:
@@ -687,5 +689,5 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.12.0 <3.0.0"
+  dart: ">=2.13.0 <3.0.0"
   flutter: ">=2.0.0"

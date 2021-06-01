@@ -2,37 +2,40 @@ import 'dart:io';
 
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/utils/result.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
+
+typedef Single_Result_Unit = Single<Result<Unit>>;
 
 abstract class UserRepository {
   Stream<AuthenticationState> get authenticationState$;
 
   Future<AuthenticationState> get authenticationState;
 
-  Stream<Result<void>> login({
+  Single_Result_Unit login({
     required String email,
     required String password,
   });
 
-  Stream<Result<void>> registerUser({
+  Single_Result_Unit registerUser({
     required String name,
     required String email,
     required String password,
   });
 
-  Stream<Result<void>> logout();
+  Single_Result_Unit logout();
 
-  Stream<Result<void>> uploadImage(File image);
+  Single_Result_Unit uploadImage(File image);
 
-  Stream<Result<void>> changePassword({
+  Single_Result_Unit changePassword({
     required String password,
     required String newPassword,
   });
 
-  Stream<Result<void>> resetPassword({
+  Single_Result_Unit resetPassword({
     required String email,
     required String token,
     required String newPassword,
   });
 
-  Stream<Result<void>> sendResetPasswordEmail(String email);
+  Single_Result_Unit sendResetPasswordEmail(String email);
 }
