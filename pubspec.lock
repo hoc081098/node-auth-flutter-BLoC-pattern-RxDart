@@ -316,7 +316,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.5+3"
+    version: "0.8.0+1"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -503,8 +503,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: b2c19235776bb50af60bc1f029766ee68f4f61c6
-      resolved-ref: b2c19235776bb50af60bc1f029766ee68f4f61c6
+      ref: "61ab80610903916556d8f2cf9d0055c23f05bb91"
+      resolved-ref: "61ab80610903916556d8f2cf9d0055c23f05bb91"
       url: "https://github.com/hoc081098/rxdart_ext.git"
     source: git
     version: "0.1.1-dev.0"

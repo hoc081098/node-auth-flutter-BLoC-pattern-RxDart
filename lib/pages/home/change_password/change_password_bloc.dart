@@ -9,6 +9,7 @@ import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:tuple/tuple.dart';
 
 bool _isValidPassword(String password) {
@@ -66,6 +67,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
 
     final changePasswordState$ = submitChangePasswordS.stream
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
+        .debug()
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
         .exhaustMap((both) => _performChangePassword(changePassword, both))
@@ -116,7 +118,11 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
     }.debug();
 
     return ChangePasswordBloc._(
-      dispose: DisposeBag([...subscriptions, ...controllers]).dispose,
+      dispose: DisposeBag([
+        ...subscriptions,
+        ...controllers,
+        changePasswordState$.connect(),
+      ]).dispose,
       changePassword: () => submitChangePasswordS.add(null),
       changePasswordState$: changePasswordState$,
       passwordChanged: passwordS.add,
@@ -132,7 +138,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   ) {
     print('[DEBUG] change password both=$both');
 
-    ChangePasswordState resultToState(Result<void> result) {
+    ChangePasswordState resultToState(Result_Unit result) {
       print('[DEBUG] change password result=$result');
 
       return result.fold(

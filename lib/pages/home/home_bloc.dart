@@ -75,14 +75,14 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LogoutMessage _resultToLogoutMessage(Result<void> result) {
+  static LogoutMessage _resultToLogoutMessage(Result_Unit result) {
     return result.fold(
       (value) => const LogoutSuccessMessage(),
       (error, message) => LogoutErrorMessage(message, error),
     );
   }
 
-  static UpdateAvatarMessage _resultToChangeAvatarMessage(Result<void> result) {
+  static UpdateAvatarMessage _resultToChangeAvatarMessage(Result_Unit result) {
     return result.fold(
       (value) => const UpdateAvatarSuccessMessage(),
       (error, message) => UpdateAvatarErrorMessage(message, error),

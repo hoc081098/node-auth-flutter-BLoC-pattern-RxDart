@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage>
             image: AssetImage('assets/bg.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
+              Colors.black.withOpacity(0.5),
               BlendMode.darken,
             ),
           ),
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             const HomeUserProfile(),
             Container(
-              height: 48.0,
+              height: 54.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             Container(
-              height: 48.0,
+              height: 54.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -104,6 +104,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
             ),
+            const SizedBox(height: 8),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -116,6 +117,7 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
             ),
+            const SizedBox(height: 8),
             Center(
               child: RotationTransition(
                 turns: rotateLogoController,

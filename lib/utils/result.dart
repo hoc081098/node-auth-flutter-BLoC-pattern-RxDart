@@ -80,12 +80,13 @@ extension UnitSingleResultExtension<T> on Single<Result<T>> {
   Single_Result_Unit asUnit() => map(
         (r) => r.fold(
           (_) => Success<Unit>(unit),
-          (error, message) => r as Result<Unit>,
+          (error, message) => r as Failure,
         ),
       );
 }
 
-typedef Single_Result_Unit = Single<Result<Unit>>;
+typedef Result_Unit = Result<Unit>;
+typedef Single_Result_Unit = Single<Result_Unit>;
 
 class Unit {
   const Unit._();

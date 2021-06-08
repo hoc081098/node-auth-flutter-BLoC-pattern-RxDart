@@ -147,7 +147,7 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static RegisterMessage _responseToMessage(Result<void> result, String email) {
+  static RegisterMessage _responseToMessage(Result_Unit result, String email) {
     return result.fold(
       (value) => RegisterSuccessMessage(email),
       (error, message) => RegisterErrorMessage(message, error),

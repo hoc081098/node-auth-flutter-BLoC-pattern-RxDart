@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
           accentColor: const Color(0xFF00e676),
         ),
         routes: routes,
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

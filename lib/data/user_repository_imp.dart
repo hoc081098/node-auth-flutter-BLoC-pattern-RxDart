@@ -175,9 +175,7 @@ class UserRepositoryImpl implements UserRepository {
   ///
   Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
       Single.fromCallable(factory)
-          .doOnError(
-              _handleUnauthenticatedError) // TODO(single): remove singleOrError
-          .singleOrError()
+          .doOnError(_handleUnauthenticatedError)
           .map<Result<T>>((value) => Success<T>(value))
           .onErrorReturnWith(_errorToResult);
 

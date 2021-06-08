@@ -6,7 +6,7 @@ class ResetPasswordUseCase {
 
   const ResetPasswordUseCase(this._userRepository);
 
-  Stream<Result<void>> call({
+  Stream<Result_Unit> call({
     required String email,
     required String token,
     required String newPassword,

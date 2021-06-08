@@ -106,10 +106,10 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final messageText = StreamBuilder<ChangePasswordState>(
+    final messageText = RxStreamBuilder<ChangePasswordState>(
       stream: changePasswordBloc.changePasswordState$,
-      builder: (context, snapshot) {
-        final message = snapshot.data?.message;
+      builder: (context, state) {
+        final message = state.message;
         if (message != null) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -132,7 +132,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     final changePasswordButton = RxStreamBuilder<ChangePasswordState>(
       stream: changePasswordBloc.changePasswordState$,
       builder: (context, state) {
-        if (state.isLoading) {
+        if (!state.isLoading) {
           return ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(12),
