@@ -6,7 +6,7 @@ class LoginUseCase {
 
   const LoginUseCase(this._userRepository);
 
-  Stream<Result_Unit> call({
+  Single_Result_Unit call({
     required String email,
     required String password,
   }) =>
