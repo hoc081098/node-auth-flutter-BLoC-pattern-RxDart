@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/utils/result.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
-
-typedef Single_Result_Unit = Single<Result<Unit>>;
 
 abstract class UserRepository {
   Stream<AuthenticationState> get authenticationState$;

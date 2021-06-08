@@ -50,80 +50,84 @@ class UserRepositoryImpl implements UserRepository {
   }) {
     return _execute(() => _remoteDataSource.loginUser(email, password))
         .flatMapResult((result) {
-      final token = result!.token!;
-      return _execute(() => _remoteDataSource
-          .getUserProfile(email, token)
-          .then((user) => Tuple2(user, token)));
-    }).flatMapResult(
-      (tuple) => _execute(
-        () => _localDataSource
-            .saveUserAndToken(
+          final token = result.token!;
+          return _execute(() => _remoteDataSource
+              .getUserProfile(email, token)
+              .then((user) => Tuple2(user, token)));
+        })
+        .flatMapResult(
+          (tuple) => _execute(
+            () => _localDataSource.saveUserAndToken(
               _Mappers.userResponseToUserAndTokenEntity(
-                tuple!.item1,
+                tuple.item1,
                 tuple.item2,
               ),
-            )
-            .then((value) => unit),
-      ),
-    );
+            ),
+          ),
+        )
+        .asUnit();
   }
 
   @override
-  Stream<Result<void>> registerUser({
+  Single_Result_Unit registerUser({
     required String name,
     required String email,
     required String password,
   }) =>
-      _execute(() => _remoteDataSource.registerUser(name, email, password));
+      _execute(() => _remoteDataSource.registerUser(name, email, password))
+          .asUnit();
 
   @override
-  Stream<Result<void>> logout() =>
-      _execute<void>(() => _localDataSource.removeUserAndToken());
+  Single_Result_Unit logout() =>
+      _execute<void>(() => _localDataSource.removeUserAndToken()).asUnit();
 
   @override
-  Stream<Result<void>> uploadImage(File image) {
-    return _userAndToken.flatMapResult((userAndToken) {
-      if (userAndToken == null) {
-        return Stream.value(
-          Failure(
-            (b) => b
-              ..message = 'Require login!'
-              ..error = 'Email or token is null',
-          ),
-        );
-      }
+  Single_Result_Unit uploadImage(File image) {
+    return _userAndToken
+        .flatMapResult((userAndToken) {
+          if (userAndToken == null) {
+            return Single.value(
+              Failure(
+                message: 'Require login!',
+                error: 'Email or token is null',
+              ),
+            );
+          }
 
-      return _execute(
-        () => _remoteDataSource.uploadImage(
-          image,
-          userAndToken.user.email,
-          userAndToken.token,
-        ),
-      ).flatMapResult(
-        (user) => _execute(
-          () => _localDataSource.saveUserAndToken(
-            _Mappers.userResponseToUserAndTokenEntity(
-              user!,
-              userAndToken.token,
+          return _execute(
+            () => _remoteDataSource
+                .uploadImage(
+                  image,
+                  userAndToken.user.email,
+                  userAndToken.token,
+                )
+                .then((user) => Tuple2(user, userAndToken.token)),
+          );
+        })
+        .flatMapResult(
+          (tuple) => _execute(
+            () => _localDataSource.saveUserAndToken(
+              _Mappers.userResponseToUserAndTokenEntity(
+                tuple.item1,
+                tuple.item2,
+              ),
             ),
           ),
-        ),
-      );
-    });
+        )
+        .asUnit();
   }
 
   @override
-  Stream<Result<void>> changePassword({
+  Single_Result_Unit changePassword({
     required String password,
     required String newPassword,
   }) {
     return _userAndToken.flatMapResult((userAndToken) {
       if (userAndToken == null) {
-        return Stream.value(
+        return Single.value(
           Failure(
-            (b) => b
-              ..message = 'Require login!'
-              ..error = 'Email or token is null',
+            message: 'Require login!',
+            error: 'Email or token is null',
           ),
         );
       }
@@ -135,12 +139,12 @@ class UserRepositoryImpl implements UserRepository {
           newPassword,
           userAndToken.token,
         ),
-      );
+      ).asUnit();
     });
   }
 
   @override
-  Stream<Result<void>> resetPassword({
+  Single_Result_Unit resetPassword({
     required String email,
     required String token,
     required String newPassword,
@@ -151,17 +155,17 @@ class UserRepositoryImpl implements UserRepository {
           token: token,
           newPassword: newPassword,
         ),
-      );
+      ).asUnit();
 
   @override
-  Stream<Result<void>> sendResetPasswordEmail(String email) =>
-      _execute(() => _remoteDataSource.resetPassword(email));
+  Single_Result_Unit sendResetPasswordEmail(String email) =>
+      _execute(() => _remoteDataSource.resetPassword(email)).asUnit();
 
   ///
   /// Helpers functions
   ///
 
-  Stream<Result<UserAndTokenEntity?>> get _userAndToken =>
+  Single<Result<UserAndTokenEntity?>> get _userAndToken =>
       _execute(() => _localDataSource.userAndToken);
 
   ///
@@ -174,7 +178,7 @@ class UserRepositoryImpl implements UserRepository {
           .doOnError(
               _handleUnauthenticatedError) // TODO(single): remove singleOrError
           .singleOrError()
-          .map<Result<T>>((value) => Success<T>.of(value: value))
+          .map<Result<T>>((value) => Success<T>(value))
           .onErrorReturnWith(_errorToResult);
 
   ///
@@ -192,14 +196,14 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Failure<T> _errorToResult<T extends Object>(Object e, StackTrace s) {
+  static Failure _errorToResult(Object e, StackTrace s) {
     if (e is RemoteDataSourceException) {
-      return Failure.of(message: e.message, error: e);
+      return Failure(message: e.message, error: e);
     }
     if (e is LocalDataSourceException) {
-      return Failure.of(message: e.message, error: e);
+      return Failure(message: e.message, error: e);
     }
-    return Failure.of(message: e.toString(), error: e);
+    return Failure(message: e.toString(), error: e);
   }
 
   ///
