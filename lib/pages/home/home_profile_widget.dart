@@ -10,7 +10,7 @@ import 'package:node_auth/pages/home/home_bloc.dart';
 import 'package:octo_image/octo_image.dart';
 
 class HomeUserProfile extends StatelessWidget {
-  const HomeUserProfile({Key key}) : super(key: key);
+  const HomeUserProfile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class HomeUserProfile extends StatelessWidget {
       color: Colors.black.withOpacity(0.5),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RxStreamBuilder<AuthenticationState>(
+        child: RxStreamBuilder<AuthenticationState?>(
           stream: homeBloc.authState$,
           builder: (context, data) {
             if (data == null) {
@@ -39,15 +39,17 @@ class HomeUserProfile extends StatelessWidget {
   }
 
   Widget _buildProfile(User user, HomeBloc homeBloc, BuildContext context) {
+    final imageUrl = user.imageUrl;
+    final provider = imageUrl != null
+        ? NetworkImage(
+            Uri.https(
+              baseUrl,
+              imageUrl,
+            ).toString(),
+          ) as ImageProvider
+        : AssetImage('assets/user.png');
     final image = OctoImage(
-      image: user.imageUrl != null
-          ? NetworkImage(
-              Uri.https(
-                baseUrl,
-                user.imageUrl,
-              ).toString(),
-            )
-          : AssetImage('assets/user.png'),
+      image: provider,
       fit: BoxFit.cover,
       width: 90.0,
       height: 90.0,
@@ -70,7 +72,7 @@ class HomeUserProfile extends StatelessWidget {
               SizedBox(height: 4),
               Text(
                 'Error',
-                style: themeData.textTheme.subtitle2.copyWith(fontSize: 12),
+                style: themeData.textTheme.subtitle2!.copyWith(fontSize: 12),
               ),
             ],
           ),
@@ -83,8 +85,8 @@ class HomeUserProfile extends StatelessWidget {
       children: <Widget>[
         ClipOval(
           child: GestureDetector(
-            child: image,
             onTap: () => _pickAndUploadImage(homeBloc),
+            child: image,
           ),
         ),
         Expanded(

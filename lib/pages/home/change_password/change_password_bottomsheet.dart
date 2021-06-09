@@ -6,7 +6,7 @@ import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ChangePasswordBottomSheet extends StatefulWidget {
-  const ChangePasswordBottomSheet({Key key}) : super(key: key);
+  const ChangePasswordBottomSheet({Key? key}) : super(key: key);
 
   @override
   _ChangePasswordBottomSheetState createState() =>
@@ -17,9 +17,9 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
     with
         SingleTickerProviderStateMixin<ChangePasswordBottomSheet>,
         DisposeBagMixin {
-  AnimationController fadeMessageController;
-  Animation<double> messageOpacity;
-  Object listen;
+  late final AnimationController fadeMessageController;
+  late final Animation<double> messageOpacity;
+  Object? listen;
 
   final newPasswordFocusNode = FocusNode();
 
@@ -54,7 +54,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             await fadeMessageController.forward();
             yield null;
 
-            if (state?.error == null) {
+            if (state.error == null) {
               Navigator.of(context).pop();
             }
           }
@@ -74,7 +74,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
   Widget build(BuildContext context) {
     final changePasswordBloc = BlocProvider.of<ChangePasswordBloc>(context);
 
-    final passwordTextField = StreamBuilder<String>(
+    final passwordTextField = StreamBuilder<String?>(
       stream: changePasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -90,7 +90,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final newPasswordTextField = StreamBuilder<String>(
+    final newPasswordTextField = StreamBuilder<String?>(
       stream: changePasswordBloc.newPasswordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -106,10 +106,10 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final messageText = StreamBuilder<ChangePasswordState>(
+    final messageText = RxStreamBuilder<ChangePasswordState>(
       stream: changePasswordBloc.changePasswordState$,
-      builder: (context, snapshot) {
-        final message = snapshot.data?.message;
+      builder: (context, state) {
+        final message = state.message;
         if (message != null) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -129,13 +129,15 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    final changePasswordButton = StreamBuilder<ChangePasswordState>(
+    final changePasswordButton = RxStreamBuilder<ChangePasswordState>(
       stream: changePasswordBloc.changePasswordState$,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data.isLoading) {
-          return RaisedButton(
-            padding: const EdgeInsets.all(12),
-            elevation: 8,
+      builder: (context, state) {
+        if (!state.isLoading) {
+          return ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(12),
+              elevation: 4,
+            ),
             onPressed: () {
               FocusScope.of(context).unfocus();
               changePasswordBloc.changePassword();
@@ -150,29 +152,28 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
       },
     );
 
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: passwordTextField,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: newPasswordTextField,
-            ),
-            messageText,
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: changePasswordButton,
-            )
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: passwordTextField,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: newPasswordTextField,
+          ),
+          messageText,
+          Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: changePasswordButton,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).viewInsets.bottom,
+          )
+        ],
       ),
     );
   }

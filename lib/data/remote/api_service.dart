@@ -95,8 +95,8 @@ class ApiService implements RemoteDataSource {
   @override
   Future<TokenResponse> resetPassword(
     String email, {
-    String token,
-    String newPassword,
+    String? token,
+    String? newPassword,
   }) async {
     final url = Uri.https(baseUrl, '/users/$email/password');
     final task = token != null && newPassword != null

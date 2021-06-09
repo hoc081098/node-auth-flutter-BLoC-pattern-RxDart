@@ -11,13 +11,12 @@ class _$AuthenticatedState extends AuthenticatedState {
   final UserAndToken userAndToken;
 
   factory _$AuthenticatedState(
-          [void Function(AuthenticatedStateBuilder) updates]) =>
+          [void Function(AuthenticatedStateBuilder)? updates]) =>
       (new AuthenticatedStateBuilder()..update(updates)).build();
 
-  _$AuthenticatedState._({this.userAndToken}) : super._() {
-    if (userAndToken == null) {
-      throw new BuiltValueNullFieldError('AuthenticatedState', 'userAndToken');
-    }
+  _$AuthenticatedState._({required this.userAndToken}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(
+        userAndToken, 'AuthenticatedState', 'userAndToken');
   }
 
   @override
@@ -50,19 +49,20 @@ class _$AuthenticatedState extends AuthenticatedState {
 
 class AuthenticatedStateBuilder
     implements Builder<AuthenticatedState, AuthenticatedStateBuilder> {
-  _$AuthenticatedState _$v;
+  _$AuthenticatedState? _$v;
 
-  UserAndTokenBuilder _userAndToken;
+  UserAndTokenBuilder? _userAndToken;
   UserAndTokenBuilder get userAndToken =>
       _$this._userAndToken ??= new UserAndTokenBuilder();
-  set userAndToken(UserAndTokenBuilder userAndToken) =>
+  set userAndToken(UserAndTokenBuilder? userAndToken) =>
       _$this._userAndToken = userAndToken;
 
   AuthenticatedStateBuilder();
 
   AuthenticatedStateBuilder get _$this {
-    if (_$v != null) {
-      _userAndToken = _$v.userAndToken?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _userAndToken = $v.userAndToken.toBuilder();
       _$v = null;
     }
     return this;
@@ -70,14 +70,12 @@ class AuthenticatedStateBuilder
 
   @override
   void replace(AuthenticatedState other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$AuthenticatedState;
   }
 
   @override
-  void update(void Function(AuthenticatedStateBuilder) updates) {
+  void update(void Function(AuthenticatedStateBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -88,7 +86,7 @@ class AuthenticatedStateBuilder
       _$result =
           _$v ?? new _$AuthenticatedState._(userAndToken: userAndToken.build());
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'userAndToken';
         userAndToken.build();
@@ -105,7 +103,7 @@ class AuthenticatedStateBuilder
 
 class _$UnauthenticatedState extends UnauthenticatedState {
   factory _$UnauthenticatedState(
-          [void Function(UnauthenticatedStateBuilder) updates]) =>
+          [void Function(UnauthenticatedStateBuilder)? updates]) =>
       (new UnauthenticatedStateBuilder()..update(updates)).build();
 
   _$UnauthenticatedState._() : super._();
@@ -138,20 +136,18 @@ class _$UnauthenticatedState extends UnauthenticatedState {
 
 class UnauthenticatedStateBuilder
     implements Builder<UnauthenticatedState, UnauthenticatedStateBuilder> {
-  _$UnauthenticatedState _$v;
+  _$UnauthenticatedState? _$v;
 
   UnauthenticatedStateBuilder();
 
   @override
   void replace(UnauthenticatedState other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UnauthenticatedState;
   }
 
   @override
-  void update(void Function(UnauthenticatedStateBuilder) updates) {
+  void update(void Function(UnauthenticatedStateBuilder)? updates) {
     if (updates != null) updates(this);
   }
 

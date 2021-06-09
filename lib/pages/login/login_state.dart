@@ -8,7 +8,7 @@ class Credential {
   final String email;
   final String password;
 
-  const Credential({this.email, this.password});
+  const Credential({required this.email, required this.password});
 }
 
 @immutable
@@ -22,7 +22,7 @@ class LoginErrorMessage implements LoginMessage {
   final Object error;
   final String message;
 
-  const LoginErrorMessage(this.message, [this.error]);
+  const LoginErrorMessage(this.message, this.error);
 
   @override
   String toString() => 'LoginErrorMessage{message=$message, error=$error}';

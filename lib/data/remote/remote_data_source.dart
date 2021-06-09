@@ -21,8 +21,8 @@ abstract class RemoteDataSource {
 
   Future<TokenResponse> resetPassword(
     String email, {
-    String token,
-    String newPassword,
+    String? token,
+    String? newPassword,
   });
 
   Future<UserResponse> getUserProfile(String email, String token);

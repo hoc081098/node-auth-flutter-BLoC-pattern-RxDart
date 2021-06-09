@@ -14,31 +14,33 @@ class SharedPrefUtil implements LocalDataSource {
 
   @override
   Future<void> removeUserAndToken() =>
-      _rxPrefs.remove(_kUserTokenKey).onError((e, s) =>
-          throw LocalDataSourceException('Cannot delete user and token', e));
+      _rxPrefs.remove(_kUserTokenKey).onError<Object>((e, s) =>
+          throw LocalDataSourceException('Cannot delete user and token', e, s));
 
   @override
   Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) {
     return _rxPrefs
         .write<UserAndTokenEntity>(_kUserTokenKey, userAndToken, _toString)
-        .onError((e, s) =>
-            throw LocalDataSourceException('Cannot save user and token', e));
+        .onError<Object>((e, s) =>
+            throw LocalDataSourceException('Cannot save user and token', e, s));
   }
 
   @override
-  Future<UserAndTokenEntity> get userAndToken => _rxPrefs
+  Future<UserAndTokenEntity?> get userAndToken => _rxPrefs
       .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .catchError((_) => null);
+      .onError<Object>((e, s) =>
+          throw LocalDataSourceException('Cannot read user and token', e, s));
 
   @override
-  Stream<UserAndTokenEntity> get userAndToken$ => _rxPrefs
+  Stream<UserAndTokenEntity?> get userAndToken$ => _rxPrefs
       .observe<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .onErrorReturn(null);
+      .onErrorReturnWith((e, s) =>
+          throw LocalDataSourceException('Cannot read user and token', e, s));
 
-  static UserAndTokenEntity _toEntity(dynamic jsonString) => jsonString == null
+  static UserAndTokenEntity? _toEntity(dynamic jsonString) => jsonString == null
       ? null
       : UserAndTokenEntity.fromJson(json.decode(jsonString));
 
-  static String _toString(UserAndTokenEntity entity) =>
+  static String? _toString(UserAndTokenEntity? entity) =>
       entity == null ? null : jsonEncode(entity);
 }

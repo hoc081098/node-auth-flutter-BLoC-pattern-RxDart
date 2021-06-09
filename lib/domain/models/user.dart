@@ -9,8 +9,7 @@ abstract class User implements Built<User, UserBuilder> {
 
   DateTime get createdAt;
 
-  @nullable
-  String get imageUrl;
+  String? get imageUrl;
 
   User._();
 

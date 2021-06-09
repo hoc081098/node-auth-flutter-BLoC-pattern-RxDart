@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:did_change_dependencies/did_change_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
@@ -15,17 +16,19 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class LoginPage extends StatefulWidget {
   static const routeName = '/login_page';
 
-  const LoginPage({Key key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _MyLoginPageState createState() => _MyLoginPageState();
 }
 
 class _MyLoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin<LoginPage>, DisposeBagMixin {
-  AnimationController loginButtonController;
-  Animation<double> buttonSqueezeAnimation;
-  Object listen;
+    with
+        SingleTickerProviderStateMixin<LoginPage>,
+        DisposeBagMixin,
+        DidChangeDependenciesStream {
+  late final AnimationController loginButtonController;
+  late final Animation<double> buttonSqueezeAnimation;
 
   final passwordFocusNode = FocusNode();
   final emailController = TextEditingController();
@@ -50,24 +53,24 @@ class _MyLoginPageState extends State<LoginPage>
         ),
       ),
     );
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<LoginBloc>().message$)
+        .exhaustMap(handleMessage)
+        .collect()
+        .disposedBy(bag);
 
-    listen ??= [
-      context.bloc<LoginBloc>().message$.flatMap(handleMessage).collect(),
-      context.bloc<LoginBloc>().isLoading$.listen((isLoading) {
-        if (isLoading) {
-          loginButtonController
-            ..reset()
-            ..forward();
-        } else {
-          loginButtonController.reverse();
-        }
-      })
-    ].disposedBy(bag);
+    didChangeDependencies$
+        .exhaustMap((_) => context.bloc<LoginBloc>().isLoading$)
+        .listen((isLoading) {
+      if (isLoading) {
+        loginButtonController
+          ..reset()
+          ..forward();
+      } else {
+        loginButtonController.reverse();
+      }
+    }).disposedBy(bag);
   }
 
   @override
@@ -160,7 +163,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget emailTextField(LoginBloc loginBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: loginBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -189,7 +192,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget passwordTextField(LoginBloc loginBloc) {
-    return StreamBuilder<String>(
+    return StreamBuilder<String?>(
       stream: loginBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -209,21 +212,6 @@ class _MyLoginPageState extends State<LoginPage>
   Widget loginButton(LoginBloc loginBloc) {
     return AnimatedBuilder(
       animation: buttonSqueezeAnimation,
-      child: MaterialButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          loginBloc.submitLogin();
-        },
-        color: Theme.of(context).backgroundColor,
-        child: Text(
-          'LOGIN',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-        ),
-        splashColor: Theme.of(context).accentColor,
-      ),
       builder: (context, child) {
         final value = buttonSqueezeAnimation.value;
 
@@ -246,11 +234,26 @@ class _MyLoginPageState extends State<LoginPage>
           ),
         );
       },
+      child: MaterialButton(
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          loginBloc.submitLogin();
+        },
+        color: Theme.of(context).backgroundColor,
+        splashColor: Theme.of(context).accentColor,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
+      ),
     );
   }
 
   Widget needAnAccount(LoginBloc loginBloc) {
-    return FlatButton(
+    return TextButton(
       onPressed: () async {
         context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(
@@ -276,7 +279,7 @@ class _MyLoginPageState extends State<LoginPage>
   }
 
   Widget forgotPassword(LoginBloc loginBloc) {
-    return FlatButton(
+    return TextButton(
       onPressed: () async {
         context.hideCurrentSnackBar();
         final email = await Navigator.pushNamed(

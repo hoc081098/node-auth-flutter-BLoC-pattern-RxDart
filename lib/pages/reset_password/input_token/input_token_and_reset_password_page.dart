@@ -11,7 +11,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const InputTokenAndResetPasswordPage({Key key, @required this.toggle})
+  const InputTokenAndResetPasswordPage({Key? key, required this.toggle})
       : super(key: key);
 
   @override
@@ -27,9 +27,9 @@ class _InputTokenAndResetPasswordPageState
   final tokenFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
 
-  AnimationController fadeController;
-  Animation<double> fadeAnim;
-  Object listen;
+  late final AnimationController fadeController;
+  late final Animation<double> fadeAnim;
+  Object? listen;
 
   @override
   void initState() {
@@ -90,7 +90,7 @@ class _InputTokenAndResetPasswordPageState
     final resetPasswordBloc =
         BlocProvider.of<InputTokenAndResetPasswordBloc>(context);
 
-    final emailTextField = StreamBuilder<String>(
+    final emailTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.emailError$,
       builder: (context, snapshot) {
         return TextField(
@@ -116,7 +116,7 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    final tokenTextField = StreamBuilder<String>(
+    final tokenTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.tokenError$,
       builder: (context, snapshot) {
         return TextField(
@@ -142,7 +142,7 @@ class _InputTokenAndResetPasswordPageState
       },
     );
 
-    final passwordTextField = StreamBuilder<String>(
+    final passwordTextField = StreamBuilder<String?>(
       stream: resetPasswordBloc.passwordError$,
       builder: (context, snapshot) {
         return PasswordTextField(
@@ -157,6 +157,25 @@ class _InputTokenAndResetPasswordPageState
         );
       },
     );
+
+    final overlayColor = MaterialStateProperty.resolveWith((states) {
+      if (states.contains(MaterialState.hovered)) {
+        return Theme.of(context).accentColor.withOpacity(0.5);
+      }
+      if (states.contains(MaterialState.focused) ||
+          states.contains(MaterialState.pressed)) {
+        return Theme.of(context).accentColor.withOpacity(0.8);
+      }
+      return null;
+    });
+
+    final buttonStyle = ElevatedButton.styleFrom(
+      padding: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      primary: Theme.of(context).cardColor,
+    ).copyWith(overlayColor: overlayColor);
 
     return Container(
       decoration: BoxDecoration(
@@ -202,29 +221,19 @@ class _InputTokenAndResetPasswordPageState
               ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: RaisedButton(
-                  child: Text('Submit'),
-                  padding: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  color: Theme.of(context).cardColor,
-                  splashColor: Theme.of(context).accentColor,
+                child: ElevatedButton(
+                  style: buttonStyle,
                   onPressed: resetPasswordBloc.submit,
+                  child: Text('Submit'),
                 ),
               ),
               SizedBox(height: 8),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                child: RaisedButton(
-                  child: Text('Request email'),
-                  padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).cardColor,
-                  splashColor: Theme.of(context).accentColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                child: ElevatedButton(
+                  style: buttonStyle,
                   onPressed: widget.toggle,
+                  child: Text('Request email'),
                 ),
               ),
               SizedBox(height: 24),

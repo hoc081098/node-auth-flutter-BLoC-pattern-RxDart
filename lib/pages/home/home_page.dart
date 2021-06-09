@@ -16,7 +16,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
 
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,8 +24,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin<HomePage>, DisposeBagMixin {
-  AnimationController rotateLogoController;
-  Object listen;
+  late final AnimationController rotateLogoController;
+  Object? listen;
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage>
             image: AssetImage('assets/bg.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withAlpha(0xBF),
+              Colors.black.withOpacity(0.5),
               BlendMode.darken,
             ),
           ),
@@ -79,31 +79,32 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             const HomeUserProfile(),
             Container(
-              height: 48.0,
+              height: 54.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
-              child: RaisedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: showChangePassword,
                 label: Text('Change password'),
                 icon: Icon(Icons.lock_outline),
-                color: Theme.of(context).backgroundColor,
-                colorBrightness: Brightness.dark,
-                splashColor: Colors.white.withOpacity(0.5),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).backgroundColor,
+                ),
               ),
             ),
             Container(
-              height: 48.0,
+              height: 54.0,
               margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
-              child: RaisedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: homeBloc.logout,
                 label: Text('Logout'),
                 icon: Icon(Icons.exit_to_app),
-                color: Theme.of(context).backgroundColor,
-                colorBrightness: Brightness.dark,
-                splashColor: Colors.white.withOpacity(0.5),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).backgroundColor,
+                ),
               ),
             ),
+            const SizedBox(height: 8),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -111,11 +112,12 @@ class _HomePageState extends State<HomePage>
                   'Flutter auth BLoC pattern RxDart',
                   style: Theme.of(context)
                       .textTheme
-                      .subtitle1
+                      .subtitle1!
                       .copyWith(fontSize: 16),
                 ),
               ),
             ),
+            const SizedBox(height: 8),
             Center(
               child: RotationTransition(
                 turns: rotateLogoController,

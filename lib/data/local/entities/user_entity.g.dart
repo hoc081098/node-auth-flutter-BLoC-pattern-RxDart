@@ -15,9 +15,9 @@ class _$UserEntitySerializer implements StructuredSerializer<UserEntity> {
   final String wireName = 'UserEntity';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, UserEntity object,
+  Iterable<Object?> serialize(Serializers serializers, UserEntity object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
       'email',
@@ -27,17 +27,19 @@ class _$UserEntitySerializer implements StructuredSerializer<UserEntity> {
       serializers.serialize(object.createdAt,
           specifiedType: const FullType(DateTime)),
     ];
-    if (object.imageUrl != null) {
+    Object? value;
+    value = object.imageUrl;
+    if (value != null) {
       result
         ..add('image_url')
-        ..add(serializers.serialize(object.imageUrl,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
     return result;
   }
 
   @override
-  UserEntity deserialize(Serializers serializers, Iterable<Object> serialized,
+  UserEntity deserialize(Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new UserEntityBuilder();
 
@@ -45,7 +47,7 @@ class _$UserEntitySerializer implements StructuredSerializer<UserEntity> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
@@ -78,22 +80,20 @@ class _$UserEntity extends UserEntity {
   @override
   final DateTime createdAt;
   @override
-  final String imageUrl;
+  final String? imageUrl;
 
-  factory _$UserEntity([void Function(UserEntityBuilder) updates]) =>
+  factory _$UserEntity([void Function(UserEntityBuilder)? updates]) =>
       (new UserEntityBuilder()..update(updates)).build();
 
-  _$UserEntity._({this.name, this.email, this.createdAt, this.imageUrl})
+  _$UserEntity._(
+      {required this.name,
+      required this.email,
+      required this.createdAt,
+      this.imageUrl})
       : super._() {
-    if (name == null) {
-      throw new BuiltValueNullFieldError('UserEntity', 'name');
-    }
-    if (email == null) {
-      throw new BuiltValueNullFieldError('UserEntity', 'email');
-    }
-    if (createdAt == null) {
-      throw new BuiltValueNullFieldError('UserEntity', 'createdAt');
-    }
+    BuiltValueNullFieldError.checkNotNull(name, 'UserEntity', 'name');
+    BuiltValueNullFieldError.checkNotNull(email, 'UserEntity', 'email');
+    BuiltValueNullFieldError.checkNotNull(createdAt, 'UserEntity', 'createdAt');
   }
 
   @override
@@ -132,32 +132,33 @@ class _$UserEntity extends UserEntity {
 }
 
 class UserEntityBuilder implements Builder<UserEntity, UserEntityBuilder> {
-  _$UserEntity _$v;
+  _$UserEntity? _$v;
 
-  String _name;
-  String get name => _$this._name;
-  set name(String name) => _$this._name = name;
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
 
-  String _email;
-  String get email => _$this._email;
-  set email(String email) => _$this._email = email;
+  String? _email;
+  String? get email => _$this._email;
+  set email(String? email) => _$this._email = email;
 
-  DateTime _createdAt;
-  DateTime get createdAt => _$this._createdAt;
-  set createdAt(DateTime createdAt) => _$this._createdAt = createdAt;
+  DateTime? _createdAt;
+  DateTime? get createdAt => _$this._createdAt;
+  set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
 
-  String _imageUrl;
-  String get imageUrl => _$this._imageUrl;
-  set imageUrl(String imageUrl) => _$this._imageUrl = imageUrl;
+  String? _imageUrl;
+  String? get imageUrl => _$this._imageUrl;
+  set imageUrl(String? imageUrl) => _$this._imageUrl = imageUrl;
 
   UserEntityBuilder();
 
   UserEntityBuilder get _$this {
-    if (_$v != null) {
-      _name = _$v.name;
-      _email = _$v.email;
-      _createdAt = _$v.createdAt;
-      _imageUrl = _$v.imageUrl;
+    final $v = _$v;
+    if ($v != null) {
+      _name = $v.name;
+      _email = $v.email;
+      _createdAt = $v.createdAt;
+      _imageUrl = $v.imageUrl;
       _$v = null;
     }
     return this;
@@ -165,14 +166,12 @@ class UserEntityBuilder implements Builder<UserEntity, UserEntityBuilder> {
 
   @override
   void replace(UserEntity other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserEntity;
   }
 
   @override
-  void update(void Function(UserEntityBuilder) updates) {
+  void update(void Function(UserEntityBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -180,7 +179,13 @@ class UserEntityBuilder implements Builder<UserEntity, UserEntityBuilder> {
   _$UserEntity build() {
     final _$result = _$v ??
         new _$UserEntity._(
-            name: name, email: email, createdAt: createdAt, imageUrl: imageUrl);
+            name: BuiltValueNullFieldError.checkNotNull(
+                name, 'UserEntity', 'name'),
+            email: BuiltValueNullFieldError.checkNotNull(
+                email, 'UserEntity', 'email'),
+            createdAt: BuiltValueNullFieldError.checkNotNull(
+                createdAt, 'UserEntity', 'createdAt'),
+            imageUrl: imageUrl);
     replace(_$result);
     return _$result;
   }

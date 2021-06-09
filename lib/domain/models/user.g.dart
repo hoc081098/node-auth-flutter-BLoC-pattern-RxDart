@@ -14,21 +14,20 @@ class _$User extends User {
   @override
   final DateTime createdAt;
   @override
-  final String imageUrl;
+  final String? imageUrl;
 
-  factory _$User([void Function(UserBuilder) updates]) =>
+  factory _$User([void Function(UserBuilder)? updates]) =>
       (new UserBuilder()..update(updates)).build();
 
-  _$User._({this.name, this.email, this.createdAt, this.imageUrl}) : super._() {
-    if (name == null) {
-      throw new BuiltValueNullFieldError('User', 'name');
-    }
-    if (email == null) {
-      throw new BuiltValueNullFieldError('User', 'email');
-    }
-    if (createdAt == null) {
-      throw new BuiltValueNullFieldError('User', 'createdAt');
-    }
+  _$User._(
+      {required this.name,
+      required this.email,
+      required this.createdAt,
+      this.imageUrl})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(name, 'User', 'name');
+    BuiltValueNullFieldError.checkNotNull(email, 'User', 'email');
+    BuiltValueNullFieldError.checkNotNull(createdAt, 'User', 'createdAt');
   }
 
   @override
@@ -67,32 +66,33 @@ class _$User extends User {
 }
 
 class UserBuilder implements Builder<User, UserBuilder> {
-  _$User _$v;
+  _$User? _$v;
 
-  String _name;
-  String get name => _$this._name;
-  set name(String name) => _$this._name = name;
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
 
-  String _email;
-  String get email => _$this._email;
-  set email(String email) => _$this._email = email;
+  String? _email;
+  String? get email => _$this._email;
+  set email(String? email) => _$this._email = email;
 
-  DateTime _createdAt;
-  DateTime get createdAt => _$this._createdAt;
-  set createdAt(DateTime createdAt) => _$this._createdAt = createdAt;
+  DateTime? _createdAt;
+  DateTime? get createdAt => _$this._createdAt;
+  set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
 
-  String _imageUrl;
-  String get imageUrl => _$this._imageUrl;
-  set imageUrl(String imageUrl) => _$this._imageUrl = imageUrl;
+  String? _imageUrl;
+  String? get imageUrl => _$this._imageUrl;
+  set imageUrl(String? imageUrl) => _$this._imageUrl = imageUrl;
 
   UserBuilder();
 
   UserBuilder get _$this {
-    if (_$v != null) {
-      _name = _$v.name;
-      _email = _$v.email;
-      _createdAt = _$v.createdAt;
-      _imageUrl = _$v.imageUrl;
+    final $v = _$v;
+    if ($v != null) {
+      _name = $v.name;
+      _email = $v.email;
+      _createdAt = $v.createdAt;
+      _imageUrl = $v.imageUrl;
       _$v = null;
     }
     return this;
@@ -100,14 +100,12 @@ class UserBuilder implements Builder<User, UserBuilder> {
 
   @override
   void replace(User other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$User;
   }
 
   @override
-  void update(void Function(UserBuilder) updates) {
+  void update(void Function(UserBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -115,7 +113,12 @@ class UserBuilder implements Builder<User, UserBuilder> {
   _$User build() {
     final _$result = _$v ??
         new _$User._(
-            name: name, email: email, createdAt: createdAt, imageUrl: imageUrl);
+            name: BuiltValueNullFieldError.checkNotNull(name, 'User', 'name'),
+            email:
+                BuiltValueNullFieldError.checkNotNull(email, 'User', 'email'),
+            createdAt: BuiltValueNullFieldError.checkNotNull(
+                createdAt, 'User', 'createdAt'),
+            imageUrl: imageUrl);
     replace(_$result);
     return _$result;
   }

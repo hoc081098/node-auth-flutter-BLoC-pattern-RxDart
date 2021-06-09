@@ -16,9 +16,9 @@ class _$UserResponseSerializer implements StructuredSerializer<UserResponse> {
   final String wireName = 'UserResponse';
 
   @override
-  Iterable<Object> serialize(Serializers serializers, UserResponse object,
+  Iterable<Object?> serialize(Serializers serializers, UserResponse object,
       {FullType specifiedType = FullType.unspecified}) {
-    final result = <Object>[
+    final result = <Object?>[
       'name',
       serializers.serialize(object.name, specifiedType: const FullType(String)),
       'email',
@@ -28,17 +28,20 @@ class _$UserResponseSerializer implements StructuredSerializer<UserResponse> {
       serializers.serialize(object.createdAt,
           specifiedType: const FullType(DateTime)),
     ];
-    if (object.imageUrl != null) {
+    Object? value;
+    value = object.imageUrl;
+    if (value != null) {
       result
         ..add('image_url')
-        ..add(serializers.serialize(object.imageUrl,
+        ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
     return result;
   }
 
   @override
-  UserResponse deserialize(Serializers serializers, Iterable<Object> serialized,
+  UserResponse deserialize(
+      Serializers serializers, Iterable<Object?> serialized,
       {FullType specifiedType = FullType.unspecified}) {
     final result = new UserResponseBuilder();
 
@@ -46,7 +49,7 @@ class _$UserResponseSerializer implements StructuredSerializer<UserResponse> {
     while (iterator.moveNext()) {
       final key = iterator.current as String;
       iterator.moveNext();
-      final dynamic value = iterator.current;
+      final Object? value = iterator.current;
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
@@ -79,22 +82,21 @@ class _$UserResponse extends UserResponse {
   @override
   final DateTime createdAt;
   @override
-  final String imageUrl;
+  final String? imageUrl;
 
-  factory _$UserResponse([void Function(UserResponseBuilder) updates]) =>
+  factory _$UserResponse([void Function(UserResponseBuilder)? updates]) =>
       (new UserResponseBuilder()..update(updates)).build();
 
-  _$UserResponse._({this.name, this.email, this.createdAt, this.imageUrl})
+  _$UserResponse._(
+      {required this.name,
+      required this.email,
+      required this.createdAt,
+      this.imageUrl})
       : super._() {
-    if (name == null) {
-      throw new BuiltValueNullFieldError('UserResponse', 'name');
-    }
-    if (email == null) {
-      throw new BuiltValueNullFieldError('UserResponse', 'email');
-    }
-    if (createdAt == null) {
-      throw new BuiltValueNullFieldError('UserResponse', 'createdAt');
-    }
+    BuiltValueNullFieldError.checkNotNull(name, 'UserResponse', 'name');
+    BuiltValueNullFieldError.checkNotNull(email, 'UserResponse', 'email');
+    BuiltValueNullFieldError.checkNotNull(
+        createdAt, 'UserResponse', 'createdAt');
   }
 
   @override
@@ -134,32 +136,33 @@ class _$UserResponse extends UserResponse {
 
 class UserResponseBuilder
     implements Builder<UserResponse, UserResponseBuilder> {
-  _$UserResponse _$v;
+  _$UserResponse? _$v;
 
-  String _name;
-  String get name => _$this._name;
-  set name(String name) => _$this._name = name;
+  String? _name;
+  String? get name => _$this._name;
+  set name(String? name) => _$this._name = name;
 
-  String _email;
-  String get email => _$this._email;
-  set email(String email) => _$this._email = email;
+  String? _email;
+  String? get email => _$this._email;
+  set email(String? email) => _$this._email = email;
 
-  DateTime _createdAt;
-  DateTime get createdAt => _$this._createdAt;
-  set createdAt(DateTime createdAt) => _$this._createdAt = createdAt;
+  DateTime? _createdAt;
+  DateTime? get createdAt => _$this._createdAt;
+  set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
 
-  String _imageUrl;
-  String get imageUrl => _$this._imageUrl;
-  set imageUrl(String imageUrl) => _$this._imageUrl = imageUrl;
+  String? _imageUrl;
+  String? get imageUrl => _$this._imageUrl;
+  set imageUrl(String? imageUrl) => _$this._imageUrl = imageUrl;
 
   UserResponseBuilder();
 
   UserResponseBuilder get _$this {
-    if (_$v != null) {
-      _name = _$v.name;
-      _email = _$v.email;
-      _createdAt = _$v.createdAt;
-      _imageUrl = _$v.imageUrl;
+    final $v = _$v;
+    if ($v != null) {
+      _name = $v.name;
+      _email = $v.email;
+      _createdAt = $v.createdAt;
+      _imageUrl = $v.imageUrl;
       _$v = null;
     }
     return this;
@@ -167,14 +170,12 @@ class UserResponseBuilder
 
   @override
   void replace(UserResponse other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserResponse;
   }
 
   @override
-  void update(void Function(UserResponseBuilder) updates) {
+  void update(void Function(UserResponseBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -182,7 +183,13 @@ class UserResponseBuilder
   _$UserResponse build() {
     final _$result = _$v ??
         new _$UserResponse._(
-            name: name, email: email, createdAt: createdAt, imageUrl: imageUrl);
+            name: BuiltValueNullFieldError.checkNotNull(
+                name, 'UserResponse', 'name'),
+            email: BuiltValueNullFieldError.checkNotNull(
+                email, 'UserResponse', 'email'),
+            createdAt: BuiltValueNullFieldError.checkNotNull(
+                createdAt, 'UserResponse', 'createdAt'),
+            imageUrl: imageUrl);
     replace(_$result);
     return _$result;
   }

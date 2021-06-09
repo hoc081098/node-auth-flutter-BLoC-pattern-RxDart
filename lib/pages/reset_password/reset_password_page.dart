@@ -14,7 +14,7 @@ import 'package:rxdart/rxdart.dart';
 class ResetPasswordPage extends StatefulWidget {
   static const routeName = '/reset_password_page';
 
-  const ResetPasswordPage({Key key}) : super(key: key);
+  const ResetPasswordPage({Key? key}) : super(key: key);
 
   @override
   _ResetPasswordPageState createState() => _ResetPasswordPageState();
@@ -23,13 +23,13 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage>, DisposeBagMixin {
   final requestEmailS = StreamController<void>(sync: true);
-  DistinctValueStream<bool> requestEmail$;
+  late final DistinctValueStream<bool> requestEmail$;
 
-  AnimationController animationController;
-  Animation<Offset> animationPosition;
-  Animation<double> animationScale;
-  Animation<double> animationOpacity;
-  Animation<double> animationTurns;
+  late final AnimationController animationController;
+  late final Animation<Offset> animationPosition;
+  late final Animation<double> animationScale;
+  late final Animation<double> animationOpacity;
+  late final Animation<double> animationTurns;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
     /// Emits true if current page is request email page.
     /// Otherwise, it is reset password page.
     requestEmail$ = requestEmailS.stream
-        .scan((acc, e, _) => !acc, true)
+        .scan<bool>((acc, e, _) => !acc, true)
         .doOnData((requestEmailPage) => requestEmailPage
             ? animationController.reverse()
             : animationController.forward())
@@ -118,7 +118,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
         title: RxStreamBuilder<bool>(
           stream: requestEmail$,
           builder: (context, requestEmailPage) {
-            assert(requestEmailPage != null);
             return Text(requestEmailPage ? 'Request email' : 'Reset password');
           },
         ),
@@ -128,6 +127,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
           Positioned.fill(child: sendEmailPage),
           Positioned.fill(
             child: RotationTransition(
+              turns: animationTurns,
               child: SlideTransition(
                 position: animationPosition,
                 child: ScaleTransition(
@@ -138,7 +138,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                   ),
                 ),
               ),
-              turns: animationTurns,
             ),
           )
         ],

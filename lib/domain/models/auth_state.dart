@@ -8,7 +8,7 @@ part 'auth_state.g.dart';
 abstract class AuthenticationState {
   const AuthenticationState();
 
-  UserAndToken get userAndToken;
+  UserAndToken? get userAndToken;
 }
 
 abstract class AuthenticatedState
@@ -30,7 +30,7 @@ abstract class UnauthenticatedState
         Built<UnauthenticatedState, UnauthenticatedStateBuilder>,
         AuthenticationState {
   @override
-  UserAndToken get userAndToken => null;
+  Null get userAndToken => null;
 
   UnauthenticatedState._();
 

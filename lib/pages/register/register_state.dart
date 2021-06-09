@@ -20,7 +20,7 @@ class RegisterErrorMessage implements RegisterMessage {
   final String message;
   final Object error;
 
-  const RegisterErrorMessage(this.message, [this.error]);
+  const RegisterErrorMessage(this.message, this.error);
 }
 
 class RegisterSuccessMessage implements RegisterMessage {

@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 class PasswordTextField extends StatefulWidget {
   final ValueChanged<String> onChanged;
-  final String errorText;
+  final String? errorText;
   final String labelText;
   final TextInputAction textInputAction;
   final VoidCallback onSubmitted;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   const PasswordTextField({
-    Key key,
-    @required this.onChanged,
-    @required this.errorText,
-    @required this.labelText,
-    @required this.onSubmitted,
-    @required this.textInputAction,
-    @required this.focusNode,
+    Key? key,
+    required this.onChanged,
+    required this.errorText,
+    required this.labelText,
+    required this.onSubmitted,
+    required this.textInputAction,
+    required this.focusNode,
   }) : super(key: key);
 
   @override

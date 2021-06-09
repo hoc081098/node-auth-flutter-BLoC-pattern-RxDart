@@ -12,16 +12,12 @@ class _$UserAndToken extends UserAndToken {
   @override
   final User user;
 
-  factory _$UserAndToken([void Function(UserAndTokenBuilder) updates]) =>
+  factory _$UserAndToken([void Function(UserAndTokenBuilder)? updates]) =>
       (new UserAndTokenBuilder()..update(updates)).build();
 
-  _$UserAndToken._({this.token, this.user}) : super._() {
-    if (token == null) {
-      throw new BuiltValueNullFieldError('UserAndToken', 'token');
-    }
-    if (user == null) {
-      throw new BuiltValueNullFieldError('UserAndToken', 'user');
-    }
+  _$UserAndToken._({required this.token, required this.user}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(token, 'UserAndToken', 'token');
+    BuiltValueNullFieldError.checkNotNull(user, 'UserAndToken', 'user');
   }
 
   @override
@@ -53,22 +49,23 @@ class _$UserAndToken extends UserAndToken {
 
 class UserAndTokenBuilder
     implements Builder<UserAndToken, UserAndTokenBuilder> {
-  _$UserAndToken _$v;
+  _$UserAndToken? _$v;
 
-  String _token;
-  String get token => _$this._token;
-  set token(String token) => _$this._token = token;
+  String? _token;
+  String? get token => _$this._token;
+  set token(String? token) => _$this._token = token;
 
-  UserBuilder _user;
+  UserBuilder? _user;
   UserBuilder get user => _$this._user ??= new UserBuilder();
-  set user(UserBuilder user) => _$this._user = user;
+  set user(UserBuilder? user) => _$this._user = user;
 
   UserAndTokenBuilder();
 
   UserAndTokenBuilder get _$this {
-    if (_$v != null) {
-      _token = _$v.token;
-      _user = _$v.user?.toBuilder();
+    final $v = _$v;
+    if ($v != null) {
+      _token = $v.token;
+      _user = $v.user.toBuilder();
       _$v = null;
     }
     return this;
@@ -76,14 +73,12 @@ class UserAndTokenBuilder
 
   @override
   void replace(UserAndToken other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserAndToken;
   }
 
   @override
-  void update(void Function(UserAndTokenBuilder) updates) {
+  void update(void Function(UserAndTokenBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -91,9 +86,13 @@ class UserAndTokenBuilder
   _$UserAndToken build() {
     _$UserAndToken _$result;
     try {
-      _$result = _$v ?? new _$UserAndToken._(token: token, user: user.build());
+      _$result = _$v ??
+          new _$UserAndToken._(
+              token: BuiltValueNullFieldError.checkNotNull(
+                  token, 'UserAndToken', 'token'),
+              user: user.build());
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'user';
         user.build();

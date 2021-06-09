@@ -15,7 +15,7 @@ import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/pages/reset_password/reset_password_page.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +28,14 @@ class MyApp extends StatelessWidget {
       },
       RegisterPage.routeName: (context) {
         return BlocProvider<RegisterBloc>(
-          child: const RegisterPage(),
           initBloc: (context) => RegisterBloc(
             RegisterUseCase(context.get()),
           ),
+          child: const RegisterPage(),
         );
       },
       HomePage.routeName: (context) {
         return BlocProvider<HomeBloc>(
-          child: const HomePage(),
           initBloc: (context) {
             final userRepository = context.get<UserRepository>();
             return HomeBloc(
@@ -45,6 +44,7 @@ class MyApp extends StatelessWidget {
               UploadImageUseCase(userRepository),
             );
           },
+          child: const HomePage(),
         );
       },
       LoginPage.routeName: (context) {
@@ -69,13 +69,14 @@ class MyApp extends StatelessWidget {
           accentColor: const Color(0xFF00e676),
         ),
         routes: routes,
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
 }
 
 class Home extends StatelessWidget {
-  const Home({Key key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +103,12 @@ class Home extends StatelessWidget {
 
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
           print('[HOME] home [2] >> [NotAuthenticated]');
-          return routes[LoginPage.routeName](context);
+          return routes[LoginPage.routeName]!(context);
         }
 
         if (snapshot.data is AuthenticatedState) {
           print('[HOME] home [3] >> [Authenticated]');
-          return routes[HomePage.routeName](context);
+          return routes[HomePage.routeName]!(context);
         }
 
         return Container(width: 0, height: 0);
