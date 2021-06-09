@@ -11,7 +11,7 @@
 
 [Youtube](https://youtu.be/OvsDKfy0aOs)
 
-## Download apk [here](https://github.com/hoc081098/hoc081098.github.io/blob/master/node_auth/app-release.apk)
+## Download apk [here](https://nightly.link/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/workflows/flutter/master/app.zip)
 
 ## Screenshots
 
