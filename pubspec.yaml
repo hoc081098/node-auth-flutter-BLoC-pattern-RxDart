@@ -18,7 +18,7 @@ dependencies:
   built_value: ^8.0.6
   tuple: ^2.0.0
   rxdart: ^0.27.1
-  image_picker: ^0.8.0+1
+  image_picker: ^0.8.0+3
   shared_preferences: ^2.0.6
   octo_image: ^1.0.0+1
 
