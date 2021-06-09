@@ -4,6 +4,7 @@
  - Functionalities: `LOGIN`, `LOGOUT`, `REGISTER`, `CHANGE PASSWORD`, `CHANGE AVATAR`, `FORGOT PASSWORD` 🌀🌀
  - Pure rxdart BLoC pattern. BLoC pattern without library. Flutter Functional & Reactive programming 🌱🌱
 
+[![Flutter](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml/badge.svg)](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml)
 [![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
 ![GitHub stars](https://img.shields.io/github/stars/hoc081098/node-auth-flutter-BLoC-pattern-RxDart?style=social)
 
