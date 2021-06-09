@@ -2,7 +2,7 @@ name: node_auth
 description: Simple auth app flutter, server node.js, BLoC pattern, RxDart.
 
 publish_to: 'none'
-version: 2.0.0+2
+version: 3.0.0+3
 
 environment:
   sdk: ">=2.13.0 <3.0.0"
@@ -29,7 +29,7 @@ dependencies:
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.1.1
   rxdart_ext: ^0.1.1-dev.0
-  did_change_dependencies: ^0.0.3
+  did_change_dependencies: ^1.0.0
   pedantic: ^1.11.0
 
 dev_dependencies:
