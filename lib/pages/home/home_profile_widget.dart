@@ -67,7 +67,7 @@ class HomeUserProfile extends StatelessWidget {
             children: <Widget>[
               Icon(
                 Icons.error,
-                color: themeData.accentColor,
+                color: themeData.colorScheme.secondary,
               ),
               SizedBox(height: 4),
               Text(

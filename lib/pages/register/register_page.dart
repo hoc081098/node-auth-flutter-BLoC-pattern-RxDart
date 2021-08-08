@@ -215,7 +215,7 @@ class _RegisterPageState extends State<RegisterPage>
           child: Material(
             elevation: 5.0,
             clipBehavior: Clip.antiAlias,
-            shadowColor: Theme.of(context).accentColor,
+            shadowColor: Theme.of(context).colorScheme.secondary,
             borderRadius: BorderRadius.circular(24.0),
             child: value > 75.0
                 ? child
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage>
           registerBloc.submitRegister();
         },
         color: Theme.of(context).backgroundColor,
-        splashColor: Theme.of(context).accentColor,
+        splashColor: Theme.of(context).colorScheme.secondary,
         child: Text(
           'REGISTER',
           style: TextStyle(

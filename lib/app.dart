@@ -60,13 +60,15 @@ class MyApp extends StatelessWidget {
       },
     };
 
+    final themeData = ThemeData(brightness: Brightness.dark);
     return Provider<Map<String, WidgetBuilder>>.value(
       routes,
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          accentColor: const Color(0xFF00e676),
+        theme: themeData.copyWith(
+          colorScheme: themeData.colorScheme.copyWith(
+            secondary: const Color(0xFF00e676),
+          ),
         ),
         routes: routes,
         debugShowCheckedModeBanner: false,

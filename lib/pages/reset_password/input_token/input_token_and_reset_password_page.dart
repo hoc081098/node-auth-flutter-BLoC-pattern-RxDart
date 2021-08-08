@@ -160,11 +160,11 @@ class _InputTokenAndResetPasswordPageState
 
     final overlayColor = MaterialStateProperty.resolveWith((states) {
       if (states.contains(MaterialState.hovered)) {
-        return Theme.of(context).accentColor.withOpacity(0.5);
+        return Theme.of(context).colorScheme.secondary.withOpacity(0.5);
       }
       if (states.contains(MaterialState.focused) ||
           states.contains(MaterialState.pressed)) {
-        return Theme.of(context).accentColor.withOpacity(0.8);
+        return Theme.of(context).colorScheme.secondary.withOpacity(0.8);
       }
       return null;
     });
