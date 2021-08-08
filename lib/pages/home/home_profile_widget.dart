@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/data/constants.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
@@ -85,7 +82,7 @@ class HomeUserProfile extends StatelessWidget {
       children: <Widget>[
         ClipOval(
           child: GestureDetector(
-            onTap: () => _pickAndUploadImage(homeBloc),
+            onTap: homeBloc.changeAvatar,
             child: image,
           ),
         ),
@@ -134,17 +131,5 @@ class HomeUserProfile extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _pickAndUploadImage(HomeBloc homeBloc) async {
-    final imageFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-      maxWidth: 720.0,
-      maxHeight: 720.0,
-    );
-    if (imageFile == null) {
-      return;
-    }
-    homeBloc.changeAvatar(File(imageFile.path));
   }
 }

@@ -16,10 +16,10 @@ dependencies:
 
   path: ^1.8.0
   http: ^0.13.3
-  built_value: ^8.0.6
+  built_value: ^8.1.1
   tuple: ^2.0.0
   rxdart: ^0.27.1
-  image_picker: ^0.8.0+3
+  image_picker: ^0.8.3+1
   shared_preferences: ^2.0.6
   octo_image: ^1.0.0+1
 
@@ -29,22 +29,17 @@ dependencies:
   disposebag: ^1.5.0
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.1.1
-  rxdart_ext: ^0.1.1-dev.0
+  rxdart_ext: ^0.1.1
   did_change_dependencies: ^1.0.0
   pedantic: ^1.11.0
 
 dev_dependencies:
-  plugin_platform_interface: ^2.0.0
+  plugin_platform_interface: ^2.0.1
   flutter_test:
     sdk: flutter
   build_runner: ^2.0.0
-  built_value_generator: ^8.0.6
-
-dependency_overrides:
-  rxdart_ext:
-    git:
-      url: https://github.com/hoc081098/rxdart_ext.git
-      ref: 61ab80610903916556d8f2cf9d0055c23f05bb91
+  built_value_generator: ^8.1.1
+  analyzer: ^1.7.2
 
 flutter:
   uses-material-design: true
