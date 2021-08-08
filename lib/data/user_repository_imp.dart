@@ -38,8 +38,8 @@ class UserRepositoryImpl implements UserRepository {
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
             .onErrorReturn(UnauthenticatedState())
             .publishValue()
-              ..listen((state) => print('[USER_REPOSITORY] state=$state'))
-              ..connect() {
+          ..listen((state) => print('[USER_REPOSITORY] state=$state'))
+          ..connect() {
     _init();
   }
 

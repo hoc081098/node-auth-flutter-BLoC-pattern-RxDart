@@ -85,7 +85,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
             ? animationController.reverse()
             : animationController.forward())
         .publishValueDistinct(true)
-          ..connect().disposedBy(bag);
+      ..connect().disposedBy(bag);
     requestEmailS.disposedBy(bag);
   }
 
