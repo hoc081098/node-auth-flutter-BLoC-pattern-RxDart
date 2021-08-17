@@ -77,7 +77,7 @@ extension FlatMapResultExtension<T extends Object?> on Single<Result<T>> {
 }
 
 extension UnitSingleResultExtension<T> on Single<Result<T>> {
-  Single_Result_Unit asUnit() => map(
+  UnitResultSingle asUnit() => map(
         (r) => r.fold(
           (_) => Success<Unit>(unit),
           (error, message) => r as Failure,
@@ -85,8 +85,8 @@ extension UnitSingleResultExtension<T> on Single<Result<T>> {
       );
 }
 
-typedef Result_Unit = Result<Unit>;
-typedef Single_Result_Unit = Single<Result_Unit>;
+typedef UnitResult = Result<Unit>;
+typedef UnitResultSingle = Single<UnitResult>;
 
 class Unit {
   const Unit._();

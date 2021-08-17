@@ -8,31 +8,31 @@ abstract class UserRepository {
 
   Future<AuthenticationState> get authenticationState;
 
-  Single_Result_Unit login({
+  UnitResultSingle login({
     required String email,
     required String password,
   });
 
-  Single_Result_Unit registerUser({
+  UnitResultSingle registerUser({
     required String name,
     required String email,
     required String password,
   });
 
-  Single_Result_Unit logout();
+  UnitResultSingle logout();
 
-  Single_Result_Unit uploadImage(File image);
+  UnitResultSingle uploadImage(File image);
 
-  Single_Result_Unit changePassword({
+  UnitResultSingle changePassword({
     required String password,
     required String newPassword,
   });
 
-  Single_Result_Unit resetPassword({
+  UnitResultSingle resetPassword({
     required String email,
     required String token,
     required String newPassword,
   });
 
-  Single_Result_Unit sendResetPasswordEmail(String email);
+  UnitResultSingle sendResetPasswordEmail(String email);
 }

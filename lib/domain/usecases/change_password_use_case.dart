@@ -6,7 +6,7 @@ class ChangePasswordUseCase {
 
   const ChangePasswordUseCase(this._userRepository);
 
-  Single_Result_Unit call({
+  UnitResultSingle call({
     required String password,
     required String newPassword,
   }) =>

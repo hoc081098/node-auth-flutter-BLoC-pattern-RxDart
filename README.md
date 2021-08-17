@@ -14,6 +14,21 @@
 
 ## Download apk [here](https://nightly.link/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/workflows/flutter/master/app.zip)
 
+## Flutter version: channel beta
+
+```yaml
+environment:
+  sdk: ">=2.14.0-0 <3.0.0"
+  flutter: ">=2.4.0-0"
+```
+
+```shell
+Flutter 2.4.0-4.2.pre • channel beta • https://github.com/flutter/flutter.git
+Framework • revision f18b9281c2 (4 weeks ago) • 2021-07-22 14:08:30 -0700
+Engine • revision 844c29f42a
+Tools • Dart 2.14.0 (build 2.14.0-301.2.beta)
+```
+
 ## Screenshots
 
 |  |  |  |

@@ -74,7 +74,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
 
     return HomeBloc._(
       changeAvatar: () => changeAvatarS.add(null),
-      logout: () => logoutS.add(true),
+      logout: () => logoutS.add(null),
       authState$: authState$,
       dispose: DisposeBag([
         authState$.connect(),
@@ -86,14 +86,14 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LogoutMessage _resultToLogoutMessage(Result_Unit result) {
+  static LogoutMessage _resultToLogoutMessage(UnitResult result) {
     return result.fold(
       (value) => const LogoutSuccessMessage(),
       (error, message) => LogoutErrorMessage(message, error),
     );
   }
 
-  static UpdateAvatarMessage _resultToChangeAvatarMessage(Result_Unit result) {
+  static UpdateAvatarMessage _resultToChangeAvatarMessage(UnitResult result) {
     return result.fold(
       (value) => const UpdateAvatarSuccessMessage(),
       (error, message) => UpdateAvatarErrorMessage(message, error),

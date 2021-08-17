@@ -14,8 +14,7 @@ part 'serializers.g.dart';
   UserResponse,
   TokenResponse,
 ])
-final Serializers _serializers = _$_serializers;
-final serializers = (_serializers.toBuilder()
+final Serializers serializers = (_$serializers.toBuilder()
       ..add(Iso8601DateTimeSerializer())
       ..addPlugin(StandardJsonPlugin()))
     .build();

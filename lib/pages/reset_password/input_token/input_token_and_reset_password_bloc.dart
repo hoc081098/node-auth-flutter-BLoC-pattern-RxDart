@@ -24,7 +24,7 @@ class ResetPasswordSuccess implements InputTokenAndResetPasswordMessage {
 
 class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
   final String message;
-  final error;
+  final Object error;
 
   const ResetPasswordFailure(this.error, this.message);
 }

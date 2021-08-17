@@ -8,5 +8,5 @@ class UploadImageUseCase {
 
   const UploadImageUseCase(this._userRepository);
 
-  Single_Result_Unit call(File image) => _userRepository.uploadImage(image);
+  UnitResultSingle call(File image) => _userRepository.uploadImage(image);
 }

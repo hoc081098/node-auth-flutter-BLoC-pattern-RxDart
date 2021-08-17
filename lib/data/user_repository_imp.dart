@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
@@ -38,13 +39,13 @@ class UserRepositoryImpl implements UserRepository {
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
             .onErrorReturn(UnauthenticatedState())
             .publishValue()
-          ..listen((state) => print('[USER_REPOSITORY] state=$state'))
+          ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
     _init();
   }
 
   @override
-  Single_Result_Unit login({
+  UnitResultSingle login({
     required String email,
     required String password,
   }) {
@@ -69,7 +70,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Single_Result_Unit registerUser({
+  UnitResultSingle registerUser({
     required String name,
     required String email,
     required String password,
@@ -78,11 +79,11 @@ class UserRepositoryImpl implements UserRepository {
           .asUnit();
 
   @override
-  Single_Result_Unit logout() =>
+  UnitResultSingle logout() =>
       _execute<void>(() => _localDataSource.removeUserAndToken()).asUnit();
 
   @override
-  Single_Result_Unit uploadImage(File image) {
+  UnitResultSingle uploadImage(File image) {
     return _userAndToken
         .flatMapResult((userAndToken) {
           if (userAndToken == null) {
@@ -118,7 +119,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Single_Result_Unit changePassword({
+  UnitResultSingle changePassword({
     required String password,
     required String newPassword,
   }) {
@@ -144,7 +145,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Single_Result_Unit resetPassword({
+  UnitResultSingle resetPassword({
     required String email,
     required String token,
     required String newPassword,
@@ -158,7 +159,7 @@ class UserRepositoryImpl implements UserRepository {
       ).asUnit();
 
   @override
-  Single_Result_Unit sendResetPasswordEmail(String email) =>
+  UnitResultSingle sendResetPasswordEmail(String email) =>
       _execute(() => _remoteDataSource.resetPassword(email)).asUnit();
 
   ///
@@ -185,7 +186,7 @@ class UserRepositoryImpl implements UserRepository {
   void _handleUnauthenticatedError(Object e, StackTrace? s) {
     if (e is RemoteDataSourceException &&
         e.statusCode == HttpStatus.unauthorized) {
-      print(
+      debugPrint(
           '[USER_REPOSITORY] {interceptor} 401 - unauthenticated error ===> login again');
       _localDataSource.removeUserAndToken();
     }
@@ -212,7 +213,7 @@ class UserRepositoryImpl implements UserRepository {
 
     try {
       final userAndToken = await _localDataSource.userAndToken;
-      print('$tag userAndToken local=$userAndToken');
+      debugPrint('$tag userAndToken local=$userAndToken');
 
       if (userAndToken == null) {
         return;
@@ -222,7 +223,7 @@ class UserRepositoryImpl implements UserRepository {
         userAndToken.user.email,
         userAndToken.token,
       );
-      print('$tag userProfile server=$userProfile');
+      debugPrint('$tag userProfile server=$userProfile');
       await _localDataSource.saveUserAndToken(
         _Mappers.userResponseToUserAndTokenEntity(
           userProfile,
@@ -230,14 +231,14 @@ class UserRepositoryImpl implements UserRepository {
         ),
       );
     } on RemoteDataSourceException catch (e) {
-      print('$tag remote error=$e');
+      debugPrint('$tag remote error=$e');
 
       if (e.statusCode == HttpStatus.unauthorized) {
-        print('$tag 401 - unauthenticated error ===> login again');
+        debugPrint('$tag 401 - unauthenticated error ===> login again');
         await _localDataSource.removeUserAndToken();
       }
     } on LocalDataSourceException catch (e) {
-      print('$tag local error=$e');
+      debugPrint('$tag local error=$e');
       await _localDataSource.removeUserAndToken();
     }
   }

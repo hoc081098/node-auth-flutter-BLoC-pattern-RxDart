@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage>
     ).animate(
       CurvedAnimation(
         parent: registerButtonController,
-        curve: Interval(0.0, 0.250),
+        curve: const Interval(0.0, 0.250),
       ),
     );
 
@@ -84,7 +84,7 @@ class _RegisterPageState extends State<RegisterPage>
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
+            image: const AssetImage('assets/bg.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withAlpha(0xBF),
@@ -165,8 +165,8 @@ class _RegisterPageState extends State<RegisterPage>
           onChanged: registerBloc.emailChanged,
           autocorrect: true,
           decoration: InputDecoration(
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
+            prefixIcon: const Padding(
+              padding: EdgeInsetsDirectional.only(end: 8.0),
               child: Icon(Icons.email),
             ),
             labelText: 'Email',
@@ -174,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage>
           ),
           keyboardType: TextInputType.emailAddress,
           maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
           focusNode: emailFocusNode,
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(passwordFocusNode);
@@ -209,7 +209,7 @@ class _RegisterPageState extends State<RegisterPage>
       builder: (context, child) {
         final value = buttonSqueezeAnimation.value;
 
-        return Container(
+        return SizedBox(
           width: value,
           height: 60.0,
           child: Material(
@@ -219,7 +219,7 @@ class _RegisterPageState extends State<RegisterPage>
             borderRadius: BorderRadius.circular(24.0),
             child: value > 75.0
                 ? child
-                : Center(
+                : const Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.0,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -235,7 +235,7 @@ class _RegisterPageState extends State<RegisterPage>
         },
         color: Theme.of(context).backgroundColor,
         splashColor: Theme.of(context).colorScheme.secondary,
-        child: Text(
+        child: const Text(
           'REGISTER',
           style: TextStyle(
             color: Colors.white,
@@ -256,14 +256,14 @@ class _RegisterPageState extends State<RegisterPage>
           decoration: InputDecoration(
             labelText: 'Name',
             errorText: snapshot.data,
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
+            prefixIcon: const Padding(
+              padding: EdgeInsetsDirectional.only(end: 8.0),
               child: Icon(Icons.person),
             ),
           ),
           keyboardType: TextInputType.text,
           maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
           autofocus: true,
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(emailFocusNode);

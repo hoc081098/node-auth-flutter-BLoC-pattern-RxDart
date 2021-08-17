@@ -40,8 +40,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       duration: const Duration(milliseconds: 1000),
     );
     animationPosition = Tween(
-      begin: Offset(2.0, 0),
-      end: Offset(0, 0),
+      begin: const Offset(2.0, 0),
+      end: const Offset(0, 0),
     ).animate(
       CurvedAnimation(
         parent: animationController,

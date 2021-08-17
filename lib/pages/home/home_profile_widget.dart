@@ -21,7 +21,7 @@ class HomeUserProfile extends StatelessWidget {
           stream: homeBloc.authState$,
           builder: (context, data) {
             if (data == null) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -44,13 +44,13 @@ class HomeUserProfile extends StatelessWidget {
               imageUrl,
             ).toString(),
           ) as ImageProvider
-        : AssetImage('assets/user.png');
+        : const AssetImage('assets/user.png');
     final image = OctoImage(
       image: provider,
       fit: BoxFit.cover,
       width: 90.0,
       height: 90.0,
-      progressIndicatorBuilder: (_, __) => Center(
+      progressIndicatorBuilder: (_, __) => const Center(
         child: CircularProgressIndicator(
           strokeWidth: 2,
         ),
@@ -66,7 +66,7 @@ class HomeUserProfile extends StatelessWidget {
                 Icons.error,
                 color: themeData.colorScheme.secondary,
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Error',
                 style: themeData.textTheme.subtitle2!.copyWith(fontSize: 12),
@@ -90,14 +90,14 @@ class HomeUserProfile extends StatelessWidget {
           child: ListTile(
             title: Text(
               user.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.w600,
               ),
             ),
             subtitle: Text(
               '${user.email}\n${user.createdAt}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
                 fontStyle: FontStyle.italic,
@@ -114,10 +114,10 @@ class HomeUserProfile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: CircularProgressIndicator(
-              valueColor: const AlwaysStoppedAnimation(Colors.white),
+              valueColor: AlwaysStoppedAnimation(Colors.white),
               strokeWidth: 2,
             ),
           ),
