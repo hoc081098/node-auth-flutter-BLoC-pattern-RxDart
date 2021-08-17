@@ -96,7 +96,7 @@ class _InputTokenAndResetPasswordPageState
         return TextField(
           autocorrect: true,
           decoration: InputDecoration(
-            prefixIcon: Padding(
+            prefixIcon: const Padding(
               padding: EdgeInsetsDirectional.only(end: 8.0),
               child: Icon(Icons.email),
             ),
@@ -111,7 +111,7 @@ class _InputTokenAndResetPasswordPageState
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(tokenFocusNode);
           },
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
         );
       },
     );
@@ -122,7 +122,7 @@ class _InputTokenAndResetPasswordPageState
         return TextField(
           autocorrect: true,
           decoration: InputDecoration(
-            prefixIcon: Padding(
+            prefixIcon: const Padding(
               padding: EdgeInsetsDirectional.only(end: 8.0),
               child: Icon(Icons.security),
             ),
@@ -137,7 +137,7 @@ class _InputTokenAndResetPasswordPageState
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(passwordFocusNode);
           },
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
         );
       },
     );
@@ -180,7 +180,7 @@ class _InputTokenAndResetPasswordPageState
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/bg.jpg'),
+          image: const AssetImage('assets/bg.jpg'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
             Colors.black.withAlpha(0xBF),
@@ -195,7 +195,7 @@ class _InputTokenAndResetPasswordPageState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: emailTextField,
@@ -211,8 +211,8 @@ class _InputTokenAndResetPasswordPageState
               Center(
                 child: FadeTransition(
                   opacity: fadeAnim,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16),
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                     ),
@@ -224,19 +224,19 @@ class _InputTokenAndResetPasswordPageState
                 child: ElevatedButton(
                   style: buttonStyle,
                   onPressed: resetPasswordBloc.submit,
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ElevatedButton(
                   style: buttonStyle,
                   onPressed: widget.toggle,
-                  child: Text('Request email'),
+                  child: const Text('Request email'),
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
             ],
           ),
         ),

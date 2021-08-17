@@ -6,7 +6,7 @@ part of 'serializers.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-Serializers _$_serializers = (new Serializers().toBuilder()
+Serializers _$serializers = (new Serializers().toBuilder()
       ..add(TokenResponse.serializer)
       ..add(UserAndTokenEntity.serializer)
       ..add(UserEntity.serializer)

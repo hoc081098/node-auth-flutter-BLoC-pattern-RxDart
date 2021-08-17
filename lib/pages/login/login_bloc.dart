@@ -126,7 +126,7 @@ class LoginBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LoginMessage _responseToMessage(Result_Unit result) {
+  static LoginMessage _responseToMessage(UnitResult result) {
     return result.fold(
       (value) => const LoginSuccessMessage(),
       (error, message) => LoginErrorMessage(message, error),

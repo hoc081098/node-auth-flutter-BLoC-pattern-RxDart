@@ -47,7 +47,7 @@ class _MyLoginPageState extends State<LoginPage>
     ).animate(
       CurvedAnimation(
         parent: loginButtonController,
-        curve: Interval(
+        curve: const Interval(
           0.0,
           0.250,
         ),
@@ -88,7 +88,7 @@ class _MyLoginPageState extends State<LoginPage>
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
+            image: const AssetImage('assets/bg.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withAlpha(0xBF),
@@ -170,8 +170,8 @@ class _MyLoginPageState extends State<LoginPage>
           controller: emailController,
           autocorrect: true,
           decoration: InputDecoration(
-            prefixIcon: Padding(
-              padding: const EdgeInsetsDirectional.only(end: 8.0),
+            prefixIcon: const Padding(
+              padding: EdgeInsetsDirectional.only(end: 8.0),
               child: Icon(Icons.email),
             ),
             labelText: 'Email',
@@ -179,7 +179,7 @@ class _MyLoginPageState extends State<LoginPage>
           ),
           keyboardType: TextInputType.emailAddress,
           maxLines: 1,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
           onChanged: loginBloc.emailChanged,
           textInputAction: TextInputAction.next,
           autofocus: true,
@@ -215,7 +215,7 @@ class _MyLoginPageState extends State<LoginPage>
       builder: (context, child) {
         final value = buttonSqueezeAnimation.value;
 
-        return Container(
+        return SizedBox(
           width: value,
           height: 60.0,
           child: Material(
@@ -225,7 +225,7 @@ class _MyLoginPageState extends State<LoginPage>
             borderRadius: BorderRadius.circular(24.0),
             child: value > 75.0
                 ? child
-                : Center(
+                : const Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2.0,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -241,7 +241,7 @@ class _MyLoginPageState extends State<LoginPage>
         },
         color: Theme.of(context).backgroundColor,
         splashColor: Theme.of(context).colorScheme.secondary,
-        child: Text(
+        child: const Text(
           'LOGIN',
           style: TextStyle(
             color: Colors.white,
@@ -260,14 +260,14 @@ class _MyLoginPageState extends State<LoginPage>
           context,
           RegisterPage.routeName,
         );
-        print('[DEBUG] email = $email');
+        debugPrint('[DEBUG] email = $email');
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },
-      child: Text(
+      child: const Text(
         "Don't have an account? Sign up",
         style: TextStyle(
           color: Colors.white70,
@@ -286,14 +286,14 @@ class _MyLoginPageState extends State<LoginPage>
           context,
           ResetPasswordPage.routeName,
         );
-        print('[DEBUG] email = $email');
+        debugPrint('[DEBUG] email = $email');
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },
-      child: Text(
+      child: const Text(
         'Forgot password?',
         style: TextStyle(
           color: Colors.white70,

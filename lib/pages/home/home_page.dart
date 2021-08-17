@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage>
 
     rotateLogoController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 4),
+      duration: const Duration(seconds: 4),
     )..repeat();
   }
 
@@ -61,13 +61,13 @@ class _HomePageState extends State<HomePage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
       ),
       resizeToAvoidBottomInset: true,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/bg.jpg'),
+            image: const AssetImage('assets/bg.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.5),
@@ -80,12 +80,12 @@ class _HomePageState extends State<HomePage>
             const HomeUserProfile(),
             Container(
               height: 54.0,
-              margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+              margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: showChangePassword,
-                label: Text('Change password'),
-                icon: Icon(Icons.lock_outline),
+                label: const Text('Change password'),
+                icon: const Icon(Icons.lock_outline),
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).backgroundColor,
                 ),
@@ -93,12 +93,12 @@ class _HomePageState extends State<HomePage>
             ),
             Container(
               height: 54.0,
-              margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+              margin: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: homeBloc.logout,
-                label: Text('Logout'),
-                icon: Icon(Icons.exit_to_app),
+                label: const Text('Logout'),
+                icon: const Icon(Icons.exit_to_app),
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).backgroundColor,
                 ),
@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage>
   }
 
   Stream<void> handleMessage(HomeMessage message) async* {
-    print('[DEBUG] homeBloc message=$message');
+    debugPrint('[DEBUG] homeBloc message=$message');
 
     if (message is LogoutMessage) {
       if (message is LogoutSuccessMessage) {
@@ -162,7 +162,7 @@ class _HomePageState extends State<HomePage>
   void showChangePassword() {
     showModalBottomSheet(
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),

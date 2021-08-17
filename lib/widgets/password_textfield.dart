@@ -40,14 +40,14 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           iconSize: 18.0,
         ),
         labelText: widget.labelText,
-        prefixIcon: Padding(
-          padding: const EdgeInsetsDirectional.only(end: 8.0),
+        prefixIcon: const Padding(
+          padding: EdgeInsetsDirectional.only(end: 8.0),
           child: Icon(Icons.lock),
         ),
       ),
       keyboardType: TextInputType.text,
       maxLines: 1,
-      style: TextStyle(fontSize: 16.0),
+      style: const TextStyle(fontSize: 16.0),
       onChanged: widget.onChanged,
       onSubmitted: (_) => widget.onSubmitted(),
       textInputAction: widget.textInputAction,

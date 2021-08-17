@@ -6,5 +6,5 @@ class LogoutUseCase {
 
   const LogoutUseCase(this._userRepository);
 
-  Single_Result_Unit call() => _userRepository.logout();
+  UnitResultSingle call() => _userRepository.logout();
 }

@@ -117,7 +117,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
               opacity: messageOpacity,
               child: Text(
                 message,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14.0,
                   fontStyle: FontStyle.italic,
                 ),
@@ -125,7 +125,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             ),
           );
         }
-        return Container(width: 0, height: 0);
+        return const SizedBox(width: 0, height: 0);
       },
     );
 
@@ -142,13 +142,13 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
               FocusScope.of(context).unfocus();
               changePasswordBloc.changePassword();
             },
-            child: Text(
+            child: const Text(
               'Change password',
               style: TextStyle(fontSize: 16.0),
             ),
           );
         }
-        return CircularProgressIndicator();
+        return const CircularProgressIndicator();
       },
     );
 

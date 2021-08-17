@@ -6,6 +6,6 @@ class SendResetPasswordEmailUseCase {
 
   const SendResetPasswordEmailUseCase(this._userRepository);
 
-  Single_Result_Unit call(String email) =>
+  UnitResultSingle call(String email) =>
       _userRepository.sendResetPasswordEmail(email);
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
@@ -136,10 +137,10 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
     ChangePasswordUseCase changePassword,
     Tuple2<String, String> both,
   ) {
-    print('[DEBUG] change password both=$both');
+    debugPrint('[DEBUG] change password both=$both');
 
-    ChangePasswordState resultToState(Result_Unit result) {
-      print('[DEBUG] change password result=$result');
+    ChangePasswordState resultToState(UnitResult result) {
+      debugPrint('[DEBUG] change password result=$result');
 
       return result.fold(
         (value) => ChangePasswordState((b) => b

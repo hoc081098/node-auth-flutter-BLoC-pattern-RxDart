@@ -89,31 +89,31 @@ class Home extends StatelessWidget {
       future: getAuthState(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          print('[HOME] home [1] >> [waiting...]');
+          debugPrint('[HOME] home [1] >> [waiting...]');
 
           return Container(
             width: double.infinity,
             height: double.infinity,
             color: Theme.of(context).cardColor,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(
-                valueColor: const AlwaysStoppedAnimation(Colors.white),
+                valueColor: AlwaysStoppedAnimation(Colors.white),
               ),
             ),
           );
         }
 
         if (snapshot.hasError || snapshot.data is UnauthenticatedState) {
-          print('[HOME] home [2] >> [NotAuthenticated]');
+          debugPrint('[HOME] home [2] >> [NotAuthenticated]');
           return routes[LoginPage.routeName]!(context);
         }
 
         if (snapshot.data is AuthenticatedState) {
-          print('[HOME] home [3] >> [Authenticated]');
+          debugPrint('[HOME] home [3] >> [Authenticated]');
           return routes[HomePage.routeName]!(context);
         }
 
-        return Container(width: 0, height: 0);
+        return const SizedBox(width: 0, height: 0);
       },
     );
   }

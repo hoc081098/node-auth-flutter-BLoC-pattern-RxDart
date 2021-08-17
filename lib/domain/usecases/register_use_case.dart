@@ -6,7 +6,7 @@ class RegisterUseCase {
 
   const RegisterUseCase(this._userRepository);
 
-  Single_Result_Unit call({
+  UnitResultSingle call({
     required String name,
     required String email,
     required String password,

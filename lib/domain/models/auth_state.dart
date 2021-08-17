@@ -30,7 +30,7 @@ abstract class UnauthenticatedState
         Built<UnauthenticatedState, UnauthenticatedStateBuilder>,
         AuthenticationState {
   @override
-  Null get userAndToken => null;
+  UserAndToken? get userAndToken => null;
 
   UnauthenticatedState._();
 

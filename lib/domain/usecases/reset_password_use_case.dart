@@ -6,7 +6,7 @@ class ResetPasswordUseCase {
 
   const ResetPasswordUseCase(this._userRepository);
 
-  Single_Result_Unit call({
+  UnitResultSingle call({
     required String email,
     required String token,
     required String newPassword,
