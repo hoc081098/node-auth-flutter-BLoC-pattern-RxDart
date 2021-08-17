@@ -2,7 +2,7 @@ name: node_auth
 description: Simple auth app flutter, server node.js, BLoC pattern, RxDart.
 
 publish_to: 'none'
-version: 3.1.0+4
+version: 3.1.1+5
 
 environment:
   sdk: ">=2.14.0-0 <3.0.0"
