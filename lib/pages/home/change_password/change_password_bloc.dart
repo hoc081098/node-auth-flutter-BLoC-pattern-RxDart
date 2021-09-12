@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
-import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
@@ -27,7 +26,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
   final Function1<String, void> newPasswordChanged;
 
   /// Output stream
-  final DistinctValueStream<ChangePasswordState> changePasswordState$;
+  final StateStream<ChangePasswordState> changePasswordState$;
   final Stream<String?> passwordError$;
   final Stream<String?> newPasswordError$;
 
@@ -72,7 +71,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         .where((isValid) => isValid)
         .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
         .exhaustMap((both) => _performChangePassword(changePassword, both))
-        .publishValueDistinct(ChangePasswordState((b) => b..isLoading = false));
+        .publishState(ChangePasswordState((b) => b..isLoading = false));
 
     final passwordError$ = both$
         .map((tuple) {

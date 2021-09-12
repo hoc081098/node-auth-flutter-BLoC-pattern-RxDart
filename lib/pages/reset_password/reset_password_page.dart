@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
@@ -10,6 +9,7 @@ import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dar
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   static const routeName = '/reset_password_page';
@@ -23,7 +23,7 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage>
     with SingleTickerProviderStateMixin<ResetPasswordPage>, DisposeBagMixin {
   final requestEmailS = StreamController<void>(sync: true);
-  late final DistinctValueStream<bool> requestEmail$;
+  late final StateStream<bool> requestEmail$;
 
   late final AnimationController animationController;
   late final Animation<Offset> animationPosition;
@@ -84,7 +84,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
         .doOnData((requestEmailPage) => requestEmailPage
             ? animationController.reverse()
             : animationController.forward())
-        .publishValueDistinct(true)
+        .publishState(true)
       ..connect().disposedBy(bag);
     requestEmailS.disposedBy(bag);
   }
