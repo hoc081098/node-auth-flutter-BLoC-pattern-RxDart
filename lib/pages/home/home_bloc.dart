@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disposebag/disposebag.dart';
-import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
@@ -24,7 +23,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   final Function0<void> logout;
 
   /// Output stream
-  final DistinctValueStream<AuthenticationState?> authState$;
+  final StateStream<AuthenticationState?> authState$;
   final Stream<HomeMessage> message$;
 
   HomeBloc._({
@@ -68,7 +67,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
         .switchMap(uploadImage.call)
         .map(_resultToChangeAvatarMessage);
 
-    final authState$ = authenticationState$.publishValueDistinct(null);
+    final authState$ = authenticationState$.publishState(null);
 
     final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
 
