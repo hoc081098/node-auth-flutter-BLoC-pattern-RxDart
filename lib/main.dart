@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart'
     show debugPrint, debugPrintSynchronously, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/app.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
@@ -15,6 +16,7 @@ import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  RxStreamBuilder.checkStateStreamEnabled = !kReleaseMode;
   _setupLoggers();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
