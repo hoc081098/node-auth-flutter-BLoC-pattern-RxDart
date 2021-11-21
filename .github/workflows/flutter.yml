@@ -38,8 +38,8 @@ jobs:
       - name: Format code
         run: flutter format lib --set-exit-if-changed
         
-      - name: Analyze
-        run: flutter analyze lib
+#       - name: Analyze
+#         run: flutter analyze lib
       
       - name: Gen code
         run: flutter packages pub run build_runner build --delete-conflicting-outputs
