@@ -18,7 +18,7 @@ dependencies:
   http: ^0.13.3
   built_value: ^8.1.2
   tuple: ^2.0.0
-  rxdart: ^0.27.2
+  rxdart: ^0.27.3
   image_picker: ^0.8.4+2
   shared_preferences: ^2.0.8
   octo_image: ^1.0.0+1
@@ -46,8 +46,8 @@ flutter:
    - assets/bg.jpg
    - assets/user.png
 
-dependency_overrides:
-  rxdart:
-    git:
-      url: https://github.com/ReactiveX/rxdart.git
-      ref: b8076e65e87233a993b62a4eb024bc76cb11b7e1
+# dependency_overrides:
+#   rxdart:
+#     git:
+#       url: https://github.com/ReactiveX/rxdart.git
+#       ref: b8076e65e87233a993b62a4eb024bc76cb11b7e1
