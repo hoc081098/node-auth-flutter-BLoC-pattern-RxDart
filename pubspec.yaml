@@ -45,3 +45,9 @@ flutter:
   assets:
    - assets/bg.jpg
    - assets/user.png
+
+dependency_overrides:
+  rxdart:
+    git:
+      url: https://github.com/ReactiveX/rxdart.git
+      ref: b8076e65e87233a993b62a4eb024bc76cb11b7e1
