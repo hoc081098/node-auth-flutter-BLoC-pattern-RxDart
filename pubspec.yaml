@@ -11,16 +11,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
-  cupertino_icons: ^1.0.3
+
+  cupertino_icons: ^1.0.4
 
   path: ^1.8.0
-  http: ^0.13.3
-  built_value: ^8.1.2
+  http: ^0.13.4
+  built_value: ^8.1.3
   tuple: ^2.0.0
   rxdart: ^0.27.3
-  image_picker: ^0.8.4+2
-  shared_preferences: ^2.0.8
+  image_picker: ^0.8.4+4
+  shared_preferences: ^2.0.9
   octo_image: ^1.0.0+1
 
   flutter_provider: ^2.1.0
@@ -28,26 +28,21 @@ dependencies:
   disposebag: ^1.5.0
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.2.0
-  rxdart_ext: ^0.1.2
+  rxdart_ext: ^0.1.3
   did_change_dependencies: ^1.0.0
 
 dev_dependencies:
-  plugin_platform_interface: ^2.0.1
+  plugin_platform_interface: ^2.0.2
   flutter_test:
     sdk: flutter
-  build_runner: ^2.1.2
-  built_value_generator: ^8.1.2
-  analyzer: ^2.2.0
+  build_runner: ^2.1.5
+  built_value_generator: ^8.1.3
+  analyzer: ^2.7.0
   flutter_lints: ^1.0.4
 
 flutter:
   uses-material-design: true
   assets:
-   - assets/bg.jpg
-   - assets/user.png
+    - assets/bg.jpg
+    - assets/user.png
 
-# dependency_overrides:
-#   rxdart:
-#     git:
-#       url: https://github.com/ReactiveX/rxdart.git
-#       ref: b8076e65e87233a993b62a4eb024bc76cb11b7e1

@@ -9,11 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         flutter-channel: [ 'stable', 'beta' ]
-    
+
     steps:
       - uses: actions/checkout@v2
 
@@ -21,33 +21,36 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
-      
+
       - uses: subosito/flutter-action@v1
         with:
           channel: ${{ matrix.flutter-channel }}
-  
+
       - name: Print Dart SDK version
         run: dart --version
-        
+
       - name: Print Flutter SDK version
         run: flutter --version
-      
+
       - name: Install dependencies
         run: flutter pub get
-        
+
       - name: Format code
         run: flutter format lib --set-exit-if-changed
-        
-#       - name: Analyze
-#         run: flutter analyze lib
-      
+
+      - name: Analyze
+        run: flutter analyze lib
+
       - name: Gen code
+        if: always()
         run: flutter packages pub run build_runner build --delete-conflicting-outputs
-      
+
       - name: Build APK
+        if: always()
         run: flutter build apk --no-shrink
-        
+
       - name: Upload APK
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: app

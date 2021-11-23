@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_disposebag/flutter_disposebag.dart';
 import 'package:node_auth/pages/register/register.dart';
-import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';

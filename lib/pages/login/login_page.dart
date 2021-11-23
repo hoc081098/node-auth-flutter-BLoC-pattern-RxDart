@@ -8,7 +8,6 @@ import 'package:node_auth/pages/home/home.dart';
 import 'package:node_auth/pages/login/login.dart';
 import 'package:node_auth/pages/register/register.dart';
 import 'package:node_auth/pages/reset_password/reset_password_page.dart';
-import 'package:node_auth/utils/delay.dart';
 import 'package:node_auth/utils/snackbar.dart';
 import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
