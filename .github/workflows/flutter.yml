@@ -36,21 +36,20 @@ jobs:
         run: flutter pub get
 
       - name: Format code
+        if: ${{ matrix.flutter-channel == 'stable' }}
         run: flutter format lib --set-exit-if-changed
 
       - name: Analyze
+        if: ${{ matrix.flutter-channel == 'stable' }}
         run: flutter analyze lib
 
       - name: Gen code
-        if: always()
         run: flutter packages pub run build_runner build --delete-conflicting-outputs
 
       - name: Build APK
-        if: always()
         run: flutter build apk --no-shrink
 
       - name: Upload APK
-        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: app
