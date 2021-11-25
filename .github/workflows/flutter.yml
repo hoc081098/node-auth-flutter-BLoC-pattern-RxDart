@@ -52,6 +52,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: app
+          name: app-${{ matrix.flutter-channel }}
           path: build/app/outputs/apk/release/app-release.apk
 
