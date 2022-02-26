@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
@@ -9,8 +11,9 @@ import 'package:rxdart/rxdart.dart';
 class SharedPrefUtil implements LocalDataSource {
   static const _kUserTokenKey = 'com.hoc.node_auth_flutter.user_and_token';
   final RxSharedPreferences _rxPrefs;
+  final Crypto _crypto;
 
-  const SharedPrefUtil(this._rxPrefs);
+  const SharedPrefUtil(this._rxPrefs, this._crypto);
 
   @override
   Future<void> removeUserAndToken() =>
@@ -37,10 +40,25 @@ class SharedPrefUtil implements LocalDataSource {
       .onErrorReturnWith((e, s) =>
           throw LocalDataSourceException('Cannot read user and token', e, s));
 
-  static UserAndTokenEntity? _toEntity(dynamic jsonString) => jsonString == null
-      ? null
-      : UserAndTokenEntity.fromJson(json.decode(jsonString));
+  //
+  // Encoder and Decoder
+  //
 
-  static String? _toString(UserAndTokenEntity? entity) =>
-      entity == null ? null : jsonEncode(entity);
+  FutureOr<UserAndTokenEntity?> _toEntity(dynamic jsonString) =>
+      jsonString == null
+          ? null
+          : _crypto
+              .decrypt((jsonString as String).toUint8List)
+              .then(codeUnitsToString)
+              .then((s) => UserAndTokenEntity.fromJson(jsonDecode(s)));
+
+  FutureOr<String?> _toString(UserAndTokenEntity? entity) => entity == null
+      ? null
+      : _crypto.encrypt(jsonEncode(entity).toUint8List).then(codeUnitsToString);
+}
+
+String codeUnitsToString(Uint8List codeUnits) => utf8.decode(codeUnits);
+
+extension on String {
+  Uint8List get toUint8List => utf8.encoder.convert(this);
 }

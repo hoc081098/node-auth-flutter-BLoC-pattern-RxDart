@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
 
 abstract class LocalDataSource {
@@ -14,4 +16,10 @@ abstract class LocalDataSource {
   /// Remove user and token from local storage.
   /// Throws [LocalDataSourceException] if removing is failed
   Future<void> removeUserAndToken();
+}
+
+abstract class Crypto {
+  Future<Uint8List> encrypt(Uint8List plaintext);
+
+  Future<Uint8List> decrypt(Uint8List ciphertext);
 }
