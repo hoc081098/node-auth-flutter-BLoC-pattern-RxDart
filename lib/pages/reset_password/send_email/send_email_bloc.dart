@@ -9,7 +9,6 @@ import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
 import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class SendEmailBloc extends DisposeCallbackBaseBloc {

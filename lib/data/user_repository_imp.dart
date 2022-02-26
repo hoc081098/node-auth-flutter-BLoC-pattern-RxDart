@@ -13,7 +13,6 @@ import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/domain/models/user_and_token.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/utils/result.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:tuple/tuple.dart';
 

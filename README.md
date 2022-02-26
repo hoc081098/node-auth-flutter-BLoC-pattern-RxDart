@@ -18,15 +18,15 @@
 
 ```yaml
 environment:
-  sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0"
+  sdk: ">=2.16.1 <3.0.0"
+  flutter: ">=2.10.1"
 ```
 
 ```shell
-Flutter 2.5.0 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision 4cc385b4b8 (5 days ago) • 2021-09-07 23:01:49 -0700
-Engine • revision f0826da7ef
-Tools • Dart 2.14.0
+Flutter 2.10.1 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision db747aa133 (2 weeks ago) • 2022-02-09 13:57:35 -0600
+Engine • revision ab46186b24
+Tools • Dart 2.16.1 • DevTools 2.9.2
 ```
 
 ## Screenshots

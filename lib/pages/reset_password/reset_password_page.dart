@@ -8,7 +8,6 @@ import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/pages/reset_password/input_token/input_token_and_reset_password.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ResetPasswordPage extends StatefulWidget {
