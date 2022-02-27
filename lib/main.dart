@@ -7,6 +7,7 @@ import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 import 'package:node_auth/app.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
+import 'package:node_auth/data/local/method_channel_crypto_impl.dart';
 import 'package:node_auth/data/local/shared_pref_util.dart';
 import 'package:node_auth/data/remote/api_service.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
@@ -25,7 +26,8 @@ void main() async {
 
   // construct LocalDataSource
   final rxPrefs = RxSharedPreferences.getInstance();
-  final LocalDataSource localDataSource = SharedPrefUtil(rxPrefs);
+  final crypto = MethodChannelCryptoImpl();
+  final LocalDataSource localDataSource = SharedPrefUtil(rxPrefs, crypto);
 
   // construct UserRepository
   final UserRepository userRepository = UserRepositoryImpl(
