@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
 
 abstract class LocalDataSource {
@@ -19,7 +17,7 @@ abstract class LocalDataSource {
 }
 
 abstract class Crypto {
-  Future<Uint8List> encrypt(Uint8List plaintext);
+  Future<String> encrypt(String plaintext);
 
-  Future<Uint8List> decrypt(Uint8List ciphertext);
+  Future<String> decrypt(String ciphertext);
 }
