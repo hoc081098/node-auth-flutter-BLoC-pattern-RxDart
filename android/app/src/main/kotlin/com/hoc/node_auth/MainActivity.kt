@@ -1,6 +1,7 @@
 package com.hoc.node_auth
 
 import android.util.Log
+import com.google.crypto.tink.subtle.Base64
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -52,11 +53,17 @@ class MainActivity : FlutterActivity() {
     mainScope.launch {
       runCatching {
         withContext(Dispatchers.IO) {
-          myApp.aead.encrypt(plaintext.encodeToByteArray(), null).let(::String)
+          plaintext
+            .encodeToByteArray()
+            .let { myApp.aead.encrypt(it, null) }
+            .let { Base64.encode(it) }
         }
       }
         .onSuccess { result.success(it) }
-        .onFailureExceptCancellationException { result.error(CRYPTO_ERROR_CODE, it.message, null) }
+        .onFailureExceptCancellationException {
+          Log.e("Flutter", "encrypt", it)
+          result.error(CRYPTO_ERROR_CODE, it.message, null)
+        }
     }
   }
 
@@ -69,11 +76,17 @@ class MainActivity : FlutterActivity() {
     mainScope.launch {
       runCatching {
         withContext(Dispatchers.IO) {
-          myApp.aead.decrypt(ciphertext.encodeToByteArray(), null).let(::String)
+          Base64
+            .decode(ciphertext, Base64.DEFAULT)
+            .let { myApp.aead.decrypt(it, null) }
+            .decodeToString()
         }
       }
         .onSuccess { result.success(it) }
-        .onFailureExceptCancellationException { result.error(CRYPTO_ERROR_CODE, it.message, null) }
+        .onFailureExceptCancellationException {
+          Log.e("Flutter", "decrypt", it)
+          result.error(CRYPTO_ERROR_CODE, it.message, null)
+        }
     }
   }
   //endregion
