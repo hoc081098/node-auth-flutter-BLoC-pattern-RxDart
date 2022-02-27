@@ -14,7 +14,7 @@ class MainActivity : FlutterActivity() {
   //region Lifecycle
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)
-    Log.d("MainActivity#", "configureFlutterEngine flutterEngine=$flutterEngine")
+    Log.d("Flutter", "configureFlutterEngine flutterEngine=$flutterEngine $this")
 
     mainScope = MainScope()
     cryptoChannel = MethodChannel(
@@ -25,7 +25,7 @@ class MainActivity : FlutterActivity() {
 
   override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
     super.cleanUpFlutterEngine(flutterEngine)
-    Log.d("MainActivity#", "cleanUpFlutterEngine flutterEngine=$flutterEngine")
+    Log.d("Flutter", "cleanUpFlutterEngine flutterEngine=$flutterEngine $this")
 
     cryptoChannel.setMethodCallHandler(null)
     mainScope.cancel()
@@ -47,12 +47,12 @@ class MainActivity : FlutterActivity() {
     call: MethodCall,
     result: MethodChannel.Result
   ) {
-    val plaintext = checkNotNull(call.arguments<ByteArray?>()) { "plaintext must be not null" }
+    val plaintext = checkNotNull(call.arguments<String?>()) { "plaintext must be not null" }
 
     mainScope.launch {
       runCatching {
         withContext(Dispatchers.IO) {
-          myApp.aead.encrypt(plaintext, null)
+          myApp.aead.encrypt(plaintext.encodeToByteArray(), null).let(::String)
         }
       }
         .onSuccess { result.success(it) }
@@ -64,12 +64,12 @@ class MainActivity : FlutterActivity() {
     call: MethodCall,
     result: MethodChannel.Result
   ) {
-    val ciphertext = checkNotNull(call.arguments<ByteArray?>()) { "ciphertext must be not null" }
+    val ciphertext = checkNotNull(call.arguments<String?>()) { "ciphertext must be not null" }
 
     mainScope.launch {
       runCatching {
         withContext(Dispatchers.IO) {
-          myApp.aead.decrypt(ciphertext, null)
+          myApp.aead.decrypt(ciphertext.encodeToByteArray(), null).let(::String)
         }
       }
         .onSuccess { result.success(it) }
