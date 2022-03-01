@@ -15,3 +15,9 @@ abstract class LocalDataSource {
   /// Throws [LocalDataSourceException] if removing is failed
   Future<void> removeUserAndToken();
 }
+
+abstract class Crypto {
+  Future<String> encrypt(String plaintext);
+
+  Future<String> decrypt(String ciphertext);
+}

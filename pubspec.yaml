@@ -46,3 +46,12 @@ flutter:
     - assets/bg.jpg
     - assets/user.png
 
+dependency_overrides:
+  rx_shared_preferences:
+    git:
+      url: https://github.com/hoc081098/rx_shared_preferences.git
+      ref: 78db985d06f275ebf3f12aa21511cfc7333c220b
+  rx_storage:
+    git:
+      url: https://github.com/Flutter-Dart-Open-Source/rx_storage.git
+      ref: 50c711605b6aa9a185e7f3ca9b2c87f0d2b35187
