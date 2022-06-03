@@ -119,8 +119,6 @@ private func useAES(
       let end = DispatchTime.now()
       let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds
       let millisTime = Double(nanoTime) / 1_000_000
-      print("[NODE_AUTH] Input: \(input)")
-      print("[NODE_AUTH] Output: \(stringResult)")
       print("[NODE_AUTH] Time: \(millisTime) ms")
 
       executeOnMain { result(stringResult) }
