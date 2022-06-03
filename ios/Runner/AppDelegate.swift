@@ -45,7 +45,7 @@ private enum AESConfig {
 }
 
 private func complete(result: @escaping FlutterResult, with error: Error) {
-  debugPrint("[NODE_AUTH] Error: ", error)
+  NSLog("\n[NODE_AUTH] Error: \(error)")
 
   executeOnMain {
     result(
@@ -76,7 +76,7 @@ private func useAES(
   block: @escaping (AES, [UInt8]) throws -> [UInt8]
 ) {
   guard let inputBytes = inputToBytes(input) else {
-    print("[NODE_AUTH] Error: inputToBytes returns nil")
+    NSLog("\n[NODE_AUTH] Error: inputToBytes returns nil")
 
     executeOnMain {
       result(
@@ -102,7 +102,7 @@ private func useAES(
 
       let outputBytes = try block(aes, inputBytes)
       guard let stringResult = bytesToString(outputBytes) else {
-        print("[NODE_AUTH] Error: bytesToString returns nil")
+        NSLog("\n[NODE_AUTH] Error: bytesToString returns nil")
 
         executeOnMain {
           result(
@@ -119,7 +119,7 @@ private func useAES(
       let end = DispatchTime.now()
       let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds
       let millisTime = Double(nanoTime) / 1_000_000
-      print("[NODE_AUTH] Time: \(millisTime) ms")
+      NSLog("\n[NODE_AUTH] Time: \(millisTime) ms")
 
       executeOnMain { result(stringResult) }
     } catch {
