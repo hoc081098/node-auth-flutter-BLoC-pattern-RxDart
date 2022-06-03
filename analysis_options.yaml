@@ -1,9 +1,5 @@
 include: package:flutter_lints/flutter.yaml
 
-analyzer:
-  enable-experiment:
-    - nonfunction-type-aliases
-
 linter:
   rules:
     - prefer_final_locals

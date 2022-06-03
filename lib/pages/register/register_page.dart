@@ -15,7 +15,7 @@ class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage>
@@ -145,13 +145,17 @@ class _RegisterPageState extends State<RegisterPage>
       context.showSnackBar('Register successfully');
       await delay(1000);
       yield null;
+      // ignore: use_build_context_synchronously
       Navigator.pop<String>(context, message.email);
+      return;
     }
     if (message is RegisterErrorMessage) {
       context.showSnackBar(message.message);
+      return;
     }
     if (message is RegisterInvalidInformationMessage) {
       context.showSnackBar('Invalid information');
+      return;
     }
   }
 

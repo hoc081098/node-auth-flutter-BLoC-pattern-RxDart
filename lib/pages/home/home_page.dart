@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage>
@@ -138,22 +138,29 @@ class _HomePageState extends State<HomePage>
         await delay(1000);
         yield null;
 
+        // ignore: use_build_context_synchronously
         context.hideCurrentSnackBar();
+        // ignore: use_build_context_synchronously
         await Navigator.of(context).pushNamedAndRemoveUntil(
           LoginPage.routeName,
           (_) => false,
         );
+        return;
       }
       if (message is LogoutErrorMessage) {
         context.showSnackBar('Error when logout: ${message.message}');
+        return;
       }
+      return;
     }
     if (message is UpdateAvatarMessage) {
       if (message is UpdateAvatarSuccessMessage) {
         context.showSnackBar('Upload image successfully!');
+        return;
       }
       if (message is UpdateAvatarErrorMessage) {
         context.showSnackBar('Error when upload image: ${message.message}');
+        return;
       }
     }
   }

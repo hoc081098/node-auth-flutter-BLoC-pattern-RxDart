@@ -9,7 +9,7 @@ class ChangePasswordBottomSheet extends StatefulWidget {
   const ChangePasswordBottomSheet({Key? key}) : super(key: key);
 
   @override
-  _ChangePasswordBottomSheetState createState() =>
+  State<ChangePasswordBottomSheet> createState() =>
       _ChangePasswordBottomSheetState();
 }
 
@@ -55,6 +55,7 @@ class _ChangePasswordBottomSheetState extends State<ChangePasswordBottomSheet>
             yield null;
 
             if (state.error == null) {
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             }
           }

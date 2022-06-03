@@ -17,7 +17,7 @@ class _$User extends User {
   final String? imageUrl;
 
   factory _$User([void Function(UserBuilder)? updates]) =>
-      (new UserBuilder()..update(updates)).build();
+      (new UserBuilder()..update(updates))._build();
 
   _$User._(
       {required this.name,
@@ -25,9 +25,9 @@ class _$User extends User {
       required this.createdAt,
       this.imageUrl})
       : super._() {
-    BuiltValueNullFieldError.checkNotNull(name, 'User', 'name');
-    BuiltValueNullFieldError.checkNotNull(email, 'User', 'email');
-    BuiltValueNullFieldError.checkNotNull(createdAt, 'User', 'createdAt');
+    BuiltValueNullFieldError.checkNotNull(name, r'User', 'name');
+    BuiltValueNullFieldError.checkNotNull(email, r'User', 'email');
+    BuiltValueNullFieldError.checkNotNull(createdAt, r'User', 'createdAt');
   }
 
   @override
@@ -56,7 +56,7 @@ class _$User extends User {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('User')
+    return (newBuiltValueToStringHelper(r'User')
           ..add('name', name)
           ..add('email', email)
           ..add('createdAt', createdAt)
@@ -110,18 +110,20 @@ class UserBuilder implements Builder<User, UserBuilder> {
   }
 
   @override
-  _$User build() {
+  User build() => _build();
+
+  _$User _build() {
     final _$result = _$v ??
         new _$User._(
-            name: BuiltValueNullFieldError.checkNotNull(name, 'User', 'name'),
+            name: BuiltValueNullFieldError.checkNotNull(name, r'User', 'name'),
             email:
-                BuiltValueNullFieldError.checkNotNull(email, 'User', 'email'),
+                BuiltValueNullFieldError.checkNotNull(email, r'User', 'email'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
-                createdAt, 'User', 'createdAt'),
+                createdAt, r'User', 'createdAt'),
             imageUrl: imageUrl);
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas

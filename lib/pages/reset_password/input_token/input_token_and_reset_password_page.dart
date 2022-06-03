@@ -13,7 +13,7 @@ class InputTokenAndResetPasswordPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _InputTokenAndResetPasswordPageState createState() =>
+  State<InputTokenAndResetPasswordPage> createState() =>
       _InputTokenAndResetPasswordPageState();
 }
 
@@ -59,6 +59,7 @@ class _InputTokenAndResetPasswordPageState
         yield null;
 
         if (message is ResetPasswordSuccess) {
+          // ignore: use_build_context_synchronously
           Navigator.pop<String>(context, message.email);
         }
       }).collect(),

@@ -10,7 +10,7 @@ class SendEmailPage extends StatefulWidget {
   const SendEmailPage({Key? key, required this.toggle}) : super(key: key);
 
   @override
-  _SendEmailPageState createState() => _SendEmailPageState();
+  State<SendEmailPage> createState() => _SendEmailPageState();
 }
 
 class _SendEmailPageState extends State<SendEmailPage>

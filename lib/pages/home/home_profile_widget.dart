@@ -28,15 +28,25 @@ class HomeUserProfile extends StatelessWidget {
             final user = data.userAndToken?.user;
             return user == null
                 ? _buildUnauthenticated(context)
-                : _buildProfile(user, homeBloc, context);
+                : RxStreamBuilder<bool>(
+                    stream: homeBloc.isUploading$,
+                    builder: (context, isUploading) =>
+                        _buildProfile(user, homeBloc, context, isUploading),
+                  );
           },
         ),
       ),
     );
   }
 
-  Widget _buildProfile(User user, HomeBloc homeBloc, BuildContext context) {
+  Widget _buildProfile(
+    User user,
+    HomeBloc homeBloc,
+    BuildContext context,
+    bool isUploading,
+  ) {
     final imageUrl = user.imageUrl;
+
     final provider = imageUrl != null
         ? NetworkImage(
             Uri.https(
@@ -45,6 +55,7 @@ class HomeUserProfile extends StatelessWidget {
             ).toString(),
           ) as ImageProvider
         : const AssetImage('assets/user.png');
+
     final image = OctoImage(
       image: provider,
       fit: BoxFit.cover,
@@ -55,7 +66,8 @@ class HomeUserProfile extends StatelessWidget {
           strokeWidth: 2,
         ),
       ),
-      errorBuilder: (_, __, ___) {
+      errorBuilder: (context, e, st) {
+        debugPrint('$e $st');
         final themeData = Theme.of(context);
 
         return Center(
@@ -80,12 +92,15 @@ class HomeUserProfile extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        ClipOval(
-          child: GestureDetector(
-            onTap: homeBloc.changeAvatar,
-            child: image,
+        if (isUploading)
+          const ImageUploadingWidget()
+        else
+          ClipOval(
+            child: GestureDetector(
+              onTap: homeBloc.changeAvatar,
+              child: image,
+            ),
           ),
-        ),
         Expanded(
           child: ListTile(
             title: Text(
@@ -98,7 +113,7 @@ class HomeUserProfile extends StatelessWidget {
             subtitle: Text(
               '${user.email}\n${user.createdAt}',
               style: const TextStyle(
-                fontSize: 18.0,
+                fontSize: 16.0,
                 fontWeight: FontWeight.w400,
                 fontStyle: FontStyle.italic,
               ),
@@ -123,10 +138,39 @@ class HomeUserProfile extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              'Loging out...',
+              'Logging out...',
               style: Theme.of(context).textTheme.subtitle1,
               textAlign: TextAlign.center,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ImageUploadingWidget extends StatelessWidget {
+  const ImageUploadingWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 90,
+      height: 90,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Uploading',
+            style: Theme.of(context).textTheme.overline,
+            textAlign: TextAlign.center,
           ),
         ],
       ),

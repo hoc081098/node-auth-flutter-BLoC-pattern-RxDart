@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disposebag/disposebag.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
@@ -24,12 +25,14 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   /// Output stream
   final StateStream<AuthenticationState?> authState$;
   final Stream<HomeMessage> message$;
+  final StateStream<bool> isUploading$;
 
   HomeBloc._({
     required this.changeAvatar,
     required this.message$,
     required this.logout,
     required this.authState$,
+    required this.isUploading$,
     required Function0<void> dispose,
   }) : super(dispose);
 
@@ -40,6 +43,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   ) {
     final changeAvatarS = PublishSubject<void>();
     final logoutS = PublishSubject<void>();
+    final isUploading$ = StateSubject(false);
 
     final Stream<AuthenticationState?> authenticationState$ = getAuthState();
 
@@ -50,20 +54,26 @@ class HomeBloc extends DisposeCallbackBaseBloc {
           .map((_) => const LogoutSuccessMessage()),
     ]);
 
+    final imagePicker = ImagePicker();
     final updateAvatarMessage$ = changeAvatarS
-        .exhaustMap(
-          (value) => Rx.fromCallable(
-            () => ImagePicker().pickImage(
+        .debug(identifier: 'changeAvatar [1]', log: debugPrint)
+        .switchMap(
+          (_) => Rx.fromCallable(
+            () => imagePicker.pickImage(
               source: ImageSource.gallery,
               maxWidth: 720.0,
               maxHeight: 720.0,
             ),
-          ),
+          ).debug(identifier: 'pickImage', log: debugPrint),
         )
+        .debug(identifier: 'changeAvatar [2]', log: debugPrint)
         .map((file) => file == null ? null : File(file.path))
         .whereNotNull()
         .distinct()
-        .switchMap(uploadImage.call)
+        .switchMap((file) => uploadImage(file)
+            .doOnListen(() => isUploading$.value = true)
+            .doOnCancel(() => isUploading$.value = false))
+        .debug(identifier: 'changeAvatar [3]', log: debugPrint)
         .map(_resultToChangeAvatarMessage);
 
     final authState$ = authenticationState$.publishState(null);
@@ -74,11 +84,13 @@ class HomeBloc extends DisposeCallbackBaseBloc {
       changeAvatar: () => changeAvatarS.add(null),
       logout: () => logoutS.add(null),
       authState$: authState$,
+      isUploading$: isUploading$,
       dispose: DisposeBag([
         authState$.connect(),
         message$.connect(),
         changeAvatarS,
         logoutS,
+        isUploading$,
       ]).dispose,
       message$: message$,
     );

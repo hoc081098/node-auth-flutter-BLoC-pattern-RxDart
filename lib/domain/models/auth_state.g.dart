@@ -12,11 +12,11 @@ class _$AuthenticatedState extends AuthenticatedState {
 
   factory _$AuthenticatedState(
           [void Function(AuthenticatedStateBuilder)? updates]) =>
-      (new AuthenticatedStateBuilder()..update(updates)).build();
+      (new AuthenticatedStateBuilder()..update(updates))._build();
 
   _$AuthenticatedState._({required this.userAndToken}) : super._() {
     BuiltValueNullFieldError.checkNotNull(
-        userAndToken, 'AuthenticatedState', 'userAndToken');
+        userAndToken, r'AuthenticatedState', 'userAndToken');
   }
 
   @override
@@ -41,7 +41,7 @@ class _$AuthenticatedState extends AuthenticatedState {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('AuthenticatedState')
+    return (newBuiltValueToStringHelper(r'AuthenticatedState')
           ..add('userAndToken', userAndToken))
         .toString();
   }
@@ -80,7 +80,9 @@ class AuthenticatedStateBuilder
   }
 
   @override
-  _$AuthenticatedState build() {
+  AuthenticatedState build() => _build();
+
+  _$AuthenticatedState _build() {
     _$AuthenticatedState _$result;
     try {
       _$result =
@@ -92,7 +94,7 @@ class AuthenticatedStateBuilder
         userAndToken.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            'AuthenticatedState', _$failedField, e.toString());
+            r'AuthenticatedState', _$failedField, e.toString());
       }
       rethrow;
     }
@@ -104,7 +106,7 @@ class AuthenticatedStateBuilder
 class _$UnauthenticatedState extends UnauthenticatedState {
   factory _$UnauthenticatedState(
           [void Function(UnauthenticatedStateBuilder)? updates]) =>
-      (new UnauthenticatedStateBuilder()..update(updates)).build();
+      (new UnauthenticatedStateBuilder()..update(updates))._build();
 
   _$UnauthenticatedState._() : super._();
 
@@ -130,7 +132,7 @@ class _$UnauthenticatedState extends UnauthenticatedState {
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper('UnauthenticatedState').toString();
+    return newBuiltValueToStringHelper(r'UnauthenticatedState').toString();
   }
 }
 
@@ -152,11 +154,13 @@ class UnauthenticatedStateBuilder
   }
 
   @override
-  _$UnauthenticatedState build() {
+  UnauthenticatedState build() => _build();
+
+  _$UnauthenticatedState _build() {
     final _$result = _$v ?? new _$UnauthenticatedState._();
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas

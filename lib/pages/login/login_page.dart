@@ -18,7 +18,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _MyLoginPageState createState() => _MyLoginPageState();
+  State<LoginPage> createState() => _MyLoginPageState();
 }
 
 class _MyLoginPageState extends State<LoginPage>
@@ -150,14 +150,19 @@ class _MyLoginPageState extends State<LoginPage>
       await delay(1000);
       yield null;
 
+      // ignore: use_build_context_synchronously
       context.hideCurrentSnackBar();
+      // ignore: use_build_context_synchronously
       await Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+      return;
     }
     if (message is LoginErrorMessage) {
       context.showSnackBar(message.message);
+      return;
     }
     if (message is InvalidInformationMessage) {
       context.showSnackBar('Invalid information');
+      return;
     }
   }
 
@@ -263,6 +268,7 @@ class _MyLoginPageState extends State<LoginPage>
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
+          // ignore: use_build_context_synchronously
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },
@@ -289,6 +295,7 @@ class _MyLoginPageState extends State<LoginPage>
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
+          // ignore: use_build_context_synchronously
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },

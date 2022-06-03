@@ -45,21 +45,21 @@ class _$UserEntitySerializer implements StructuredSerializer<UserEntity> {
 
     final iterator = serialized.iterator;
     while (iterator.moveNext()) {
-      final key = iterator.current as String;
+      final key = iterator.current! as String;
       iterator.moveNext();
       final Object? value = iterator.current;
       switch (key) {
         case 'name':
           result.name = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String))! as String;
           break;
         case 'email':
           result.email = serializers.deserialize(value,
-              specifiedType: const FullType(String)) as String;
+              specifiedType: const FullType(String))! as String;
           break;
         case 'created_at':
           result.createdAt = serializers.deserialize(value,
-              specifiedType: const FullType(DateTime)) as DateTime;
+              specifiedType: const FullType(DateTime))! as DateTime;
           break;
         case 'image_url':
           result.imageUrl = serializers.deserialize(value,
@@ -83,7 +83,7 @@ class _$UserEntity extends UserEntity {
   final String? imageUrl;
 
   factory _$UserEntity([void Function(UserEntityBuilder)? updates]) =>
-      (new UserEntityBuilder()..update(updates)).build();
+      (new UserEntityBuilder()..update(updates))._build();
 
   _$UserEntity._(
       {required this.name,
@@ -91,9 +91,10 @@ class _$UserEntity extends UserEntity {
       required this.createdAt,
       this.imageUrl})
       : super._() {
-    BuiltValueNullFieldError.checkNotNull(name, 'UserEntity', 'name');
-    BuiltValueNullFieldError.checkNotNull(email, 'UserEntity', 'email');
-    BuiltValueNullFieldError.checkNotNull(createdAt, 'UserEntity', 'createdAt');
+    BuiltValueNullFieldError.checkNotNull(name, r'UserEntity', 'name');
+    BuiltValueNullFieldError.checkNotNull(email, r'UserEntity', 'email');
+    BuiltValueNullFieldError.checkNotNull(
+        createdAt, r'UserEntity', 'createdAt');
   }
 
   @override
@@ -122,7 +123,7 @@ class _$UserEntity extends UserEntity {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('UserEntity')
+    return (newBuiltValueToStringHelper(r'UserEntity')
           ..add('name', name)
           ..add('email', email)
           ..add('createdAt', createdAt)
@@ -176,19 +177,21 @@ class UserEntityBuilder implements Builder<UserEntity, UserEntityBuilder> {
   }
 
   @override
-  _$UserEntity build() {
+  UserEntity build() => _build();
+
+  _$UserEntity _build() {
     final _$result = _$v ??
         new _$UserEntity._(
             name: BuiltValueNullFieldError.checkNotNull(
-                name, 'UserEntity', 'name'),
+                name, r'UserEntity', 'name'),
             email: BuiltValueNullFieldError.checkNotNull(
-                email, 'UserEntity', 'email'),
+                email, r'UserEntity', 'email'),
             createdAt: BuiltValueNullFieldError.checkNotNull(
-                createdAt, 'UserEntity', 'createdAt'),
+                createdAt, r'UserEntity', 'createdAt'),
             imageUrl: imageUrl);
     replace(_$result);
     return _$result;
   }
 }
 
-// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new
+// ignore_for_file: always_put_control_body_on_new_line,always_specify_types,annotate_overrides,avoid_annotating_with_dynamic,avoid_as,avoid_catches_without_on_clauses,avoid_returning_this,deprecated_member_use_from_same_package,lines_longer_than_80_chars,no_leading_underscores_for_local_identifiers,omit_local_variable_types,prefer_expression_function_bodies,sort_constructors_first,test_types_in_equals,unnecessary_const,unnecessary_new,unnecessary_lambdas

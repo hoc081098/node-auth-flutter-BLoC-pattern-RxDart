@@ -37,7 +37,7 @@ void _logResponse(http.Response response) {
   debugPrint('[http] <-- ${response.statusCode} ${response.request}');
   debugPrint('${_indent}bodyBytes: ${response.bodyBytes.length}');
   try {
-    debugPrint('${_indent}body: ' + response.body);
+    debugPrint('${_indent}body: ${response.body}');
   } catch (_) {}
 }
 
