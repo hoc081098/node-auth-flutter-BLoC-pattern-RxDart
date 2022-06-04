@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/data/constants.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/pages/home/home_bloc.dart';
@@ -17,15 +18,15 @@ class HomeUserProfile extends StatelessWidget {
       color: Colors.black.withOpacity(0.5),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RxStreamBuilder<AuthenticationState?>(
+        child: RxStreamBuilder<Result<AuthenticationState>?>(
           stream: homeBloc.authState$,
-          builder: (context, data) {
-            if (data == null) {
+          builder: (context, result) {
+            if (result == null) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            final user = data.userAndToken?.user;
+            final user = result.orNull()?.userAndToken?.user;
             return user == null
                 ? _buildUnauthenticated(context)
                 : RxStreamBuilder<bool>(

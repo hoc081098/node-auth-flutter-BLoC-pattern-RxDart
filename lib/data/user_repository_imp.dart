@@ -23,7 +23,7 @@ class UserRepositoryImpl implements UserRepository {
   final LocalDataSource _localDataSource;
 
   @override
-  final Stream<AuthenticationState> authenticationState$;
+  final Stream<Result<AuthenticationState>> authenticationState$;
 
   @override
   Single<Result<AuthenticationState>> get authenticationState =>
@@ -35,7 +35,7 @@ class UserRepositoryImpl implements UserRepository {
     this._localDataSource,
   ) : authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
-            .onErrorReturn(UnauthenticatedState())
+            .toEitherStream(_errorToAppError)
             .publishValue()
           ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
@@ -175,10 +175,10 @@ class UserRepositoryImpl implements UserRepository {
   /// if future complete with error, emit [Failure]
   ///
   Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
-      Single.fromCallable(factory)
+      Rx.fromCallable(factory)
           .doOnError(_handleUnauthenticatedError)
-          .map<Result<T>>((value) => Right<T>(value))
-          .onErrorReturnWith(_errorToResult);
+          .toEitherStream(_errorToAppError)
+          .singleOrError();
 
   ///
   /// Like error http interceptor
@@ -195,13 +195,13 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Result<Never> _errorToResult(Object e, StackTrace s) {
+  static AppError _errorToAppError(Object e, StackTrace s) {
     if (e is RemoteDataSourceException) {
       return AppError(
         message: e.message,
         error: e,
         stackTrace: s,
-      ).left();
+      );
     }
 
     if (e is LocalDataSourceException) {
@@ -209,14 +209,14 @@ class UserRepositoryImpl implements UserRepository {
         message: e.message,
         error: e,
         stackTrace: s,
-      ).left();
+      );
     }
 
     return AppError(
       message: e.toString(),
       error: e,
       stackTrace: s,
-    ).left();
+    );
   }
 
   ///

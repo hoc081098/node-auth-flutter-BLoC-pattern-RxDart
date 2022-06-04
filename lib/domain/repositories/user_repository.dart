@@ -4,7 +4,7 @@ import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 
 abstract class UserRepository {
-  Stream<AuthenticationState> get authenticationState$;
+  Stream<Result<AuthenticationState>> get authenticationState$;
 
   Single<Result<AuthenticationState>> get authenticationState;
 

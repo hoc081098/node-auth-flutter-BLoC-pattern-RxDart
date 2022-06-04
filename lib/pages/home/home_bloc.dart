@@ -11,6 +11,7 @@ import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/pages/home/home_state.dart';
+import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
 
 //ignore_for_file: close_sinks
@@ -22,7 +23,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   final Function0<void> logout;
 
   /// Output stream
-  final StateStream<AuthenticationState?> authState$;
+  final StateStream<Result<AuthenticationState>?> authState$;
   final Stream<HomeMessage> message$;
   final StateStream<bool> isUploading$;
 
@@ -44,13 +45,13 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     final logoutS = PublishSubject<void>();
     final isUploading$ = StateSubject(false);
 
-    final Stream<AuthenticationState?> authenticationState$ = getAuthState();
+    final authenticationState$ = getAuthState();
 
     final logoutMessage$ = Rx.merge([
       logoutS.exhaustMap((_) => logout()).map(_resultToLogoutMessage),
       authenticationState$
-          .where((state) => state!.userAndToken == null)
-          .map((_) => const LogoutSuccessMessage()),
+          .where((result) => result.orNull()?.userAndToken == null)
+          .mapTo(const LogoutSuccessMessage()),
     ]);
 
     final imagePicker = ImagePicker();
@@ -77,7 +78,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
         .debug(identifier: 'changeAvatar [3]', log: debugPrint)
         .map(_resultToChangeAvatarMessage);
 
-    final authState$ = authenticationState$.publishState(null);
+    final authState$ = authenticationState$.castAsNullable().publishState(null);
 
     final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
 
