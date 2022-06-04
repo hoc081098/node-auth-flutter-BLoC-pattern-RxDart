@@ -141,14 +141,14 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
       debugPrint('[DEBUG] change password result=$result');
 
       return result.fold(
-        (value) => ChangePasswordState((b) => b
+        ifRight: (_) => ChangePasswordState((b) => b
           ..isLoading = false
           ..error = null
           ..message = 'Change password successfully!'),
-        (error, message) => ChangePasswordState((b) => b
+        ifLeft: (appError) => ChangePasswordState((b) => b
           ..isLoading = false
-          ..error = error
-          ..message = 'Error when change password: $message'),
+          ..error = appError.error
+          ..message = 'Error when change password: ${appError.message}'),
       );
     }
 

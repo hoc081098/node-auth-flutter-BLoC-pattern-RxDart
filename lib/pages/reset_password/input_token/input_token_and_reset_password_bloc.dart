@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
-import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
@@ -140,8 +139,9 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
         )
         .map(
           (result) => result.fold(
-            (_) => ResetPasswordSuccess(email),
-            (error, message) => ResetPasswordFailure(error, message),
+            ifRight: (_) => ResetPasswordSuccess(email),
+            ifLeft: (appError) =>
+                ResetPasswordFailure(appError.error, appError.message),
           ),
         );
   }

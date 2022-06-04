@@ -87,10 +87,11 @@ class UserRepositoryImpl implements UserRepository {
         .flatMapResult((userAndToken) {
           if (userAndToken == null) {
             return Single.value(
-              Failure(
+              AppError(
                 message: 'Require login!',
                 error: 'Email or token is null',
-              ),
+                stackTrace: StackTrace.current,
+              ).left(),
             );
           }
 
@@ -125,10 +126,11 @@ class UserRepositoryImpl implements UserRepository {
     return _userAndToken.flatMapResult((userAndToken) {
       if (userAndToken == null) {
         return Single.value(
-          Failure(
+          AppError(
             message: 'Require login!',
             error: 'Email or token is null',
-          ),
+            stackTrace: StackTrace.current,
+          ).left(),
         );
       }
 
@@ -176,7 +178,7 @@ class UserRepositoryImpl implements UserRepository {
   Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
       Single.fromCallable(factory)
           .doOnError(_handleUnauthenticatedError)
-          .map<Result<T>>((value) => Success<T>(value))
+          .map<Result<T>>((value) => Right<T>(value))
           .onErrorReturnWith(_errorToResult);
 
   ///
@@ -194,14 +196,28 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Failure _errorToResult(Object e, StackTrace s) {
+  static Result<Never> _errorToResult(Object e, StackTrace s) {
     if (e is RemoteDataSourceException) {
-      return Failure(message: e.message, error: e);
+      return AppError(
+        message: e.message,
+        error: e,
+        stackTrace: s,
+      ).left();
     }
+
     if (e is LocalDataSourceException) {
-      return Failure(message: e.message, error: e);
+      return AppError(
+        message: e.message,
+        error: e,
+        stackTrace: s,
+      ).left();
     }
-    return Failure(message: e.toString(), error: e);
+
+    return AppError(
+      message: e.toString(),
+      error: e,
+      stackTrace: s,
+    ).left();
   }
 
   ///

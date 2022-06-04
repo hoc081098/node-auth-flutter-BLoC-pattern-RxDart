@@ -70,9 +70,11 @@ class HomeBloc extends DisposeCallbackBaseBloc {
         .map((file) => file == null ? null : File(file.path))
         .whereNotNull()
         .distinct()
-        .switchMap((file) => uploadImage(file)
-            .doOnListen(() => isUploading$.value = true)
-            .doOnCancel(() => isUploading$.value = false))
+        .switchMap(
+          (file) => uploadImage(file).doOn(
+              listen: () => isUploading$.value = true,
+              cancel: () => isUploading$.value = false),
+        )
         .debug(identifier: 'changeAvatar [3]', log: debugPrint)
         .map(_resultToChangeAvatarMessage);
 
@@ -98,15 +100,17 @@ class HomeBloc extends DisposeCallbackBaseBloc {
 
   static LogoutMessage _resultToLogoutMessage(UnitResult result) {
     return result.fold(
-      (value) => const LogoutSuccessMessage(),
-      (error, message) => LogoutErrorMessage(message, error),
+      ifRight: (_) => const LogoutSuccessMessage(),
+      ifLeft: (appError) =>
+          LogoutErrorMessage(appError.message, appError.error),
     );
   }
 
   static UpdateAvatarMessage _resultToChangeAvatarMessage(UnitResult result) {
     return result.fold(
-      (value) => const UpdateAvatarSuccessMessage(),
-      (error, message) => UpdateAvatarErrorMessage(message, error),
+      ifRight: (_) => const UpdateAvatarSuccessMessage(),
+      ifLeft: (appError) =>
+          UpdateAvatarErrorMessage(appError.message, appError.error),
     );
   }
 }

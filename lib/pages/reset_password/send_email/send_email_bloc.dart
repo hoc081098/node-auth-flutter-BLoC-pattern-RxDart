@@ -6,7 +6,6 @@ import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:node_auth/domain/usecases/send_reset_password_email_use_case.dart';
 import 'package:node_auth/pages/reset_password/send_email/send_email.dart';
-import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
@@ -81,8 +80,9 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
         )
         .map(
           (result) => result.fold(
-            (_) => const SendEmailSuccessMessage(),
-            (error, message) => SendEmailErrorMessage(error, message),
+            ifRight: (_) => const SendEmailSuccessMessage(),
+            ifLeft: (appError) =>
+                SendEmailErrorMessage(appError.error, appError.message),
           ),
         );
   }

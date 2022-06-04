@@ -31,6 +31,10 @@ dependencies:
   flutter_bloc_pattern: ^2.3.0
   rxdart_ext: ^0.2.2
   did_change_dependencies: ^1.0.0
+  dart_either:
+    git:
+      url: https://github.com/hoc081098/dart_either.git
+      ref: bedffe85f149e2a8349536124c2dac3b31d0b25d
 
 dev_dependencies:
   plugin_platform_interface: ^2.1.2

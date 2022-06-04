@@ -1,67 +1,34 @@
-import 'package:meta/meta.dart';
+import 'package:dart_either/dart_either.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
-@sealed
-@immutable
-abstract class Result<T> {}
+export 'package:dart_either/dart_either.dart';
 
-extension ResultExtensions<T> on Result<T> {
-  R fold<R>(
-    R Function(T value) onSuccess,
-    R Function(Object error, String message) onFailure,
-  ) {
-    final self = this;
-    if (self is Success<T>) {
-      return onSuccess(self.value);
-    }
-    if (self is Failure) {
-      return onFailure(self.error, self.message);
-    }
-    throw StateError('Cannot handle $this');
-  }
-}
-
-class Success<T> implements Result<T> {
-  final T value;
-
-  Success(this.value);
-
-  @override
-  String toString() => 'Success{value: $value}';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Success &&
-          runtimeType == other.runtimeType &&
-          value == other.value;
-
-  @override
-  int get hashCode => value.hashCode;
-}
-
-class Failure implements Result<Never> {
+class AppError {
   final String message;
   final Object error;
+  final StackTrace stackTrace;
 
-  Failure({
+  AppError({
     required this.message,
     required this.error,
+    required this.stackTrace,
   });
 
   @override
-  String toString() => 'Failure{message: $message, error: $error}';
+  String toString() =>
+      'AppError{message: $message, error: $error, stackTrace: $stackTrace}';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Failure &&
+      other is AppError &&
           runtimeType == other.runtimeType &&
           message == other.message &&
-          error == other.error;
+          error == other.error &&
+          stackTrace == other.stackTrace;
 
   @override
-  int get hashCode => message.hashCode ^ error.hashCode;
+  int get hashCode => Object.hash(message, error, stackTrace);
 }
 
 extension FlatMapResultExtension<T extends Object?> on Single<Result<T>> {
@@ -69,27 +36,23 @@ extension FlatMapResultExtension<T extends Object?> on Single<Result<T>> {
     Single<Result<R>> Function(T value) mapper,
   ) =>
       flatMapSingle(
-        (result) => result.fold(
-          mapper,
-          (error, message) => Single.value(result as Failure),
+        (result) => result.when(
+          ifRight: (v) => mapper(v.value),
+          ifLeft: (l) => Single.value(l),
         ),
       );
 }
 
 extension UnitSingleResultExtension<T> on Single<Result<T>> {
-  UnitResultSingle asUnit() => map(
-        (r) => r.fold(
-          (_) => Success<Unit>(unit),
-          (error, message) => r as Failure,
-        ),
-      );
+  UnitResultSingle asUnit() => map((r) => r.map((_) => Unit.instance));
 }
 
+typedef Result<T> = Either<AppError, T>;
 typedef UnitResult = Result<Unit>;
 typedef UnitResultSingle = Single<UnitResult>;
 
 class Unit {
   const Unit._();
-}
 
-const unit = Unit._();
+  static const instance = Unit._();
+}

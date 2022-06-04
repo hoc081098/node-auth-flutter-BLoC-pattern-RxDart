@@ -8,7 +8,7 @@ import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 // ignore_for_file: close_sinks
 
@@ -81,8 +81,10 @@ class LoginBloc extends DisposeCallbackBaseBloc {
               email: credential.email,
               password: credential.password,
             )
-                .doOnListen(() => isLoadingController.add(true))
-                .doOnData((_) => isLoadingController.add(false))
+                .doOn(
+                  listen: () => isLoadingController.add(true),
+                  cancel: () => isLoadingController.add(false),
+                )
                 .map(_responseToMessage),
           ),
       submit$
@@ -128,8 +130,8 @@ class LoginBloc extends DisposeCallbackBaseBloc {
 
   static LoginMessage _responseToMessage(UnitResult result) {
     return result.fold(
-      (value) => const LoginSuccessMessage(),
-      (error, message) => LoginErrorMessage(message, error),
+      ifRight: (_) => const LoginSuccessMessage(),
+      ifLeft: (appError) => LoginErrorMessage(appError.message, appError.error),
     );
   }
 }
