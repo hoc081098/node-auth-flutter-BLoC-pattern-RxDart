@@ -8,12 +8,12 @@ import 'package:node_auth/data/local/entities/user_entity.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/remote/response/user_response.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/domain/models/user_and_token.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
-import 'package:node_auth/utils/result.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
+import 'package:node_auth/utils/streams.dart';
 import 'package:tuple/tuple.dart';
 
 part 'mappers.dart';
@@ -26,10 +26,9 @@ class UserRepositoryImpl implements UserRepository {
   final Stream<AuthenticationState> authenticationState$;
 
   @override
-  Future<AuthenticationState> get authenticationState =>
-      _localDataSource.userAndToken
-          .then(_Mappers.userAndTokenEntityToDomainAuthState)
-          .catchError((_) => UnauthenticatedState());
+  Single<Result<AuthenticationState>> get authenticationState =>
+      _execute(() => _localDataSource.userAndToken
+          .then(_Mappers.userAndTokenEntityToDomainAuthState));
 
   UserRepositoryImpl(
     this._remoteDataSource,
@@ -49,13 +48,13 @@ class UserRepositoryImpl implements UserRepository {
     required String password,
   }) {
     return _execute(() => _remoteDataSource.loginUser(email, password))
-        .flatMapResult((result) {
+        .flatMapEitherSingle((result) {
           final token = result.token!;
           return _execute(() => _remoteDataSource
               .getUserProfile(email, token)
               .then((user) => Tuple2(user, token)));
         })
-        .flatMapResult(
+        .flatMapEitherSingle(
           (tuple) => _execute(
             () => _localDataSource.saveUserAndToken(
               _Mappers.userResponseToUserAndTokenEntity(
@@ -84,7 +83,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   UnitResultSingle uploadImage(File image) {
     return _userAndToken
-        .flatMapResult((userAndToken) {
+        .flatMapEitherSingle((userAndToken) {
           if (userAndToken == null) {
             return Single.value(
               AppError(
@@ -105,7 +104,7 @@ class UserRepositoryImpl implements UserRepository {
                 .then((user) => Tuple2(user, userAndToken.token)),
           );
         })
-        .flatMapResult(
+        .flatMapEitherSingle(
           (tuple) => _execute(
             () => _localDataSource.saveUserAndToken(
               _Mappers.userResponseToUserAndTokenEntity(
@@ -123,7 +122,7 @@ class UserRepositoryImpl implements UserRepository {
     required String password,
     required String newPassword,
   }) {
-    return _userAndToken.flatMapResult((userAndToken) {
+    return _userAndToken.flatMapEitherSingle((userAndToken) {
       if (userAndToken == null) {
         return Single.value(
           AppError(

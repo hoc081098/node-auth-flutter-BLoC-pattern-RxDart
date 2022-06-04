@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/usecases/login_use_case.dart';
 import 'package:node_auth/pages/login/login.dart';
-import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
 
 // ignore_for_file: close_sinks
 

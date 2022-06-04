@@ -5,14 +5,13 @@ import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/pages/home/home_state.dart';
-import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/type_defs.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
 
 //ignore_for_file: close_sinks
 
