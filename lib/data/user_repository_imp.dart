@@ -8,12 +8,12 @@ import 'package:node_auth/data/local/entities/user_entity.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/remote/response/user_response.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/domain/models/user_and_token.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
-import 'package:node_auth/utils/result.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
+import 'package:node_auth/utils/streams.dart';
 import 'package:tuple/tuple.dart';
 
 part 'mappers.dart';
@@ -23,20 +23,19 @@ class UserRepositoryImpl implements UserRepository {
   final LocalDataSource _localDataSource;
 
   @override
-  final Stream<AuthenticationState> authenticationState$;
+  final Stream<Result<AuthenticationState>> authenticationState$;
 
   @override
-  Future<AuthenticationState> get authenticationState =>
-      _localDataSource.userAndToken
-          .then(_Mappers.userAndTokenEntityToDomainAuthState)
-          .catchError((_) => UnauthenticatedState());
+  Single<Result<AuthenticationState>> get authenticationState =>
+      _execute(() => _localDataSource.userAndToken
+          .then(_Mappers.userAndTokenEntityToDomainAuthState));
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   ) : authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
-            .onErrorReturn(UnauthenticatedState())
+            .toEitherStream(_errorToAppError)
             .publishValue()
           ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
@@ -49,13 +48,13 @@ class UserRepositoryImpl implements UserRepository {
     required String password,
   }) {
     return _execute(() => _remoteDataSource.loginUser(email, password))
-        .flatMapResult((result) {
+        .flatMapEitherSingle((result) {
           final token = result.token!;
           return _execute(() => _remoteDataSource
               .getUserProfile(email, token)
               .then((user) => Tuple2(user, token)));
         })
-        .flatMapResult(
+        .flatMapEitherSingle(
           (tuple) => _execute(
             () => _localDataSource.saveUserAndToken(
               _Mappers.userResponseToUserAndTokenEntity(
@@ -84,13 +83,14 @@ class UserRepositoryImpl implements UserRepository {
   @override
   UnitResultSingle uploadImage(File image) {
     return _userAndToken
-        .flatMapResult((userAndToken) {
+        .flatMapEitherSingle((userAndToken) {
           if (userAndToken == null) {
             return Single.value(
-              Failure(
+              AppError(
                 message: 'Require login!',
                 error: 'Email or token is null',
-              ),
+                stackTrace: StackTrace.current,
+              ).left(),
             );
           }
 
@@ -104,7 +104,7 @@ class UserRepositoryImpl implements UserRepository {
                 .then((user) => Tuple2(user, userAndToken.token)),
           );
         })
-        .flatMapResult(
+        .flatMapEitherSingle(
           (tuple) => _execute(
             () => _localDataSource.saveUserAndToken(
               _Mappers.userResponseToUserAndTokenEntity(
@@ -122,13 +122,14 @@ class UserRepositoryImpl implements UserRepository {
     required String password,
     required String newPassword,
   }) {
-    return _userAndToken.flatMapResult((userAndToken) {
+    return _userAndToken.flatMapEitherSingle((userAndToken) {
       if (userAndToken == null) {
         return Single.value(
-          Failure(
+          AppError(
             message: 'Require login!',
             error: 'Email or token is null',
-          ),
+            stackTrace: StackTrace.current,
+          ).left(),
         );
       }
 
@@ -174,10 +175,10 @@ class UserRepositoryImpl implements UserRepository {
   /// if future complete with error, emit [Failure]
   ///
   Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
-      Single.fromCallable(factory)
+      Rx.fromCallable(factory)
           .doOnError(_handleUnauthenticatedError)
-          .map<Result<T>>((value) => Success<T>(value))
-          .onErrorReturnWith(_errorToResult);
+          .toEitherStream(_errorToAppError)
+          .singleOrError();
 
   ///
   /// Like error http interceptor
@@ -194,14 +195,28 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Convert error to [Failure]
   ///
-  static Failure _errorToResult(Object e, StackTrace s) {
+  static AppError _errorToAppError(Object e, StackTrace s) {
     if (e is RemoteDataSourceException) {
-      return Failure(message: e.message, error: e);
+      return AppError(
+        message: e.message,
+        error: e,
+        stackTrace: s,
+      );
     }
+
     if (e is LocalDataSourceException) {
-      return Failure(message: e.message, error: e);
+      return AppError(
+        message: e.message,
+        error: e,
+        stackTrace: s,
+      );
     }
-    return Failure(message: e.toString(), error: e);
+
+    return AppError(
+      message: e.toString(),
+      error: e,
+      stackTrace: s,
+    );
   }
 
   ///

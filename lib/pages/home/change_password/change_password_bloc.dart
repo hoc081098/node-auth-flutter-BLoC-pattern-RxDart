@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
-import 'package:node_auth/utils/result.dart';
 import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:tuple/tuple.dart';
 
 bool _isValidPassword(String password) {
@@ -141,14 +140,14 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
       debugPrint('[DEBUG] change password result=$result');
 
       return result.fold(
-        (value) => ChangePasswordState((b) => b
+        ifRight: (_) => ChangePasswordState((b) => b
           ..isLoading = false
           ..error = null
           ..message = 'Change password successfully!'),
-        (error, message) => ChangePasswordState((b) => b
+        ifLeft: (appError) => ChangePasswordState((b) => b
           ..isLoading = false
-          ..error = error
-          ..message = 'Error when change password: $message'),
+          ..error = appError.error
+          ..message = 'Error when change password: ${appError.message}'),
       );
     }
 

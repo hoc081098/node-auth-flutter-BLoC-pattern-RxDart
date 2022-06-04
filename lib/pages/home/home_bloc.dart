@@ -5,14 +5,14 @@ import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:node_auth/domain/models/app_error.dart';
 import 'package:node_auth/domain/models/auth_state.dart';
 import 'package:node_auth/domain/usecases/get_auth_state_stream_use_case.dart';
 import 'package:node_auth/domain/usecases/logout_use_case.dart';
 import 'package:node_auth/domain/usecases/upload_image_use_case.dart';
 import 'package:node_auth/pages/home/home_state.dart';
-import 'package:node_auth/utils/result.dart';
+import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
 
 //ignore_for_file: close_sinks
 
@@ -23,7 +23,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
   final Function0<void> logout;
 
   /// Output stream
-  final StateStream<AuthenticationState?> authState$;
+  final StateStream<Result<AuthenticationState>?> authState$;
   final Stream<HomeMessage> message$;
   final StateStream<bool> isUploading$;
 
@@ -45,13 +45,13 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     final logoutS = PublishSubject<void>();
     final isUploading$ = StateSubject(false);
 
-    final Stream<AuthenticationState?> authenticationState$ = getAuthState();
+    final authenticationState$ = getAuthState();
 
     final logoutMessage$ = Rx.merge([
       logoutS.exhaustMap((_) => logout()).map(_resultToLogoutMessage),
       authenticationState$
-          .where((state) => state!.userAndToken == null)
-          .map((_) => const LogoutSuccessMessage()),
+          .where((result) => result.orNull()?.userAndToken == null)
+          .mapTo(const LogoutSuccessMessage()),
     ]);
 
     final imagePicker = ImagePicker();
@@ -70,13 +70,15 @@ class HomeBloc extends DisposeCallbackBaseBloc {
         .map((file) => file == null ? null : File(file.path))
         .whereNotNull()
         .distinct()
-        .switchMap((file) => uploadImage(file)
-            .doOnListen(() => isUploading$.value = true)
-            .doOnCancel(() => isUploading$.value = false))
+        .switchMap(
+          (file) => uploadImage(file).doOn(
+              listen: () => isUploading$.value = true,
+              cancel: () => isUploading$.value = false),
+        )
         .debug(identifier: 'changeAvatar [3]', log: debugPrint)
         .map(_resultToChangeAvatarMessage);
 
-    final authState$ = authenticationState$.publishState(null);
+    final authState$ = authenticationState$.castAsNullable().publishState(null);
 
     final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
 
@@ -98,15 +100,17 @@ class HomeBloc extends DisposeCallbackBaseBloc {
 
   static LogoutMessage _resultToLogoutMessage(UnitResult result) {
     return result.fold(
-      (value) => const LogoutSuccessMessage(),
-      (error, message) => LogoutErrorMessage(message, error),
+      ifRight: (_) => const LogoutSuccessMessage(),
+      ifLeft: (appError) =>
+          LogoutErrorMessage(appError.message, appError.error),
     );
   }
 
   static UpdateAvatarMessage _resultToChangeAvatarMessage(UnitResult result) {
     return result.fold(
-      (value) => const UpdateAvatarSuccessMessage(),
-      (error, message) => UpdateAvatarErrorMessage(message, error),
+      ifRight: (_) => const UpdateAvatarSuccessMessage(),
+      ifLeft: (appError) =>
+          UpdateAvatarErrorMessage(appError.message, appError.error),
     );
   }
 }

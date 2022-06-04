@@ -169,6 +169,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  dart_either:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: bedffe85f149e2a8349536124c2dac3b31d0b25d
+      resolved-ref: bedffe85f149e2a8349536124c2dac3b31d0b25d
+      url: "https://github.com/hoc081098/dart_either.git"
+    source: git
+    version: "0.1.0"
   dart_style:
     dependency: transitive
     description:
