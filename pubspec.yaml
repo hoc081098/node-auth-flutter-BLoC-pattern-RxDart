@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.5
 
   meta: ^1.7.0
   path: ^1.8.1
