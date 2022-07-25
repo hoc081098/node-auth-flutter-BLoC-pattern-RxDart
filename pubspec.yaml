@@ -19,7 +19,7 @@ dependencies:
   http: ^0.13.4
   built_value: ^8.3.2
   tuple: ^2.0.0
-  rxdart: ^0.27.4
+  rxdart: ^0.27.5
   image_picker: ^0.8.5+3
   shared_preferences: ^2.0.15
   octo_image: ^1.0.2
@@ -29,7 +29,7 @@ dependencies:
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.3.0
-  rxdart_ext: ^0.2.3
+  rxdart_ext: ^0.2.4
   did_change_dependencies: ^1.0.0
   dart_either:
     git:
@@ -42,7 +42,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.1.11
   built_value_generator: ^8.3.2
-  analyzer: ^4.2.0
+  analyzer: ^4.3.0
   flutter_lints: ^2.0.1
 
 flutter:
