@@ -2,7 +2,10 @@
 
  - ❄️❄️ `BLoC pattern` `rxdart` `stream` 🐋🐋 Simple auth app flutter, server node.js, BLoC pattern, RxDart
  - Functionalities: `LOGIN`, `LOGOUT`, `REGISTER`, `CHANGE PASSWORD`, `CHANGE AVATAR`, `FORGOT PASSWORD` 🌀🌀
- - Pure rxdart BLoC pattern. BLoC pattern without library. Flutter Functional & Reactive programming 🌱🌱
+ - **Pure rxdart BLoC pattern**. BLoC pattern without library. Flutter Functional & Reactive programming 🌱🌱
+ - Platform-Specific Code With **Flutter Method Channel**
+    - [Android](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/blob/master/android/app/src/main/kotlin/com/hoc/node_auth/MainActivity.kt#L21): using [Tink library](https://github.com/google/tink) to encrypt/decrypt access token and user info.
+    - [iOS](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/blob/master/ios/Runner/AppDelegate.swift#L20): using [CryptoSwift library](https://github.com/krzyzanowskim/CryptoSwift) to encrypt/decrypt access token and user info.
 
 [![Flutter](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml/badge.svg)](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml)
 [![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
