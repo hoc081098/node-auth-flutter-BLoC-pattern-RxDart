@@ -11,6 +11,11 @@
 [![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
 ![GitHub stars](https://img.shields.io/github/stars/hoc081098/node-auth-flutter-BLoC-pattern-RxDart?style=social)
 
+## Buy me a coffee
+Liked some of my work? Buy me a coffee (or more likely a beer)
+
+[!["Buy Me A Coffee"](https://cdn.buymeacoffee.com/buttons/default-orange.png)](https://www.buymeacoffee.com/hoc081098)
+
 ## Video demo:
 
 [Youtube](https://youtu.be/OvsDKfy0aOs)
