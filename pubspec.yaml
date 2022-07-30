@@ -29,7 +29,7 @@ dependencies:
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.3.0
-  rxdart_ext: ^0.2.4
+  rxdart_ext: ^0.2.5
   did_change_dependencies: ^1.0.0
   dart_either:
     git:
