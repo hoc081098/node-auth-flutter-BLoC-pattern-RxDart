@@ -311,7 +311,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4"
+    version: "0.13.5"
   http_multi_server:
     dependency: transitive
     description:
@@ -646,6 +646,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  stream_loader:
+    dependency: "direct main"
+    description:
+      name: stream_loader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.0"
   stream_transform:
     dependency: transitive
     description:
