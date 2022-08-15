@@ -10,9 +10,9 @@ extension FlatMapEitherSingleExtension<L, R1> on Single<Either<L, R1>> {
     Single<Either<L, R2>> Function(R1 value) mapper,
   ) =>
       flatMapSingle(
-        (result) => result.when(
-          ifRight: (v) => mapper(v.value),
-          ifLeft: (l) => Single.value(l),
+        (result) => result.fold(
+          ifRight: (v) => mapper(v),
+          ifLeft: (v) => Single.value(v.left<R2>()),
         ),
       );
 }
