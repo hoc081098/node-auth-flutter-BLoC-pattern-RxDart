@@ -32,7 +32,7 @@ dependencies:
   rxdart_ext: ^0.2.5
   did_change_dependencies: ^1.0.0
   stream_loader: ^1.5.0
-  dart_either: ^1.0.0-beta02
+  dart_either: ^1.0.0-beta06
 
 dev_dependencies:
   plugin_platform_interface: ^2.1.2
