@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.5
 
   meta: ^1.7.0
-  path: ^1.8.1
+  path: ^1.8.2
   http: ^0.13.5
   built_value: ^8.4.1
   tuple: ^2.0.0
