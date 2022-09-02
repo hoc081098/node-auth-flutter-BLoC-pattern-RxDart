@@ -40,7 +40,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.2.0
   built_value_generator: ^8.4.1
-  analyzer: ^4.6.0
+  analyzer: ^4.7.0
   flutter_lints: ^2.0.1
 
 flutter:
