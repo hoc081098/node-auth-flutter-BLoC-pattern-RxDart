@@ -27,8 +27,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Single<Result<AuthenticationState>> get authenticationState =>
-      _executeFuture(() => _localDataSource.userAndToken
-          .then(_Mappers.userAndTokenEntityToDomainAuthState));
+      _localDataSource.userAndToken
+          .map(_Mappers.userAndTokenEntityToDomainAuthState)
+          .toEitherSingle(_errorToAppError);
 
   UserRepositoryImpl(
     this._remoteDataSource,
@@ -52,20 +53,21 @@ class UserRepositoryImpl implements UserRepository {
         .toEitherSingle(_errorToAppError)
         .flatMapEitherSingle((result) {
           final token = result.token!;
+
           return _remoteDataSource
               .getUserProfile(email, token)
               .map((user) => Tuple2(user, token))
               .toEitherSingle(_errorToAppError);
         })
         .flatMapEitherSingle(
-          (tuple) => _executeFuture(
-            () => _localDataSource.saveUserAndToken(
-              _Mappers.userResponseToUserAndTokenEntity(
-                tuple.item1,
-                tuple.item2,
-              ),
-            ),
-          ),
+          (tuple) => _localDataSource
+              .saveUserAndToken(
+                _Mappers.userResponseToUserAndTokenEntity(
+                  tuple.item1,
+                  tuple.item2,
+                ),
+              )
+              .toEitherSingle(_errorToAppError),
         )
         .asUnit();
   }
@@ -82,9 +84,10 @@ class UserRepositoryImpl implements UserRepository {
           .asUnit();
 
   @override
-  UnitResultSingle logout() =>
-      _executeFuture<void>(() => _localDataSource.removeUserAndToken())
-          .asUnit();
+  UnitResultSingle logout() => _localDataSource
+      .removeUserAndToken()
+      .toEitherSingle(_errorToAppError)
+      .asUnit();
 
   @override
   UnitResultSingle uploadImage(File image) {
@@ -110,14 +113,14 @@ class UserRepositoryImpl implements UserRepository {
               .toEitherSingle(_errorToAppError);
         })
         .flatMapEitherSingle(
-          (tuple) => _executeFuture(
-            () => _localDataSource.saveUserAndToken(
-              _Mappers.userResponseToUserAndTokenEntity(
-                tuple.item1,
-                tuple.item2,
-              ),
-            ),
-          ),
+          (tuple) => _localDataSource
+              .saveUserAndToken(
+                _Mappers.userResponseToUserAndTokenEntity(
+                  tuple.item1,
+                  tuple.item2,
+                ),
+              )
+              .toEitherSingle(_errorToAppError),
         )
         .asUnit();
   }
@@ -176,15 +179,7 @@ class UserRepositoryImpl implements UserRepository {
   ///
 
   Single<Result<UserAndTokenEntity?>> get _userAndToken =>
-      _executeFuture(() => _localDataSource.userAndToken);
-
-  ///
-  /// Execute [factory] when listen to observable,
-  /// if future is successful, emit [Success]
-  /// if future complete with error, emit [Failure]
-  ///
-  static Single<Result<T>> _executeFuture<T>(Future<T> Function() factory) =>
-      Single.fromCallable(factory).toEitherSingle(_errorToAppError);
+      _localDataSource.userAndToken.toEitherSingle(_errorToAppError);
 
   ///
   /// Convert error to [Failure]
@@ -220,7 +215,7 @@ class UserRepositoryImpl implements UserRepository {
     const tag = '[USER_REPOSITORY] { init }';
 
     try {
-      final userAndToken = await _localDataSource.userAndToken;
+      final userAndToken = await _localDataSource.userAndToken.first;
       debugPrint('$tag userAndToken local=$userAndToken');
 
       if (userAndToken == null) {
@@ -232,20 +227,22 @@ class UserRepositoryImpl implements UserRepository {
             userAndToken.user.email,
             userAndToken.token,
           )
-          .single;
+          .first;
 
       debugPrint('$tag userProfile server=$userProfile');
-      await _localDataSource.saveUserAndToken(
-        _Mappers.userResponseToUserAndTokenEntity(
-          userProfile,
-          userAndToken.token,
-        ),
-      );
+      await _localDataSource
+          .saveUserAndToken(
+            _Mappers.userResponseToUserAndTokenEntity(
+              userProfile,
+              userAndToken.token,
+            ),
+          )
+          .first;
     } on RemoteDataSourceException catch (e) {
       debugPrint('$tag remote error=$e');
     } on LocalDataSourceException catch (e) {
       debugPrint('$tag local error=$e');
-      await _localDataSource.removeUserAndToken();
+      await _localDataSource.removeUserAndToken().first;
     }
   }
 }

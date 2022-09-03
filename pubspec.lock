@@ -99,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.4.1"
+  cancellation_token_hoc081098:
+    dependency: "direct main"
+    description:
+      path: "../MyCourse/cancellation_token_hoc081098"
+      relative: true
+    source: path
+    version: "1.0.0-dev.0"
   characters:
     dependency: transitive
     description:

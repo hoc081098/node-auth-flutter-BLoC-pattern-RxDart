@@ -35,6 +35,7 @@ dependencies:
   stream_loader: ^1.5.0
   dart_either: ^1.0.0
   http_client_hoc081098:
+  cancellation_token_hoc081098:
 
 dev_dependencies:
   plugin_platform_interface: ^2.1.2
@@ -58,3 +59,5 @@ dependency_overrides:
       ref: 45da2a23b3ec328d9b9bb07f891dc3dc38663327
   http_client_hoc081098:
     path: ../MyCourse/http_client_hoc081098
+  cancellation_token_hoc081098:
+    path: ../MyCourse/cancellation_token_hoc081098

@@ -66,7 +66,7 @@ void main() async {
   final rxPrefs = RxSharedPreferences.getInstance();
   final crypto = MethodChannelCryptoImpl();
   final LocalDataSource localDataSource = SharedPrefUtil(rxPrefs, crypto);
-  onUnauthorized = localDataSource.removeUserAndToken;
+  onUnauthorized = () => localDataSource.removeUserAndToken().first;
 
   // construct UserRepository
   final UserRepository userRepository = UserRepositoryImpl(

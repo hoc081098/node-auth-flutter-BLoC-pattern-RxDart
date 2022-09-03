@@ -5,7 +5,7 @@ import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 class SharedPrefUtil implements LocalDataSource {
   static const _kUserTokenKey = 'com.hoc.node_auth_flutter.user_and_token';
@@ -15,23 +15,28 @@ class SharedPrefUtil implements LocalDataSource {
   const SharedPrefUtil(this._rxPrefs, this._crypto);
 
   @override
-  Future<void> removeUserAndToken() =>
-      _rxPrefs.remove(_kUserTokenKey).onError<Object>((e, s) =>
-          throw LocalDataSourceException('Cannot delete user and token', e, s));
+  Single<void> removeUserAndToken() => Single.fromCallable(
+        () => _rxPrefs.remove(_kUserTokenKey).onError<Object>((e, s) =>
+            throw LocalDataSourceException(
+                'Cannot delete user and token', e, s)),
+      );
 
   @override
-  Future<void> saveUserAndToken(UserAndTokenEntity userAndToken) {
-    return _rxPrefs
-        .write<UserAndTokenEntity>(_kUserTokenKey, userAndToken, _toString)
-        .onError<Object>((e, s) =>
-            throw LocalDataSourceException('Cannot save user and token', e, s));
-  }
+  Single<void> saveUserAndToken(UserAndTokenEntity userAndToken) =>
+      Single.fromCallable(
+        () => _rxPrefs
+            .write<UserAndTokenEntity>(_kUserTokenKey, userAndToken, _toString)
+            .onError<Object>((e, s) => throw LocalDataSourceException(
+                'Cannot save user and token', e, s)),
+      );
 
   @override
-  Future<UserAndTokenEntity?> get userAndToken => _rxPrefs
-      .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
-      .onError<Object>((e, s) =>
-          throw LocalDataSourceException('Cannot read user and token', e, s));
+  Single<UserAndTokenEntity?> get userAndToken => Single.fromCallable(
+        () => _rxPrefs
+            .read<UserAndTokenEntity>(_kUserTokenKey, _toEntity)
+            .onError<Object>((e, s) => throw LocalDataSourceException(
+                'Cannot read user and token', e, s)),
+      );
 
   @override
   Stream<UserAndTokenEntity?> get userAndToken$ => _rxPrefs
