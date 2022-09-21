@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http_client_hoc081098/http_client_hoc081098.dart';
 import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
@@ -29,14 +30,14 @@ class UserRepositoryImpl implements UserRepository {
   Single<Result<AuthenticationState>> get authenticationState =>
       _localDataSource.userAndToken
           .map(_Mappers.userAndTokenEntityToDomainAuthState)
-          .toEitherSingle(_errorToAppError);
+          .toEitherSingle(_Mappers.errorToAppError);
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   ) : authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
-            .toEitherStream(_errorToAppError)
+            .toEitherStream(_Mappers.errorToAppError)
             .publishValue()
           ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
@@ -50,14 +51,14 @@ class UserRepositoryImpl implements UserRepository {
   }) {
     return _remoteDataSource
         .loginUser(email, password)
-        .toEitherSingle(_errorToAppError)
+        .toEitherSingle(_Mappers.errorToAppError)
         .flatMapEitherSingle((result) {
           final token = result.token!;
 
           return _remoteDataSource
               .getUserProfile(email, token)
               .map((user) => Tuple2(user, token))
-              .toEitherSingle(_errorToAppError);
+              .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
           (tuple) => _localDataSource
@@ -67,7 +68,7 @@ class UserRepositoryImpl implements UserRepository {
                   tuple.item2,
                 ),
               )
-              .toEitherSingle(_errorToAppError),
+              .toEitherSingle(_Mappers.errorToAppError),
         )
         .asUnit();
   }
@@ -80,13 +81,13 @@ class UserRepositoryImpl implements UserRepository {
   }) =>
       _remoteDataSource
           .registerUser(name, email, password)
-          .toEitherSingle(_errorToAppError)
+          .toEitherSingle(_Mappers.errorToAppError)
           .asUnit();
 
   @override
   UnitResultSingle logout() => _localDataSource
       .removeUserAndToken()
-      .toEitherSingle(_errorToAppError)
+      .toEitherSingle(_Mappers.errorToAppError)
       .asUnit();
 
   @override
@@ -110,7 +111,7 @@ class UserRepositoryImpl implements UserRepository {
                 userAndToken.token,
               )
               .map((user) => Tuple2(user, userAndToken.token))
-              .toEitherSingle(_errorToAppError);
+              .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
           (tuple) => _localDataSource
@@ -120,7 +121,7 @@ class UserRepositoryImpl implements UserRepository {
                   tuple.item2,
                 ),
               )
-              .toEitherSingle(_errorToAppError),
+              .toEitherSingle(_Mappers.errorToAppError),
         )
         .asUnit();
   }
@@ -148,7 +149,7 @@ class UserRepositoryImpl implements UserRepository {
             newPassword,
             userAndToken.token,
           )
-          .toEitherSingle(_errorToAppError)
+          .toEitherSingle(_Mappers.errorToAppError)
           .asUnit();
     });
   }
@@ -165,48 +166,22 @@ class UserRepositoryImpl implements UserRepository {
             token: token,
             newPassword: newPassword,
           )
-          .toEitherSingle(_errorToAppError)
+          .toEitherSingle(_Mappers.errorToAppError)
           .asUnit();
 
   @override
   UnitResultSingle sendResetPasswordEmail(String email) => _remoteDataSource
       .resetPassword(email)
-      .toEitherSingle(_errorToAppError)
+      .toEitherSingle(_Mappers.errorToAppError)
       .asUnit();
 
   ///
   /// Helpers functions
   ///
 
+  /// TODO: Replace with interceptor
   Single<Result<UserAndTokenEntity?>> get _userAndToken =>
-      _localDataSource.userAndToken.toEitherSingle(_errorToAppError);
-
-  ///
-  /// Convert error to [Failure]
-  ///
-  static AppError _errorToAppError(Object e, StackTrace s) {
-    if (e is RemoteDataSourceException) {
-      return AppError(
-        message: e.message,
-        error: e,
-        stackTrace: s,
-      );
-    }
-
-    if (e is LocalDataSourceException) {
-      return AppError(
-        message: e.message,
-        error: e,
-        stackTrace: s,
-      );
-    }
-
-    return AppError(
-      message: e.toString(),
-      error: e,
-      stackTrace: s,
-    );
-  }
+      _localDataSource.userAndToken.toEitherSingle(_Mappers.errorToAppError);
 
   ///
   /// Check auth when starting app
