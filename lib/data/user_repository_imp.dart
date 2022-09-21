@@ -40,7 +40,7 @@ class UserRepositoryImpl implements UserRepository {
             .publishValue()
           ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
-    _init();
+    _init().ignore();
   }
 
   @override
@@ -211,7 +211,7 @@ class UserRepositoryImpl implements UserRepository {
   ///
   /// Check auth when starting app
   ///
-  void _init() async {
+  Future<void> _init() async {
     const tag = '[USER_REPOSITORY] { init }';
 
     try {
