@@ -89,7 +89,7 @@ class LoginBloc extends DisposeCallbackBaseBloc {
       submit$
           .where((isValid) => !isValid)
           .map((_) => const InvalidInformationMessage())
-    ]).share();
+    ]).whereNotNull().share();
 
     final emailError$ = emailController.stream
         .map((email) {
@@ -127,10 +127,12 @@ class LoginBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LoginMessage _responseToMessage(UnitResult result) {
+  static LoginMessage? _responseToMessage(UnitResult result) {
     return result.fold(
       ifRight: (_) => const LoginSuccessMessage(),
-      ifLeft: (appError) => LoginErrorMessage(appError.message, appError.error),
+      ifLeft: (appError) => appError.isCancellation
+          ? null
+          : LoginErrorMessage(appError.message!, appError.error!),
     );
   }
 }

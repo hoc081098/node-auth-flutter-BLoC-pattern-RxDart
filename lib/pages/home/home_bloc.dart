@@ -80,7 +80,9 @@ class HomeBloc extends DisposeCallbackBaseBloc {
 
     final authState$ = authenticationState$.castAsNullable().publishState(null);
 
-    final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$]).publish();
+    final message$ = Rx.merge([logoutMessage$, updateAvatarMessage$])
+        .whereNotNull()
+        .publish();
 
     return HomeBloc._(
       changeAvatar: () => changeAvatarS.add(null),
@@ -98,19 +100,21 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static LogoutMessage _resultToLogoutMessage(UnitResult result) {
+  static LogoutMessage? _resultToLogoutMessage(UnitResult result) {
     return result.fold(
       ifRight: (_) => const LogoutSuccessMessage(),
-      ifLeft: (appError) =>
-          LogoutErrorMessage(appError.message, appError.error),
+      ifLeft: (appError) => appError.isCancellation
+          ? null
+          : LogoutErrorMessage(appError.message!, appError.error!),
     );
   }
 
-  static UpdateAvatarMessage _resultToChangeAvatarMessage(UnitResult result) {
+  static UpdateAvatarMessage? _resultToChangeAvatarMessage(UnitResult result) {
     return result.fold(
       ifRight: (_) => const UpdateAvatarSuccessMessage(),
-      ifLeft: (appError) =>
-          UpdateAvatarErrorMessage(appError.message, appError.error),
+      ifLeft: (appError) => appError.isCancellation
+          ? null
+          : UpdateAvatarErrorMessage(appError.message!, appError.error!),
     );
   }
 }

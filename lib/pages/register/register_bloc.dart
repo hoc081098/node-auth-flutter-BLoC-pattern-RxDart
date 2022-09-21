@@ -99,7 +99,7 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
       submit$
           .where((isValid) => !isValid)
           .map((_) => const RegisterInvalidInformationMessage())
-    ]).share();
+    ]).whereNotNull().share();
 
     final emailError$ = emailController.stream
         .map((email) {
@@ -148,11 +148,12 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static RegisterMessage _responseToMessage(UnitResult result, String email) {
+  static RegisterMessage? _responseToMessage(UnitResult result, String email) {
     return result.fold(
       ifRight: (_) => RegisterSuccessMessage(email),
-      ifLeft: (appError) =>
-          RegisterErrorMessage(appError.message, appError.error),
+      ifLeft: (appError) => appError.isCancellation
+          ? null
+          : RegisterErrorMessage(appError.message!, appError.error!),
     );
   }
 }

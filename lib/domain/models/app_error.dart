@@ -9,15 +9,30 @@ export 'package:rxdart_ext/rxdart_ext.dart';
 
 @sealed
 class AppError {
-  final String message;
-  final Object error;
-  final StackTrace stackTrace;
+  final String? _message;
+  final Object? _error;
+  final StackTrace? _stackTrace;
 
-  const AppError._({
-    required this.message,
-    required this.error,
-    required this.stackTrace,
-  });
+  /// Message of error
+  /// Returns null if [isCancellation] is true
+  String? get message => isCancellation ? null : _message;
+
+  /// Get caused error
+  /// Returns null if [isCancellation] is true
+  Object? get error => isCancellation ? null : _error;
+
+  /// Get stack trace
+  /// Returns null if [isCancellation] is true
+  StackTrace? get stackTrace => isCancellation ? null : _stackTrace;
+
+  /// Returns true if this error is caused by cancellation
+  bool get isCancellation => this is AppCancellationError;
+
+  const AppError._(
+    this._message,
+    this._error,
+    this._stackTrace,
+  );
 
   factory AppError({
     required String message,
@@ -29,35 +44,22 @@ class AppError {
     }
 
     return AppError._(
-      message: message,
-      error: error,
-      stackTrace: stackTrace,
+      message,
+      error,
+      stackTrace,
     );
   }
 
   @override
   String toString() =>
-      'AppError{message: $message, error: $error, stackTrace: $stackTrace}';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is AppError &&
-          runtimeType == other.runtimeType &&
-          message == other.message &&
-          error == other.error &&
-          stackTrace == other.stackTrace;
-
-  @override
-  int get hashCode => Object.hash(message, error, stackTrace);
+      'AppError{message: $_message, error: $_error, stackTrace: $_stackTrace}';
 }
 
 class AppCancellationError extends AppError {
-  const AppCancellationError()
-      : super._(
-            message: 'CancellationException',
-            error: const CancellationException(),
-            stackTrace: StackTrace.empty);
+  const AppCancellationError() : super._(null, null, null);
+
+  @override
+  String toString() => 'AppCancellationError';
 }
 
 typedef Result<T> = Either<AppError, T>;
