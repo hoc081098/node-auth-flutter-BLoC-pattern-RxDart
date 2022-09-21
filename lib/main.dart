@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cupertino_http/cupertino_client.dart';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart'
     show debugPrint, debugPrintSynchronously, kReleaseMode;
@@ -27,7 +28,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   final loggingInterceptor = SimpleLoggingInterceptor(
-    DefaultSimpleHttpClientLogger(
+    SimpleLogger(
       loggerFunction: print,
       level: kReleaseMode ? SimpleLogLevel.none : SimpleLogLevel.body,
       headersToRedact: {
@@ -42,10 +43,9 @@ void main() async {
       AuthInterceptor(onUnauthorized: () => onUnauthorized());
 
   final simpleHttpClient = SimpleHttpClient(
-    // client: Platform.isIOS || Platform.isMacOS
-    //     ? CupertinoClient.defaultSessionConfiguration()
-    //     : http.Client(),
-    client: http.Client(),
+    client: Platform.isIOS || Platform.isMacOS
+        ? CupertinoClient.defaultSessionConfiguration()
+        : http.Client(),
     timeout: const Duration(seconds: 20),
     requestInterceptors: [
       authInterceptor.requestInterceptor,

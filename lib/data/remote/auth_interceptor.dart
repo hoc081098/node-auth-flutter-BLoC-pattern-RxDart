@@ -21,5 +21,7 @@ class AuthInterceptor {
           '[AUTH_INTERCEPTOR] {interceptor} 401 - unauthenticated error ===> login again');
       await onUnauthorized();
     }
+
+    return response;
   };
 }

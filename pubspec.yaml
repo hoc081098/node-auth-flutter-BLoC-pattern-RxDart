@@ -14,7 +14,7 @@ dependencies:
 
   cupertino_icons: ^1.0.5
 
-  cupertino_http: ^0.0.4
+  cupertino_http: ^0.0.7
   meta: ^1.7.0
   path: ^1.8.1
   http: ^0.13.5
@@ -35,7 +35,7 @@ dependencies:
   stream_loader: ^1.5.0
   dart_either: ^1.0.0
   http_client_hoc081098:
-  cancellation_token_hoc081098:
+  cancellation_token_hoc081098: ^1.0.0
 
 dev_dependencies:
   plugin_platform_interface: ^2.1.2
@@ -58,6 +58,6 @@ dependency_overrides:
       url: https://github.com/hoc081098/rxdart_ext.git
       ref: 45da2a23b3ec328d9b9bb07f891dc3dc38663327
   http_client_hoc081098:
-    path: ../MyCourse/http_client_hoc081098
-  cancellation_token_hoc081098:
-    path: ../MyCourse/cancellation_token_hoc081098
+    git:
+      url: https://github.com/hoc081098/http_client_hoc081098.git
+      ref: e5b9d29d216bee0601783dace15850170dcbeb94
