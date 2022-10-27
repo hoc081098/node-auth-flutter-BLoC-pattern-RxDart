@@ -30,7 +30,7 @@ dependencies:
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.3.0
-  rxdart_ext: ^0.2.5
+  rxdart_ext: ^0.2.6
   did_change_dependencies: ^1.0.0
   stream_loader: ^1.5.0
   dart_either: ^1.0.0
@@ -53,10 +53,6 @@ flutter:
     - assets/user.png
 
 dependency_overrides:
-  rxdart_ext:
-    git:
-      url: https://github.com/hoc081098/rxdart_ext.git
-      ref: 45da2a23b3ec328d9b9bb07f891dc3dc38663327
   http_client_hoc081098:
     git:
       url: https://github.com/hoc081098/http_client_hoc081098.git
