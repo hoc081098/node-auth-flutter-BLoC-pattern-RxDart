@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:http_client_hoc081098/http_client_hoc081098.dart';
 import 'package:node_auth/data/constants.dart';
 import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/remote/response/token_response.dart';
 import 'package:node_auth/data/remote/response/user_response.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:rxdart_ext/rxdart_ext.dart';
 
@@ -24,6 +24,8 @@ class ApiService implements RemoteDataSource {
       useCancellationToken<T>((cancelToken) async {
         try {
           return await block(cancelToken);
+        } on CancellationException {
+          rethrow;
         } on SocketException catch (e, s) {
           throw RemoteDataSourceException('No internet connection', e, s);
         } on SimpleHttpClientException catch (e, s) {
