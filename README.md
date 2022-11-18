@@ -11,10 +11,10 @@
 [![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
 ![GitHub stars](https://img.shields.io/github/stars/hoc081098/node-auth-flutter-BLoC-pattern-RxDart?style=social)
 
-## Buy me a coffee
+<br>
 Liked some of my work? Buy me a coffee (or more likely a beer)
 
-[!["Buy Me A Coffee"](https://cdn.buymeacoffee.com/buttons/default-orange.png)](https://www.buymeacoffee.com/hoc081098)
+<a href="https://www.buymeacoffee.com/hoc081098" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" height=64></a>
 
 ## Video demo:
 
