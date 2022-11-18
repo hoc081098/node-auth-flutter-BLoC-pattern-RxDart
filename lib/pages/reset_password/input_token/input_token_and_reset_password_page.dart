@@ -173,7 +173,7 @@ class _InputTokenAndResetPasswordPageState
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      primary: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).cardColor,
     ).copyWith(overlayColor: overlayColor);
 
     return Container(

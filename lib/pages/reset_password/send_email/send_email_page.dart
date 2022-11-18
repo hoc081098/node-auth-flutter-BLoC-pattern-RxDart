@@ -107,7 +107,7 @@ class _SendEmailPageState extends State<SendEmailPage>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      primary: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).cardColor,
     ).copyWith(overlayColor: overlayColor);
 
     return Container(
