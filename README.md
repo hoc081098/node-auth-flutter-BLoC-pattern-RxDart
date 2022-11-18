@@ -1,4 +1,4 @@
-# node_auth #node-auth-flutter-BLoC-pattern-RxDart
+# node_auth # node-auth-flutter-BLoC-pattern-RxDart
 
  - ❄️❄️ `BLoC pattern` `rxdart` `stream` 🐋🐋 Simple auth app flutter, server node.js, BLoC pattern, RxDart
  - Functionalities: `LOGIN`, `LOGOUT`, `REGISTER`, `CHANGE PASSWORD`, `CHANGE AVATAR`, `FORGOT PASSWORD` 🌀🌀
