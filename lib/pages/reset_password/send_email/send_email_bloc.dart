@@ -56,7 +56,7 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
           );
         },
       ),
-    ]).share();
+    ]).whereNotNull().share();
 
     return SendEmailBloc._(
       dispose: DisposeBag([emailS, submitS, isLoadingS]).dispose,
@@ -68,7 +68,7 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static Stream<SendEmailMessage> send(
+  static Stream<SendEmailMessage?> send(
     String email,
     SendResetPasswordEmailUseCase sendResetPasswordEmail,
     Sink<bool> isLoadingController,
@@ -81,8 +81,9 @@ class SendEmailBloc extends DisposeCallbackBaseBloc {
         .map(
           (result) => result.fold(
             ifRight: (_) => const SendEmailSuccessMessage(),
-            ifLeft: (appError) =>
-                SendEmailErrorMessage(appError.error, appError.message),
+            ifLeft: (appError) => appError.isCancellation
+                ? null
+                : SendEmailErrorMessage(appError.error!, appError.message!),
           ),
         );
   }

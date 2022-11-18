@@ -109,7 +109,7 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
                 tuple3,
                 isLoadingSubject,
               )),
-    ]).share();
+    ]).whereNotNull().share();
 
     return InputTokenAndResetPasswordBloc._(
       dispose: DisposeBag(subjects).dispose,
@@ -125,14 +125,20 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
     );
   }
 
-  static Stream<InputTokenAndResetPasswordMessage> _sendResetPasswordRequest(
+  static Stream<InputTokenAndResetPasswordMessage?> _sendResetPasswordRequest(
     ResetPasswordUseCase resetPassword,
     Tuple3<String, String, String> tuple3,
     Sink<bool> isLoadingSink,
   ) {
     final email = tuple3.item1;
+    final token = tuple3.item2;
+    final newPassword = tuple3.item3;
+
     return resetPassword(
-            email: email, token: tuple3.item2, newPassword: tuple3.item3)
+      email: email,
+      token: token,
+      newPassword: newPassword,
+    )
         .doOn(
           listen: () => isLoadingSink.add(true),
           cancel: () => isLoadingSink.add(false),
@@ -140,8 +146,9 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
         .map(
           (result) => result.fold(
             ifRight: (_) => ResetPasswordSuccess(email),
-            ifLeft: (appError) =>
-                ResetPasswordFailure(appError.error, appError.message),
+            ifLeft: (appError) => appError.isCancellation
+                ? null
+                : ResetPasswordFailure(appError.error!, appError.message!),
           ),
         );
   }

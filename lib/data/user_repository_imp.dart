@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http_client_hoc081098/http_client_hoc081098.dart';
 import 'package:node_auth/data/exception/local_data_source_exception.dart';
 import 'package:node_auth/data/exception/remote_data_source_exception.dart';
 import 'package:node_auth/data/local/entities/user_and_token_entity.dart';
@@ -27,19 +28,20 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Single<Result<AuthenticationState>> get authenticationState =>
-      _execute(() => _localDataSource.userAndToken
-          .then(_Mappers.userAndTokenEntityToDomainAuthState));
+      _localDataSource.userAndToken
+          .map(_Mappers.userAndTokenEntityToDomainAuthState)
+          .toEitherSingle(_Mappers.errorToAppError);
 
   UserRepositoryImpl(
     this._remoteDataSource,
     this._localDataSource,
   ) : authenticationState$ = _localDataSource.userAndToken$
             .map(_Mappers.userAndTokenEntityToDomainAuthState)
-            .toEitherStream(_errorToAppError)
+            .toEitherStream(_Mappers.errorToAppError)
             .publishValue()
           ..listen((state) => debugPrint('[USER_REPOSITORY] state=$state'))
           ..connect() {
-    _init();
+    _init().ignore();
   }
 
   @override
@@ -47,22 +49,26 @@ class UserRepositoryImpl implements UserRepository {
     required String email,
     required String password,
   }) {
-    return _execute(() => _remoteDataSource.loginUser(email, password))
+    return _remoteDataSource
+        .loginUser(email, password)
+        .toEitherSingle(_Mappers.errorToAppError)
         .flatMapEitherSingle((result) {
           final token = result.token!;
-          return _execute(() => _remoteDataSource
+
+          return _remoteDataSource
               .getUserProfile(email, token)
-              .then((user) => Tuple2(user, token)));
+              .map((user) => Tuple2(user, token))
+              .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
-          (tuple) => _execute(
-            () => _localDataSource.saveUserAndToken(
-              _Mappers.userResponseToUserAndTokenEntity(
-                tuple.item1,
-                tuple.item2,
-              ),
-            ),
-          ),
+          (tuple) => _localDataSource
+              .saveUserAndToken(
+                _Mappers.userResponseToUserAndTokenEntity(
+                  tuple.item1,
+                  tuple.item2,
+                ),
+              )
+              .toEitherSingle(_Mappers.errorToAppError),
         )
         .asUnit();
   }
@@ -73,12 +79,16 @@ class UserRepositoryImpl implements UserRepository {
     required String email,
     required String password,
   }) =>
-      _execute(() => _remoteDataSource.registerUser(name, email, password))
+      _remoteDataSource
+          .registerUser(name, email, password)
+          .toEitherSingle(_Mappers.errorToAppError)
           .asUnit();
 
   @override
-  UnitResultSingle logout() =>
-      _execute<void>(() => _localDataSource.removeUserAndToken()).asUnit();
+  UnitResultSingle logout() => _localDataSource
+      .removeUserAndToken()
+      .toEitherSingle(_Mappers.errorToAppError)
+      .asUnit();
 
   @override
   UnitResultSingle uploadImage(File image) {
@@ -94,25 +104,24 @@ class UserRepositoryImpl implements UserRepository {
             );
           }
 
-          return _execute(
-            () => _remoteDataSource
-                .uploadImage(
-                  image,
-                  userAndToken.user.email,
-                  userAndToken.token,
-                )
-                .then((user) => Tuple2(user, userAndToken.token)),
-          );
+          return _remoteDataSource
+              .uploadImage(
+                image,
+                userAndToken.user.email,
+                userAndToken.token,
+              )
+              .map((user) => Tuple2(user, userAndToken.token))
+              .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
-          (tuple) => _execute(
-            () => _localDataSource.saveUserAndToken(
-              _Mappers.userResponseToUserAndTokenEntity(
-                tuple.item1,
-                tuple.item2,
-              ),
-            ),
-          ),
+          (tuple) => _localDataSource
+              .saveUserAndToken(
+                _Mappers.userResponseToUserAndTokenEntity(
+                  tuple.item1,
+                  tuple.item2,
+                ),
+              )
+              .toEitherSingle(_Mappers.errorToAppError),
         )
         .asUnit();
   }
@@ -133,14 +142,15 @@ class UserRepositoryImpl implements UserRepository {
         );
       }
 
-      return _execute(
-        () => _remoteDataSource.changePassword(
-          userAndToken.user.email,
-          password,
-          newPassword,
-          userAndToken.token,
-        ),
-      ).asUnit();
+      return _remoteDataSource
+          .changePassword(
+            userAndToken.user.email,
+            password,
+            newPassword,
+            userAndToken.token,
+          )
+          .toEitherSingle(_Mappers.errorToAppError)
+          .asUnit();
     });
   }
 
@@ -150,110 +160,64 @@ class UserRepositoryImpl implements UserRepository {
     required String token,
     required String newPassword,
   }) =>
-      _execute(
-        () => _remoteDataSource.resetPassword(
-          email,
-          token: token,
-          newPassword: newPassword,
-        ),
-      ).asUnit();
+      _remoteDataSource
+          .resetPassword(
+            email,
+            token: token,
+            newPassword: newPassword,
+          )
+          .toEitherSingle(_Mappers.errorToAppError)
+          .asUnit();
 
   @override
-  UnitResultSingle sendResetPasswordEmail(String email) =>
-      _execute(() => _remoteDataSource.resetPassword(email)).asUnit();
+  UnitResultSingle sendResetPasswordEmail(String email) => _remoteDataSource
+      .resetPassword(email)
+      .toEitherSingle(_Mappers.errorToAppError)
+      .asUnit();
 
   ///
   /// Helpers functions
   ///
 
+  /// TODO: Replace with interceptor
   Single<Result<UserAndTokenEntity?>> get _userAndToken =>
-      _execute(() => _localDataSource.userAndToken);
-
-  ///
-  /// Execute [factory] when listen to observable,
-  /// if future is successful, emit [Success]
-  /// if future complete with error, emit [Failure]
-  ///
-  Single<Result<T>> _execute<T>(Future<T> Function() factory) =>
-      Rx.fromCallable(factory)
-          .doOnError(_handleUnauthenticatedError)
-          .toEitherStream(_errorToAppError)
-          .singleOrError();
-
-  ///
-  /// Like error http interceptor
-  ///
-  void _handleUnauthenticatedError(Object e, StackTrace? s) {
-    if (e is RemoteDataSourceException &&
-        e.statusCode == HttpStatus.unauthorized) {
-      debugPrint(
-          '[USER_REPOSITORY] {interceptor} 401 - unauthenticated error ===> login again');
-      _localDataSource.removeUserAndToken();
-    }
-  }
-
-  ///
-  /// Convert error to [Failure]
-  ///
-  static AppError _errorToAppError(Object e, StackTrace s) {
-    if (e is RemoteDataSourceException) {
-      return AppError(
-        message: e.message,
-        error: e,
-        stackTrace: s,
-      );
-    }
-
-    if (e is LocalDataSourceException) {
-      return AppError(
-        message: e.message,
-        error: e,
-        stackTrace: s,
-      );
-    }
-
-    return AppError(
-      message: e.toString(),
-      error: e,
-      stackTrace: s,
-    );
-  }
+      _localDataSource.userAndToken.toEitherSingle(_Mappers.errorToAppError);
 
   ///
   /// Check auth when starting app
   ///
-  void _init() async {
+  Future<void> _init() async {
     const tag = '[USER_REPOSITORY] { init }';
 
     try {
-      final userAndToken = await _localDataSource.userAndToken;
+      final userAndToken = await _localDataSource.userAndToken.first;
       debugPrint('$tag userAndToken local=$userAndToken');
 
       if (userAndToken == null) {
         return;
       }
 
-      final userProfile = await _remoteDataSource.getUserProfile(
-        userAndToken.user.email,
-        userAndToken.token,
-      );
+      final userProfile = await _remoteDataSource
+          .getUserProfile(
+            userAndToken.user.email,
+            userAndToken.token,
+          )
+          .first;
+
       debugPrint('$tag userProfile server=$userProfile');
-      await _localDataSource.saveUserAndToken(
-        _Mappers.userResponseToUserAndTokenEntity(
-          userProfile,
-          userAndToken.token,
-        ),
-      );
+      await _localDataSource
+          .saveUserAndToken(
+            _Mappers.userResponseToUserAndTokenEntity(
+              userProfile,
+              userAndToken.token,
+            ),
+          )
+          .first;
     } on RemoteDataSourceException catch (e) {
       debugPrint('$tag remote error=$e');
-
-      if (e.statusCode == HttpStatus.unauthorized) {
-        debugPrint('$tag 401 - unauthenticated error ===> login again');
-        await _localDataSource.removeUserAndToken();
-      }
     } on LocalDataSourceException catch (e) {
       debugPrint('$tag local error=$e');
-      await _localDataSource.removeUserAndToken();
+      await _localDataSource.removeUserAndToken().first;
     }
   }
 }

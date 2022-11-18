@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage>
                 label: const Text('Change password'),
                 icon: const Icon(Icons.lock_outline),
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).backgroundColor,
                 ),
               ),
             ),
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage>
                 label: const Text('Logout'),
                 icon: const Icon(Icons.exit_to_app),
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).backgroundColor,
                 ),
               ),
             ),

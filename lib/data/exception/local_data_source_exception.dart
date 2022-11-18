@@ -7,5 +7,5 @@ class LocalDataSourceException implements Exception {
 
   @override
   String toString() =>
-      'LocalDataSourceException{message=$message, error=$error}';
+      'LocalDataSourceException{message=$message, error=$error, stackTrace=$stackTrace}';
 }

@@ -147,7 +147,9 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         ifLeft: (appError) => ChangePasswordState((b) => b
           ..isLoading = false
           ..error = appError.error
-          ..message = 'Error when change password: ${appError.message}'),
+          ..message = appError.isCancellation
+              ? null
+              : 'Error when change password: ${appError.message}'),
       );
     }
 

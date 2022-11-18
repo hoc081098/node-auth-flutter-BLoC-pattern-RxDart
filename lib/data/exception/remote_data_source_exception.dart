@@ -1,11 +1,11 @@
-import 'dart:io';
+class RemoteDataSourceException implements Exception {
+  final String message;
+  final Object error;
+  final StackTrace stackTrace;
 
-class RemoteDataSourceException extends HttpException {
-  final int statusCode;
-
-  RemoteDataSourceException(this.statusCode, String message) : super(message);
+  const RemoteDataSourceException(this.message, this.error, this.stackTrace);
 
   @override
   String toString() =>
-      'RemoteDataSourceException{statusCode=$statusCode, message=$message}';
+      'RemoteDataSourceException{message=$message, error=$error, stackTrace=$stackTrace}';
 }
