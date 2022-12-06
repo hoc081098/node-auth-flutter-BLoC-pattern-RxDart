@@ -175,7 +175,7 @@ packages:
       name: cupertino_http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.9"
+    version: "0.0.10"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -327,12 +327,10 @@ packages:
   http_client_hoc081098:
     dependency: "direct main"
     description:
-      path: "."
-      ref: c13fc534ab6d7a63e79ae347fd7c877cd42615ac
-      resolved-ref: c13fc534ab6d7a63e79ae347fd7c877cd42615ac
-      url: "https://github.com/hoc081098/http_client_hoc081098.git"
-    source: git
-    version: "1.0.0-dev.0"
+      name: http_client_hoc081098
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1-dev.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -563,7 +561,7 @@ packages:
       name: rxdart_ext
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.6"
+    version: "0.2.7"
   shared_preferences:
     dependency: "direct main"
     description:

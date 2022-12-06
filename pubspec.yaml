@@ -14,7 +14,7 @@ dependencies:
 
   cupertino_icons: ^1.0.5
 
-  cupertino_http: ^0.0.9
+  cupertino_http: ^0.0.10
   meta: ^1.8.0
   path: ^1.8.2
   http: ^0.13.5
@@ -30,11 +30,11 @@ dependencies:
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.3.0
-  rxdart_ext: ^0.2.6
+  rxdart_ext: ^0.2.7
   did_change_dependencies: ^1.0.0
   stream_loader: ^1.5.0
   dart_either: ^1.0.0
-  http_client_hoc081098:
+  http_client_hoc081098: ^0.0.1-dev.0
   cancellation_token_hoc081098: ^1.0.0
 
 dev_dependencies:
@@ -51,9 +51,3 @@ flutter:
   assets:
     - assets/bg.jpg
     - assets/user.png
-
-dependency_overrides:
-  http_client_hoc081098:
-    git:
-      url: https://github.com/hoc081098/http_client_hoc081098.git
-      ref: c13fc534ab6d7a63e79ae347fd7c877cd42615ac
