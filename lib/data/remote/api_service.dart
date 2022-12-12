@@ -28,8 +28,16 @@ class ApiService implements RemoteDataSource {
           rethrow;
         } on SocketException catch (e, s) {
           throw RemoteDataSourceException('No internet connection', e, s);
-        } on SimpleHttpClientException catch (e, s) {
-          throw RemoteDataSourceException('Http error', e, s);
+        } on SimpleTimeoutException catch (e, s) {
+          throw RemoteDataSourceException('Timeout error', e, s);
+        } on SimpleErrorResponseException catch (e, s) {
+          String message;
+          try {
+            message = jsonDecode(e.errorResponseBody)['message'] as String;
+          } catch (_) {
+            message = 'Http error';
+          }
+          throw RemoteDataSourceException(message, e, s);
         } catch (e, s) {
           throw RemoteDataSourceException('Other error', e, s);
         }
