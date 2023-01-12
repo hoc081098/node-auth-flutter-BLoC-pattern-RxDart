@@ -98,7 +98,7 @@ packages:
       name: built_value_generator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.4.2"
+    version: "8.4.3"
   cancellation_token_hoc081098:
     dependency: "direct main"
     description:
@@ -527,13 +527,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1+1"
   rx_shared_preferences:
     dependency: "direct main"
     description:
