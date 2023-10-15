@@ -37,11 +37,11 @@ jobs:
 
       - name: Format code
         if: ${{ matrix.flutter-channel == 'stable' }}
-        run: flutter format lib --set-exit-if-changed
+        run: dart format lib --set-exit-if-changed
 
       - name: Analyze
         if: ${{ matrix.flutter-channel == 'stable' }}
-        run: flutter analyze lib
+        run: dart analyze lib
 
       - name: Gen code
         run: flutter packages pub run build_runner build --delete-conflicting-outputs
