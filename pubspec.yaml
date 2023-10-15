@@ -22,11 +22,11 @@ dependencies:
   tuple: ^2.0.1
   rxdart: ^0.27.7
   image_picker: ^0.8.6
-  shared_preferences: ^2.0.15
+  shared_preferences: ^2.2.2
   octo_image: ^1.0.2
 
   flutter_provider: ^2.1.0
-  rx_shared_preferences: ^3.0.0
+  rx_shared_preferences: ^3.1.0
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
   flutter_bloc_pattern: ^2.3.0
