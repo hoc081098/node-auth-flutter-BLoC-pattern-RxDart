@@ -20,9 +20,9 @@ dependencies:
   http: ^1.2.2
   built_value: ^8.9.2
   rxdart: ^0.28.0
-  image_picker: ^0.8.6
-  shared_preferences: ^2.2.2
-  octo_image: ^1.0.2
+  image_picker: ^1.1.2
+  shared_preferences: ^2.3.2
+  octo_image: ^2.1.0
 
   flutter_provider: ^2.1.0
   rx_shared_preferences: ^4.0.0
