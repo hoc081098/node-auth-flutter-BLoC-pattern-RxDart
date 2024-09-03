@@ -9,14 +9,14 @@ class PasswordTextField extends StatefulWidget {
   final FocusNode? focusNode;
 
   const PasswordTextField({
-    Key? key,
+    super.key,
     required this.onChanged,
     required this.errorText,
     required this.labelText,
     required this.onSubmitted,
     required this.textInputAction,
     required this.focusNode,
-  }) : super(key: key);
+  });
 
   @override
   State<PasswordTextField> createState() => _PasswordTextFieldState();

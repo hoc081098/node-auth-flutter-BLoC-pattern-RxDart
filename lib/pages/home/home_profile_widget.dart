@@ -8,7 +8,7 @@ import 'package:node_auth/pages/home/home_bloc.dart';
 import 'package:octo_image/octo_image.dart';
 
 class HomeUserProfile extends StatelessWidget {
-  const HomeUserProfile({Key? key}) : super(key: key);
+  const HomeUserProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +151,7 @@ class HomeUserProfile extends StatelessWidget {
 }
 
 class ImageUploadingWidget extends StatelessWidget {
-  const ImageUploadingWidget({Key? key}) : super(key: key);
+  const ImageUploadingWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,7 @@ class Credential {
 }
 
 @immutable
-abstract class LoginMessage {}
+sealed class LoginMessage {}
 
 class LoginSuccessMessage implements LoginMessage {
   const LoginSuccessMessage();

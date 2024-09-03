@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
 
 @immutable
-abstract class HomeMessage {}
+sealed class HomeMessage {}
 
-abstract class LogoutMessage implements HomeMessage {}
+sealed class LogoutMessage implements HomeMessage {}
 
-abstract class UpdateAvatarMessage implements HomeMessage {}
+sealed class UpdateAvatarMessage implements HomeMessage {}
 
 ///
 ///

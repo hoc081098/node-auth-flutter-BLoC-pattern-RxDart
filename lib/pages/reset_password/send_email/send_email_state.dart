@@ -1,4 +1,7 @@
-abstract class SendEmailMessage {}
+import 'package:meta/meta.dart';
+
+@immutable
+sealed class SendEmailMessage {}
 
 class SendEmailInvalidInformationMessage implements SendEmailMessage {
   const SendEmailInvalidInformationMessage();

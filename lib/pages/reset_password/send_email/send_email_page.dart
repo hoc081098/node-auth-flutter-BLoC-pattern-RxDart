@@ -7,7 +7,7 @@ import 'package:node_auth/utils/snackbar.dart';
 class SendEmailPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const SendEmailPage({Key? key, required this.toggle}) : super(key: key);
+  const SendEmailPage({super.key, required this.toggle});
 
   @override
   State<SendEmailPage> createState() => _SendEmailPageState();
@@ -168,15 +168,11 @@ class _SendEmailPageState extends State<SendEmailPage>
   }
 
   static String _getMessageString(SendEmailMessage msg) {
-    if (msg is SendEmailInvalidInformationMessage) {
-      return 'Invalid information. Try again';
-    }
-    if (msg is SendEmailSuccessMessage) {
-      return 'Email sent. Check your email inbox and go to reset password page';
-    }
-    if (msg is SendEmailErrorMessage) {
-      return msg.message;
-    }
-    return 'An unexpected error has occurred';
+    return switch (msg) {
+      SendEmailInvalidInformationMessage() => 'Invalid information. Try again',
+      SendEmailSuccessMessage() =>
+        'Email sent. Check your email inbox and go to reset password page',
+      SendEmailErrorMessage() => msg.message,
+    };
   }
 }
