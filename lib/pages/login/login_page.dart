@@ -17,7 +17,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class LoginPage extends StatefulWidget {
   static const routeName = '/login_page';
 
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _MyLoginPageState();

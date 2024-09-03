@@ -14,7 +14,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class RegisterPage extends StatefulWidget {
   static const routeName = '/register_page';
 
-  const RegisterPage({Key? key}) : super(key: key);
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();

@@ -13,7 +13,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class ResetPasswordPage extends StatefulWidget {
   static const routeName = '/reset_password_page';
 
-  const ResetPasswordPage({Key? key}) : super(key: key);
+  const ResetPasswordPage({super.key});
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();

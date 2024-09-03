@@ -117,10 +117,10 @@ packages:
     dependency: "direct main"
     description:
       name: cancellation_token_hoc081098
-      sha256: "21f24807159afdc4229a2a53f26a72026a3e92a1812b5dbdcaa467673311c41f"
+      sha256: ddc12a15f9b8a1256e6cefddc9011ddccfeb05188473b26ba3eddd20ac297aea
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   characters:
     dependency: transitive
     description:

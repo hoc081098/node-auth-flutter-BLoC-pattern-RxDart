@@ -6,7 +6,7 @@ import 'package:node_auth/widgets/password_textfield.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
 class ChangePasswordBottomSheet extends StatefulWidget {
-  const ChangePasswordBottomSheet({Key? key}) : super(key: key);
+  const ChangePasswordBottomSheet({super.key});
 
   @override
   State<ChangePasswordBottomSheet> createState() =>

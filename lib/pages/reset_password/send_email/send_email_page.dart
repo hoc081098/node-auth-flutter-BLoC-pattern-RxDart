@@ -7,7 +7,7 @@ import 'package:node_auth/utils/snackbar.dart';
 class SendEmailPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const SendEmailPage({Key? key, required this.toggle}) : super(key: key);
+  const SendEmailPage({super.key, required this.toggle});
 
   @override
   State<SendEmailPage> createState() => _SendEmailPageState();

@@ -17,7 +17,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class HomePage extends StatefulWidget {
   static const routeName = '/home_page';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
