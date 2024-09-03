@@ -243,7 +243,7 @@ class _MyLoginPageState extends State<LoginPage>
           FocusScope.of(context).unfocus();
           loginBloc.submitLogin();
         },
-        color: Theme.of(context).backgroundColor,
+        color: Theme.of(context).colorScheme.surface,
         splashColor: Theme.of(context).colorScheme.secondary,
         child: const Text(
           'LOGIN',

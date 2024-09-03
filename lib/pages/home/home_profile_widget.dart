@@ -82,7 +82,7 @@ class HomeUserProfile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Error',
-                style: themeData.textTheme.subtitle2!.copyWith(fontSize: 12),
+                style: themeData.textTheme.titleSmall!.copyWith(fontSize: 12),
               ),
             ],
           ),
@@ -140,7 +140,7 @@ class HomeUserProfile extends StatelessWidget {
           Expanded(
             child: Text(
               'Logging out...',
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
           ),
@@ -170,7 +170,7 @@ class ImageUploadingWidget extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Uploading',
-            style: Theme.of(context).textTheme.overline,
+            style: Theme.of(context).textTheme.labelSmall,
             textAlign: TextAlign.center,
           ),
         ],

@@ -98,9 +98,9 @@ class _RegisterPageState extends State<RegisterPage>
               color: Colors.transparent,
               width: double.infinity,
               height: kToolbarHeight,
-              child: Row(
+              child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
+                children: [
                   BackButton(color: Colors.white),
                 ],
               ),
@@ -235,7 +235,7 @@ class _RegisterPageState extends State<RegisterPage>
           FocusScope.of(context).unfocus();
           registerBloc.submitRegister();
         },
-        color: Theme.of(context).backgroundColor,
+        color: Theme.of(context).colorScheme.surface,
         splashColor: Theme.of(context).colorScheme.secondary,
         child: const Text(
           'REGISTER',

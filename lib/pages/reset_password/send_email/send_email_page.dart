@@ -91,12 +91,12 @@ class _SendEmailPageState extends State<SendEmailPage>
       },
     );
 
-    final overlayColor = MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.hovered)) {
+    final overlayColor = WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.hovered)) {
         return Theme.of(context).colorScheme.secondary.withOpacity(0.5);
       }
-      if (states.contains(MaterialState.focused) ||
-          states.contains(MaterialState.pressed)) {
+      if (states.contains(WidgetState.focused) ||
+          states.contains(WidgetState.pressed)) {
         return Theme.of(context).colorScheme.secondary.withOpacity(0.8);
       }
       return null;

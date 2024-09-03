@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage>
                 label: const Text('Change password'),
                 icon: const Icon(Icons.lock_outline),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                 ),
               ),
             ),
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage>
                 label: const Text('Logout'),
                 icon: const Icon(Icons.exit_to_app),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                 ),
               ),
             ),
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage>
                   'Flutter auth BLoC pattern RxDart',
                   style: Theme.of(context)
                       .textTheme
-                      .subtitle1!
+                      .titleMedium!
                       .copyWith(fontSize: 16),
                 ),
               ),
