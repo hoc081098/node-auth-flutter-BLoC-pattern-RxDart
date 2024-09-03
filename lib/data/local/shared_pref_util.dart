@@ -48,12 +48,11 @@ class SharedPrefUtil implements LocalDataSource {
   // Encoder and Decoder
   //
 
-  FutureOr<UserAndTokenEntity?> _toEntity(dynamic jsonString) =>
-      jsonString == null
-          ? null
-          : _crypto
-              .decrypt(jsonString as String)
-              .then((s) => UserAndTokenEntity.fromJson(jsonDecode(s)));
+  FutureOr<UserAndTokenEntity?> _toEntity(dynamic jsonString) => jsonString ==
+          null
+      ? null
+      : _crypto.decrypt(jsonString as String).then((s) =>
+          UserAndTokenEntity.fromJson(jsonDecode(s) as Map<String, dynamic>));
 
   FutureOr<String?> _toString(UserAndTokenEntity? entity) =>
       entity == null ? null : _crypto.encrypt(jsonEncode(entity));

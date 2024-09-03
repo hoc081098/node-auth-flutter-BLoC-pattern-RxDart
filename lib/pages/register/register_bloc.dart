@@ -125,7 +125,7 @@ class RegisterBloc extends DisposeCallbackBaseBloc {
         .distinct()
         .share();
 
-    final subscriptions = <String, Stream>{
+    final subscriptions = <String, Stream<dynamic>>{
       'emailError': emailError$,
       'passwordError': passwordError$,
       'nameError': nameError$,

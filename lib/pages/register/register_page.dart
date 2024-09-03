@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:did_change_dependencies/did_change_dependencies.dart';
@@ -141,21 +143,18 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Stream<void> handleMessage(RegisterMessage message) async* {
-    if (message is RegisterSuccessMessage) {
-      context.showSnackBar('Register successfully');
-      await delay(1000);
-      yield null;
-      // ignore: use_build_context_synchronously
-      Navigator.pop<String>(context, message.email);
-      return;
-    }
-    if (message is RegisterErrorMessage) {
-      context.showSnackBar(message.message);
-      return;
-    }
-    if (message is RegisterInvalidInformationMessage) {
-      context.showSnackBar('Invalid information');
-      return;
+    switch (message) {
+      case RegisterSuccessMessage():
+        context.showSnackBar('Register successfully');
+        await delay(1000);
+        yield null;
+        Navigator.pop<String>(context, message.email);
+
+      case RegisterErrorMessage():
+        context.showSnackBar(message.message);
+
+      case RegisterInvalidInformationMessage():
+        context.showSnackBar('Invalid information');
     }
   }
 

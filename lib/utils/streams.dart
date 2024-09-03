@@ -10,7 +10,7 @@ extension AsUnitSingleExtension<L, R> on Single<Either<L, R>> {
 }
 
 extension DebugMapStreamsExtension on Map<String, Stream<dynamic>> {
-  List<StreamSubscription> debug() => entries
+  List<StreamSubscription<dynamic>> debug() => entries
       .map((entry) => entry.value
           .listen((data) => debugPrint('[DEBUG] [${entry.key}] = $data')))
       .toList();

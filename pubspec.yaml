@@ -5,35 +5,34 @@ publish_to: 'none'
 version: 3.3.0+8
 
 environment:
-  sdk: ">=2.18.2 <3.0.0"
-  flutter: ">=3.3.3"
+  sdk: ^3.4.3
+  flutter: ">=3.22.2"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.5
+  cupertino_icons: ^1.0.8
 
-  cupertino_http: ^0.0.10
-  meta: ^1.8.0
+  cupertino_http: ^1.5.1
+  meta: ^1.12.0
   path: ^1.8.2
-  http: ^0.13.5
-  built_value: ^8.4.2
-  tuple: ^2.0.1
-  rxdart: ^0.27.7
+  http: ^1.2.2
+  built_value: ^8.9.2
+  rxdart: ^0.28.0
   image_picker: ^0.8.6
   shared_preferences: ^2.2.2
   octo_image: ^1.0.2
 
   flutter_provider: ^2.1.0
-  rx_shared_preferences: ^3.1.0
+  rx_shared_preferences: ^4.0.0
   disposebag: ^1.5.1
   flutter_disposebag: ^1.1.0
-  flutter_bloc_pattern: ^2.3.0
-  rxdart_ext: ^0.2.7
+  flutter_bloc_pattern: ^3.0.0
+  rxdart_ext: ^0.3.0
   did_change_dependencies: ^1.0.0
   stream_loader: ^1.5.0
-  dart_either: ^1.0.0
+  dart_either: ^2.0.0
   http_client_hoc081098: ^0.0.1-dev.0
   cancellation_token_hoc081098: ^1.0.0
 
@@ -51,3 +50,10 @@ flutter:
   assets:
     - assets/bg.jpg
     - assets/user.png
+
+dependency_overrides:
+  http: ^1.2.2
+  rxdart_ext:
+    git:
+      url: https://github.com/hoc081098/rxdart_ext.git
+      ref: 138c130651ed5b57127851cfc9817ad7377c806e

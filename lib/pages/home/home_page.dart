@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -132,41 +134,37 @@ class _HomePageState extends State<HomePage>
   Stream<void> handleMessage(HomeMessage message) async* {
     debugPrint('[DEBUG] homeBloc message=$message');
 
-    if (message is LogoutMessage) {
-      if (message is LogoutSuccessMessage) {
-        context.showSnackBar('Logout successfully!');
-        await delay(1000);
-        yield null;
+    switch (message) {
+      case LogoutMessage():
+        switch (message) {
+          case LogoutSuccessMessage():
+            context.showSnackBar('Logout successfully!');
+            await delay(1000);
+            yield null;
 
-        // ignore: use_build_context_synchronously
-        context.hideCurrentSnackBar();
-        // ignore: use_build_context_synchronously
-        await Navigator.of(context).pushNamedAndRemoveUntil(
-          LoginPage.routeName,
-          (_) => false,
-        );
-        return;
-      }
-      if (message is LogoutErrorMessage) {
-        context.showSnackBar('Error when logout: ${message.message}');
-        return;
-      }
-      return;
-    }
-    if (message is UpdateAvatarMessage) {
-      if (message is UpdateAvatarSuccessMessage) {
-        context.showSnackBar('Upload image successfully!');
-        return;
-      }
-      if (message is UpdateAvatarErrorMessage) {
-        context.showSnackBar('Error when upload image: ${message.message}');
-        return;
-      }
+            context.hideCurrentSnackBar();
+            await Navigator.of(context).pushNamedAndRemoveUntil(
+              LoginPage.routeName,
+              (_) => false,
+            );
+
+          case LogoutErrorMessage():
+            context.showSnackBar('Error when logout: ${message.message}');
+        }
+
+      case UpdateAvatarMessage():
+        switch (message) {
+          case UpdateAvatarSuccessMessage():
+            context.showSnackBar('Upload image successfully!');
+
+          case UpdateAvatarErrorMessage():
+            context.showSnackBar('Error when upload image: ${message.message}');
+        }
     }
   }
 
   void showChangePassword() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(

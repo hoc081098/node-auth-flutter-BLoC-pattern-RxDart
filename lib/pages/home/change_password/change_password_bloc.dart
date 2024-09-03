@@ -8,11 +8,10 @@ import 'package:node_auth/domain/usecases/change_password_use_case.dart';
 import 'package:node_auth/pages/home/change_password/change_password.dart';
 import 'package:node_auth/utils/streams.dart';
 import 'package:node_auth/utils/type_defs.dart';
-import 'package:tuple/tuple.dart';
 
-bool _isValidPassword(String password) {
-  return password.length >= 6;
-}
+bool _isValidPassword(String password) => password.length >= 6;
+
+typedef _FormInfo = ({String password, String newPassword});
 
 // ignore_for_file: close_sinks
 
@@ -49,32 +48,34 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
     /// Streams
     ///
 
-    final both$ = Rx.combineLatest2(
+    final Stream<_FormInfo> both$ = Rx.combineLatest2(
       passwordS.stream.startWith(''),
       newPasswordS.stream.startWith(''),
-      (String password, String newPassword) => Tuple2(password, newPassword),
+      (String password, String newPassword) =>
+          (password: password, newPassword: newPassword),
     ).share();
 
-    final isValidSubmit$ = both$.map((both) {
-      final password = both.item1;
-      final newPassword = both.item2;
-      return _isValidPassword(newPassword) &&
-          _isValidPassword(password) &&
-          password != newPassword;
-    }).shareValueSeeded(false);
+    final isValidSubmit$ = both$
+        .map(
+          (formInfo) =>
+              _isValidPassword(formInfo.newPassword) &&
+              _isValidPassword(formInfo.password) &&
+              formInfo.password != formInfo.newPassword,
+        )
+        .shareValueSeeded(false);
 
     final changePasswordState$ = submitChangePasswordS.stream
         .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
         .debug()
         .where((isValid) => isValid)
-        .withLatestFrom(both$, (_, Tuple2<String, String> both) => both)
+        .withLatestFrom(both$, (_, formInfo) => formInfo)
         .exhaustMap((both) => _performChangePassword(changePassword, both))
         .publishState(ChangePasswordState((b) => b..isLoading = false));
 
     final passwordError$ = both$
-        .map((tuple) {
-          final password = tuple.item1;
-          final newPassword = tuple.item2;
+        .map((formInfo) {
+          final password = formInfo.password;
+          final newPassword = formInfo.newPassword;
 
           if (!_isValidPassword(password)) {
             return 'Password must be at least 6 characters';
@@ -90,9 +91,9 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         .share();
 
     final newPasswordError$ = both$
-        .map((tuple) {
-          final password = tuple.item1;
-          final newPassword = tuple.item2;
+        .map((formInfo) {
+          final password = formInfo.password;
+          final newPassword = formInfo.newPassword;
 
           if (!_isValidPassword(newPassword)) {
             return 'New password must be at least 6 characters';
@@ -107,7 +108,7 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
         .distinct()
         .share();
 
-    final subscriptions = <String, Stream>{
+    final subscriptions = <String, Stream<dynamic>>{
       'newPasswordError': newPasswordError$,
       'passwordError': passwordError$,
       'isValidSubmit': isValidSubmit$,
@@ -132,9 +133,9 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
 
   static Stream<ChangePasswordState> _performChangePassword(
     ChangePasswordUseCase changePassword,
-    Tuple2<String, String> both,
+    _FormInfo formInfo,
   ) {
-    debugPrint('[DEBUG] change password both=$both');
+    debugPrint('[DEBUG] change password both=$formInfo');
 
     ChangePasswordState resultToState(UnitResult result) {
       debugPrint('[DEBUG] change password result=$result');
@@ -153,7 +154,8 @@ class ChangePasswordBloc extends DisposeCallbackBaseBloc {
       );
     }
 
-    return changePassword(password: both.item1, newPassword: both.item2)
+    return changePassword(
+            password: formInfo.password, newPassword: formInfo.newPassword)
         .map(resultToState)
         .startWith(
           ChangePasswordState((b) => b
