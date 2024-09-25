@@ -20,7 +20,7 @@ dependencies:
   http: ^0.13.5
   built_value: ^8.4.2
   tuple: ^2.0.1
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   image_picker: ^0.8.6
   shared_preferences: ^2.2.2
   octo_image: ^1.0.2
