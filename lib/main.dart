@@ -27,37 +27,9 @@ void main() async {
   _setupLoggers();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  final loggingInterceptor = SimpleLoggingInterceptor(
-    SimpleLogger(
-      loggerFunction: print,
-      level: kReleaseMode ? SimpleLogLevel.none : SimpleLogLevel.body,
-      headersToRedact: {
-        ApiService.xAccessToken,
-        HttpHeaders.authorizationHeader,
-      },
-    ),
-  );
-
+  // Create http client
   late final Func0<Future<void>> onUnauthorized;
-  final authInterceptor =
-      AuthInterceptor(onUnauthorized: () => onUnauthorized());
-
-  final simpleHttpClient = SimpleHttpClient(
-    client: Platform.isIOS || Platform.isMacOS
-        ? CupertinoClient.defaultSessionConfiguration()
-        : http.Client(),
-    timeout: const Duration(seconds: 20),
-    requestInterceptors: [
-      authInterceptor.requestInterceptor,
-      // others interceptors above this line
-      loggingInterceptor.requestInterceptor,
-    ],
-    responseInterceptors: [
-      loggingInterceptor.responseInterceptor,
-      // others interceptors below this line
-      authInterceptor.responseInterceptor,
-    ],
-  );
+  final simpleHttpClient = createSimpleHttpClient(() => onUnauthorized());
 
   // construct RemoteDataSource
   final RemoteDataSource remoteDataSource = ApiService(simpleHttpClient);
@@ -80,6 +52,42 @@ void main() async {
       child: const MyApp(),
     ),
   );
+}
+
+SimpleHttpClient createSimpleHttpClient(
+  Func0<Future<void>> onUnauthorized,
+) {
+  final authInterceptor = AuthInterceptor(onUnauthorized: onUnauthorized);
+
+  final loggingInterceptor = SimpleLoggingInterceptor(
+    SimpleLogger(
+      loggerFunction: print,
+      level: kReleaseMode ? SimpleLogLevel.none : SimpleLogLevel.body,
+      headersToRedact: {
+        ApiService.xAccessToken,
+        HttpHeaders.authorizationHeader,
+      },
+    ),
+  );
+
+  final simpleHttpClient = SimpleHttpClient(
+    client: Platform.isIOS || Platform.isMacOS
+        ? CupertinoClient.defaultSessionConfiguration()
+        : http.Client(),
+    timeout: const Duration(seconds: 20),
+    requestInterceptors: [
+      authInterceptor.requestInterceptor,
+      // others interceptors above this line
+      loggingInterceptor.requestInterceptor,
+    ],
+    responseInterceptors: [
+      loggingInterceptor.responseInterceptor,
+      // others interceptors below this line
+      authInterceptor.responseInterceptor,
+    ],
+  );
+
+  return simpleHttpClient;
 }
 
 void _setupLoggers() {
