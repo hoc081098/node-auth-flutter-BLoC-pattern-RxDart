@@ -62,7 +62,7 @@ class ApiService implements RemoteDataSource {
             HttpHeaders.authorizationHeader: basic,
           },
           cancelToken: cancelToken,
-        );
+        ) as Map<String, dynamic>;
         return TokenResponse.fromJson(json);
       });
 
@@ -87,7 +87,7 @@ class ApiService implements RemoteDataSource {
           url,
           body: body,
           cancelToken: cancelToken,
-        );
+        ) as Map<String, dynamic>;
         return TokenResponse.fromJson(decoded);
       });
 
@@ -106,7 +106,7 @@ class ApiService implements RemoteDataSource {
           url,
           headers: {xAccessToken: token},
           cancelToken: cancelToken,
-        );
+        ) as Map<String, dynamic>;
         return UserResponse.fromJson(json);
       });
 
@@ -129,7 +129,7 @@ class ApiService implements RemoteDataSource {
           headers: {xAccessToken: token},
           body: body,
           cancelToken: cancelToken,
-        );
+        ) as Map<String, dynamic>;
         return TokenResponse.fromJson(json);
       });
 
@@ -160,7 +160,7 @@ class ApiService implements RemoteDataSource {
                 url,
                 cancelToken: cancelToken,
               );
-        final json = await task;
+        final json = await task as Map<String, dynamic>;
         return TokenResponse.fromJson(json);
       });
 
@@ -198,7 +198,7 @@ class ApiService implements RemoteDataSource {
           fields: {'user': email},
           headers: {xAccessToken: token},
           cancelToken: cancelToken,
-        );
+        ) as Map<String, dynamic>;
         return UserResponse.fromJson(decoded);
       });
 }

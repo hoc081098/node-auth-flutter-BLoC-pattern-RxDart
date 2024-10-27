@@ -10,7 +10,7 @@ class RegisterUser {
 }
 
 @immutable
-abstract class RegisterMessage {}
+sealed class RegisterMessage {}
 
 class RegisterInvalidInformationMessage implements RegisterMessage {
   const RegisterInvalidInformationMessage();

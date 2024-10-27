@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cupertino_http/cupertino_client.dart';
+import 'package:cupertino_http/cupertino_http.dart';
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart'
     show debugPrint, debugPrintSynchronously, kReleaseMode;
@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_client_hoc081098/http_client_hoc081098.dart';
 import 'package:node_auth/app.dart';
 import 'package:node_auth/data/local/local_data_source.dart';
@@ -19,7 +20,6 @@ import 'package:node_auth/data/remote/remote_data_source.dart';
 import 'package:node_auth/data/user_repository_imp.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,37 +27,9 @@ void main() async {
   _setupLoggers();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  final loggingInterceptor = SimpleLoggingInterceptor(
-    SimpleLogger(
-      loggerFunction: print,
-      level: kReleaseMode ? SimpleLogLevel.none : SimpleLogLevel.body,
-      headersToRedact: {
-        ApiService.xAccessToken,
-        HttpHeaders.authorizationHeader,
-      },
-    ),
-  );
-
+  // Create http client
   late final Func0<Future<void>> onUnauthorized;
-  final authInterceptor =
-      AuthInterceptor(onUnauthorized: () => onUnauthorized());
-
-  final simpleHttpClient = SimpleHttpClient(
-    client: Platform.isIOS || Platform.isMacOS
-        ? CupertinoClient.defaultSessionConfiguration()
-        : http.Client(),
-    timeout: const Duration(seconds: 20),
-    requestInterceptors: [
-      authInterceptor.requestInterceptor,
-      // others interceptors above this line
-      loggingInterceptor.requestInterceptor,
-    ],
-    responseInterceptors: [
-      loggingInterceptor.responseInterceptor,
-      // others interceptors below this line
-      authInterceptor.responseInterceptor,
-    ],
-  );
+  final simpleHttpClient = createSimpleHttpClient(() => onUnauthorized());
 
   // construct RemoteDataSource
   final RemoteDataSource remoteDataSource = ApiService(simpleHttpClient);
@@ -80,6 +52,42 @@ void main() async {
       child: const MyApp(),
     ),
   );
+}
+
+SimpleHttpClient createSimpleHttpClient(
+  Func0<Future<void>> onUnauthorized,
+) {
+  final authInterceptor = AuthInterceptor(onUnauthorized: onUnauthorized);
+
+  final loggingInterceptor = SimpleLoggingInterceptor(
+    SimpleLogger(
+      loggerFunction: print,
+      level: kReleaseMode ? SimpleLogLevel.none : SimpleLogLevel.body,
+      headersToRedact: {
+        ApiService.xAccessToken,
+        HttpHeaders.authorizationHeader,
+      },
+    ),
+  );
+
+  final simpleHttpClient = SimpleHttpClient(
+    client: Platform.isIOS || Platform.isMacOS
+        ? CupertinoClient.defaultSessionConfiguration()
+        : http.Client(),
+    timeout: const Duration(seconds: 20),
+    requestInterceptors: [
+      authInterceptor.requestInterceptor,
+      // others interceptors above this line
+      loggingInterceptor.requestInterceptor,
+    ],
+    responseInterceptors: [
+      loggingInterceptor.responseInterceptor,
+      // others interceptors below this line
+      authInterceptor.responseInterceptor,
+    ],
+  );
+
+  return simpleHttpClient;
 }
 
 void _setupLoggers() {

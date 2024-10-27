@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:did_change_dependencies/did_change_dependencies.dart';
@@ -15,7 +17,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class LoginPage extends StatefulWidget {
   static const routeName = '/login_page';
 
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _MyLoginPageState();
@@ -144,25 +146,21 @@ class _MyLoginPageState extends State<LoginPage>
     );
   }
 
-  Stream<void> handleMessage(message) async* {
-    if (message is LoginSuccessMessage) {
-      context.showSnackBar('Login successfully');
-      await delay(1000);
-      yield null;
+  Stream<void> handleMessage(LoginMessage message) async* {
+    switch (message) {
+      case LoginSuccessMessage():
+        context.showSnackBar('Login successfully');
+        await delay(1000);
+        yield null;
 
-      // ignore: use_build_context_synchronously
-      context.hideCurrentSnackBar();
-      // ignore: use_build_context_synchronously
-      await Navigator.of(context).pushReplacementNamed(HomePage.routeName);
-      return;
-    }
-    if (message is LoginErrorMessage) {
-      context.showSnackBar(message.message);
-      return;
-    }
-    if (message is InvalidInformationMessage) {
-      context.showSnackBar('Invalid information');
-      return;
+        context.hideCurrentSnackBar();
+        await Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+
+      case LoginErrorMessage():
+        context.showSnackBar(message.message);
+
+      case InvalidInformationMessage():
+        context.showSnackBar('Invalid information');
     }
   }
 
@@ -268,7 +266,6 @@ class _MyLoginPageState extends State<LoginPage>
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
-          // ignore: use_build_context_synchronously
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },
@@ -295,7 +292,6 @@ class _MyLoginPageState extends State<LoginPage>
         if (email != null && email is String) {
           emailController.text = email;
           loginBloc.emailChanged(email);
-          // ignore: use_build_context_synchronously
           FocusScope.of(context).requestFocus(passwordFocusNode);
         }
       },

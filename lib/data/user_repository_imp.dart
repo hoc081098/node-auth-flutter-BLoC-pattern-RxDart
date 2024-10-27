@@ -15,9 +15,10 @@ import 'package:node_auth/domain/models/user.dart';
 import 'package:node_auth/domain/models/user_and_token.dart';
 import 'package:node_auth/domain/repositories/user_repository.dart';
 import 'package:node_auth/utils/streams.dart';
-import 'package:tuple/tuple.dart';
 
 part 'mappers.dart';
+
+typedef _UserResponseAndToken = ({UserResponse user, String token});
 
 class UserRepositoryImpl implements UserRepository {
   final RemoteDataSource _remoteDataSource;
@@ -57,15 +58,15 @@ class UserRepositoryImpl implements UserRepository {
 
           return _remoteDataSource
               .getUserProfile(email, token)
-              .map((user) => Tuple2(user, token))
+              .map<_UserResponseAndToken>((user) => (user: user, token: token))
               .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
           (tuple) => _localDataSource
               .saveUserAndToken(
                 _Mappers.userResponseToUserAndTokenEntity(
-                  tuple.item1,
-                  tuple.item2,
+                  tuple.user,
+                  tuple.token,
                 ),
               )
               .toEitherSingle(_Mappers.errorToAppError),
@@ -100,7 +101,7 @@ class UserRepositoryImpl implements UserRepository {
                 message: 'Require login!',
                 error: 'Email or token is null',
                 stackTrace: StackTrace.current,
-              ).left(),
+              ).left<_UserResponseAndToken>(),
             );
           }
 
@@ -110,15 +111,16 @@ class UserRepositoryImpl implements UserRepository {
                 userAndToken.user.email,
                 userAndToken.token,
               )
-              .map((user) => Tuple2(user, userAndToken.token))
+              .map<_UserResponseAndToken>(
+                  (user) => (user: user, token: userAndToken.token))
               .toEitherSingle(_Mappers.errorToAppError);
         })
         .flatMapEitherSingle(
           (tuple) => _localDataSource
               .saveUserAndToken(
                 _Mappers.userResponseToUserAndTokenEntity(
-                  tuple.item1,
-                  tuple.item2,
+                  tuple.user,
+                  tuple.token,
                 ),
               )
               .toEitherSingle(_Mappers.errorToAppError),

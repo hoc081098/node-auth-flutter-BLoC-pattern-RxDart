@@ -9,8 +9,7 @@ import 'package:rxdart_ext/rxdart_ext.dart';
 class InputTokenAndResetPasswordPage extends StatefulWidget {
   final VoidCallback toggle;
 
-  const InputTokenAndResetPasswordPage({Key? key, required this.toggle})
-      : super(key: key);
+  const InputTokenAndResetPasswordPage({super.key, required this.toggle});
 
   @override
   State<InputTokenAndResetPasswordPage> createState() =>

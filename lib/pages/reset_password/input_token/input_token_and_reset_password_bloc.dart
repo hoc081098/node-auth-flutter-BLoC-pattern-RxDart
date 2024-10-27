@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:meta/meta.dart';
 import 'package:node_auth/domain/usecases/reset_password_use_case.dart';
 import 'package:node_auth/utils/type_defs.dart';
 import 'package:node_auth/utils/validators.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
-import 'package:tuple/tuple.dart';
 
-abstract class InputTokenAndResetPasswordMessage {}
+@immutable
+sealed class InputTokenAndResetPasswordMessage {}
 
 class InvalidInformation implements InputTokenAndResetPasswordMessage {
   const InvalidInformation();
@@ -26,6 +27,8 @@ class ResetPasswordFailure implements InputTokenAndResetPasswordMessage {
 
   const ResetPasswordFailure(this.error, this.message);
 }
+
+typedef _FormInfo = ({String email, String token, String newPassword});
 
 //ignore_for_file: close_sinks
 
@@ -87,26 +90,30 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
       return 'Token must be not empty';
     }).share();
 
-    final allField$ = submitSubject
-        .map((_) => Tuple3(
-            emailSubject.value, tokenSubject.value, passwordSubject.value))
+    final Stream<_FormInfo> allField$ = submitSubject
+        .map(
+          (_) => (
+            email: emailSubject.value,
+            token: tokenSubject.value,
+            newPassword: passwordSubject.value
+          ),
+        )
         .share();
 
-    bool allFieldsAreValid(Tuple3<String, String, String> tuple3) {
-      return Validator.isValidEmail(tuple3.item1) &&
-          tuple3.item2.isNotEmpty &&
-          Validator.isValidPassword(tuple3.item3);
-    }
+    bool allFieldsAreValid(_FormInfo formInfo) =>
+        Validator.isValidEmail(formInfo.email) &&
+        formInfo.token.isNotEmpty &&
+        Validator.isValidPassword(formInfo.newPassword);
 
     final message$ = Rx.merge([
       allField$
-          .where((tuple3) => !allFieldsAreValid(tuple3))
+          .where((formInfo) => !allFieldsAreValid(formInfo))
           .map((_) => const InvalidInformation()),
       allField$
           .where(allFieldsAreValid)
-          .exhaustMap((tuple3) => _sendResetPasswordRequest(
+          .exhaustMap((formInfo) => _sendResetPasswordRequest(
                 resetPassword,
-                tuple3,
+                formInfo,
                 isLoadingSubject,
               )),
     ]).whereNotNull().share();
@@ -127,17 +134,13 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
 
   static Stream<InputTokenAndResetPasswordMessage?> _sendResetPasswordRequest(
     ResetPasswordUseCase resetPassword,
-    Tuple3<String, String, String> tuple3,
+    _FormInfo formInfo,
     Sink<bool> isLoadingSink,
   ) {
-    final email = tuple3.item1;
-    final token = tuple3.item2;
-    final newPassword = tuple3.item3;
-
     return resetPassword(
-      email: email,
-      token: token,
-      newPassword: newPassword,
+      email: formInfo.email,
+      token: formInfo.token,
+      newPassword: formInfo.newPassword,
     )
         .doOn(
           listen: () => isLoadingSink.add(true),
@@ -145,7 +148,7 @@ class InputTokenAndResetPasswordBloc extends DisposeCallbackBaseBloc {
         )
         .map(
           (result) => result.fold(
-            ifRight: (_) => ResetPasswordSuccess(email),
+            ifRight: (_) => ResetPasswordSuccess(formInfo.email),
             ifLeft: (appError) => appError.isCancellation
                 ? null
                 : ResetPasswordFailure(appError.error!, appError.message!),
