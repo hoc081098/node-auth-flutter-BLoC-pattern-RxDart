@@ -388,10 +388,10 @@ packages:
     dependency: "direct main"
     description:
       name: http_client_hoc081098
-      sha256: "2b624d62e7c3a28c59deeaf1b72dcc8bd9de9ac129a7d5ebaa7fc3cbbae2f2e2"
+      sha256: b6c6c10e3dc5846548c037c163f4bfc67486ceeb06d1458f42591bda1b31405b
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1-dev.0"
+    version: "0.1.0"
   http_multi_server:
     dependency: transitive
     description:

@@ -33,7 +33,7 @@ dependencies:
   did_change_dependencies: ^1.0.0
   stream_loader: ^1.5.0
   dart_either: ^2.0.0
-  http_client_hoc081098: ^0.0.1-dev.0
+  http_client_hoc081098: ^0.1.0
   cancellation_token_hoc081098: ^2.0.0
 
 dev_dependencies:
@@ -52,8 +52,6 @@ flutter:
     - assets/user.png
 
 dependency_overrides:
-  http: ^1.2.2
-  cancellation_token_hoc081098: ^2.0.0
   rxdart_ext:
     git:
       url: https://github.com/hoc081098/rxdart_ext.git
