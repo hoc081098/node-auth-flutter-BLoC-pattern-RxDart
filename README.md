@@ -10,6 +10,7 @@
 [![Flutter](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml/badge.svg)](https://github.com/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/actions/workflows/flutter.yml)
 [![Codemagic build status](https://api.codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/status_badge.svg)](https://codemagic.io/apps/5e299cf863c55e0019edee46/5e299cf863c55e0019edee45/latest_build)
 ![GitHub stars](https://img.shields.io/github/stars/hoc081098/node-auth-flutter-BLoC-pattern-RxDart?style=social)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhoc081098%2Fnode-auth-flutter-BLoC-pattern-RxDart&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 <br>
 Liked some of my work? Buy me a coffee (or more likely a beer)
