@@ -23,19 +23,12 @@ Liked some of my work? Buy me a coffee (or more likely a beer)
 
 ## Download apk [here](https://nightly.link/hoc081098/node-auth-flutter-BLoC-pattern-RxDart/workflows/flutter/master/app.zip)
 
-## Flutter version: channel stable
+## Flutter version (stable channel)
 
 ```yaml
 environment:
-  sdk: ">=2.17.1 <3.0.0"
-  flutter: ">=3.0.1"
-```
-
-```shell
-Flutter 3.0.1 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision fb57da5f94 (2 weeks ago) • 2022-05-19 15:50:29 -0700
-Engine • revision caaafc5604
-Tools • Dart 2.17.1 • DevTools 2.12.2
+  sdk: ^3.4.3
+  flutter: ">=3.22.2"
 ```
 
 ## Screenshots
